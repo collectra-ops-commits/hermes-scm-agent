@@ -1,1 +1,1 @@
-FROM ghcr.io/nousresearch/hermes:latest
+FROM ghcr.io/nousresearch/hermes-agent:latest
