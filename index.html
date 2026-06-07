@@ -1,426 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Collectra SCM — Command Centre</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-
-/* PASSWORD GATE */
-#gate{position:fixed;inset:0;z-index:9999;background:#1a1c1e;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
-#gate.hidden{display:none}
-.gate-brand{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;color:#4a9d8f;text-transform:uppercase;margin-bottom:8px}
-.gate-title{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;color:#e8e6e0;letter-spacing:-0.5px}
-.gate-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;letter-spacing:2px;text-transform:uppercase}
-.gate-input{background:#111315;border:1px solid #2a2d30;color:#e8e6e0;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:10px 16px;border-radius:4px;width:260px;outline:none;text-align:center;letter-spacing:4px;margin-top:12px}
-.gate-input:focus{border-color:#4a9d8f}
-.gate-btn{background:#4a9d8f;color:#0d0f10;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:10px 0;border:none;border-radius:4px;cursor:pointer;width:260px;margin-top:4px}
-.gate-btn:hover{background:#5bbdad}
-.gate-err{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e05c5c;letter-spacing:1px;height:14px}
-
-:root{
-  --bg:#1a1c1e;
-  --sidebar:#141618;
-  --panel:#1f2124;
-  --card:#242729;
-  --border:#2a2d30;
-  --border2:#323538;
-  --text:#e8e6e0;
-  --muted:#666;
-  --muted2:#444;
-  --label:#888;
-  --green:#4a9d8f;
-  --green2:#2dd98a;
-  --yellow:#c9a227;
-  --red:#e05c5c;
-  --blue:#5b8dd9;
-  --purple:#8b7fd4;
-}
-
-body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column}
-
-/* TOP BAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:40px;background:var(--sidebar);border-bottom:1px solid var(--border);flex-shrink:0}
-.tb-left{display:flex;align-items:center;gap:12px}
-.tb-brand{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--text);letter-spacing:.5px}
-.tb-brand span{color:var(--green)}
-.tb-status{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.5px}
-.status-dot{width:6px;height:6px;background:var(--green2);border-radius:50%;animation:blink 3s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-.tb-right{display:flex;align-items:center;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)}
-.tb-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:10px;padding:4px 12px;border-radius:3px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all .15s}
-.tb-btn:hover{border-color:var(--green);color:var(--green)}
-
-/* LAYOUT */
-.layout{display:flex;flex:1;overflow:hidden}
-
-/* SIDEBAR */
-.sidebar{width:200px;background:var(--sidebar);border-right:1px solid var(--border);flex-shrink:0;overflow-y:auto;padding:16px 0}
-.sb-section{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted2);text-transform:uppercase;padding:0 16px;margin:16px 0 6px}
-.sb-section:first-child{margin-top:0}
-.sb-item{display:flex;align-items:center;gap:8px;padding:6px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s;text-decoration:none;border-left:2px solid transparent}
-.sb-item:hover{color:var(--text);background:rgba(255,255,255,.03)}
-.sb-item.active{color:var(--green);background:rgba(74,157,143,.06);border-left-color:var(--green)}
-.sb-item svg{width:12px;height:12px;opacity:.6;flex-shrink:0}
-.sb-item.active svg{opacity:1}
-.sb-footer{padding:16px;border-top:1px solid var(--border);margin-top:16px}
-.sb-online{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green2);letter-spacing:1px}
-.sb-model{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px}
-
-/* MAIN */
-.main{flex:1;overflow-y:auto;padding:0}
-
-/* PAGE HEADER */
-.page-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);background:var(--panel)}
-.ph-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--green);text-transform:uppercase;margin-bottom:6px}
-.ph-title{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:var(--text);letter-spacing:-.3px}
-.ph-meta{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
-.ph-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:3px 10px;border-radius:2px;letter-spacing:1px;text-transform:uppercase}
-
-/* CONTENT GRID */
-.content{padding:16px 24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-
-/* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden}
-.card-wide{grid-column:1/3}
-.card-full{grid-column:1/4}
-.card-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--label);text-transform:uppercase}
-.card-label.green{color:var(--green)}
-.card-label.yellow{color:var(--yellow)}
-.card-label.blue{color:var(--blue)}
-.card-label.red{color:var(--red)}
-.card-label.purple{color:var(--purple)}
-.card-body{padding:12px 14px}
-
-/* CALENDAR */
-.cal-day{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--green);text-transform:uppercase;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
-.cal-day:first-child{margin-top:0}
-.cal-event{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--panel);border-radius:3px;margin-bottom:4px;font-size:12px;border-left:2px solid var(--yellow)}
-.cal-event.cyan{border-left-color:var(--green)}
-.cal-add{display:flex;gap:6px;margin-top:10px}
-.field{background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 10px;border-radius:3px;outline:none;transition:border .15s}
-.field:focus{border-color:var(--green)}
-.field{flex:1}
-.btn{background:var(--green);color:#0d0f10;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:7px 14px;border:none;border-radius:3px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
-.btn:hover{background:#5bbdad}
-.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:9px;padding:5px 10px;border-radius:3px;cursor:pointer;letter-spacing:1px;text-transform:uppercase}
-.btn-ghost:hover{border-color:var(--green);color:var(--green)}
-
-/* TIP */
-.tip-body{font-size:13px;line-height:1.8;color:#aaa;font-weight:300;margin-bottom:12px}
-.tip-source{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--green);letter-spacing:1px;padding:6px 10px;background:var(--panel);border-radius:3px;border-left:2px solid var(--green)}
-
-/* FACT */
-.fact-icon{font-size:24px;margin-bottom:10px}
-.fact-body{font-size:12px;line-height:1.8;color:#888;font-weight:300}
-
-/* TODO */
-.todo-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--panel);border-radius:3px;margin-bottom:4px;font-size:12px}
-.todo-item.done span{text-decoration:line-through;color:var(--muted)}
-.todo-cb{width:14px;height:14px;border:1px solid var(--border2);border-radius:2px;cursor:pointer;flex-shrink:0;background:transparent;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
-.todo-cb.chk{background:var(--green2);border-color:var(--green2);color:#000}
-.todo-del{margin-left:auto;background:transparent;border:none;color:var(--muted2);cursor:pointer;font-size:11px;padding:2px 5px;border-radius:2px}
-.todo-del:hover{color:var(--red)}
-.todo-count{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted)}
-
-/* AUTO ITEMS */
-.auto-item{padding:10px 12px;background:var(--panel);border-radius:3px;margin-bottom:6px;border-left:2px solid var(--green2)}
-.auto-item.warn{border-left-color:var(--yellow)}
-.auto-status{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--green2);margin-bottom:3px}
-.auto-status.warn{color:var(--yellow)}
-.auto-name{font-size:12px;font-weight:500}
-.auto-time{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px}
-
-/* INTEL */
-.intel-item{padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;display:block;text-decoration:none}
-.intel-item:last-child{border-bottom:none}
-.intel-item:hover{background:var(--panel)}
-.intel-src{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px}
-.intel-txt{font-size:12px;color:#aaa;line-height:1.5}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Warehouse — Home Launchpad</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+<div class="app-shell">
 
-<!-- GATE -->
-<div id="gate">
-  <div class="gate-brand">Collectra Operations System</div>
-  <div class="gate-title">hermes/admin · <span style="color:var(--green)">scm</span></div>
-  <div class="gate-sub">Restricted · Syed Hasibul Alam Siam</div>
-  <input class="gate-input" type="password" id="pw" placeholder="password" onkeydown="if(event.key==='Enter')checkPw()">
-  <div class="gate-err" id="pw-err"></div>
-  <button class="gate-btn" onclick="checkPw()">Sign In →</button>
-</div>
-
-<!-- TOP BAR -->
-<div class="topbar">
-  <div class="tb-left">
-    <div class="tb-brand">collectra/<span>scm</span></div>
-    <div class="tb-status"><div class="status-dot"></div>running</div>
-  </div>
-  <div class="tb-right">
-    made with Hermes Agent &nbsp;·&nbsp; Nous Research
-    <button class="tb-btn" onclick="window.open('https://hermes-agent-production-08c4.up.railway.app','_blank')">Open Hermes →</button>
-  </div>
-</div>
-
-<div class="layout">
   <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sb-section">Dashboard</div>
-    <a class="sb-item active" href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Home
-    </a>
-
-    <div class="sb-section">SCM Modules</div>
-    <a class="sb-item" href="freight_intel.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Freight Intel
-    </a>
-    <a class="sb-item" href="pipeline.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="4" height="18"/><rect x="10" y="3" width="4" height="12"/><rect x="17" y="3" width="4" height="15"/></svg>
-      Pipeline
-    </a>
-    <a class="sb-item" href="incoterms.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      Incoterms
-    </a>
-    <a class="sb-item" href="draft_desk.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      Draft Desk
-    </a>
-    <a class="sb-item" href="memory_vault.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Memory Vault
-    </a>
-    <a class="sb-item" href="suppliers.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-      Suppliers
-    </a>
-
-    <div class="sb-section">Monitor</div>
-    <a class="sb-item" href="https://hermes-agent-production-08c4.up.railway.app/sessions" target="_blank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Status
-    </a>
-    <a class="sb-item" href="https://hermes-agent-production-08c4.up.railway.app/logs" target="_blank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-      Logs
-    </a>
-
-    <div class="sb-footer">
-      <div class="sb-online"><div class="status-dot"></div>Gateway Running</div>
-      <div class="sb-model">gemini-2.5-flash · openrouter</div>
-      <div class="sb-model" style="margin-top:2px">v0.15.2 · Nous Research</div>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-title">The Warehouse</div>
+      <div class="sidebar-logo-sub">Hermes Command Center</div>
     </div>
-  </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Core Sectors</div>
+      <a class="nav-item" href="index.html">
+        <span class="nav-icon">⌂</span> Home Launchpad
+        <span class="nav-index">01</span>
+      </a>
+      <a class="nav-item" href="social_intel.html">
+        <span class="nav-icon">◈</span> Social Intel
+        <span class="nav-index">02</span>
+      </a>
+      <a class="nav-item" href="investment.html">
+        <span class="nav-icon">◆</span> Investment Cmd
+        <span class="nav-index">03</span>
+      </a>
+      <a class="nav-item" href="crm.html">
+        <span class="nav-icon">▣</span> Client CRM
+        <span class="nav-index">04</span>
+      </a>
+      <a class="nav-item" href="pipeline.html">
+        <span class="nav-icon">→</span> Leads Pipeline
+        <span class="nav-index">05</span>
+      </a>
+      <a class="nav-item" href="research.html">
+        <span class="nav-icon">⊞</span> Research Terminal
+        <span class="nav-index">06</span>
+      </a>
+      <a class="nav-item" href="memory_vault.html">
+        <span class="nav-icon">◉</span> Memory World
+        <span class="nav-index">07</span>
+      </a>
+      <a class="nav-item" href="team_payroll.html">
+        <span class="nav-icon">▤</span> Team & Payroll
+        <span class="nav-index">08</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">HERMES AGENT <span>ONLINE</span></div>
+      <div class="sidebar-footer-text" style="margin-top:4px;">v0.15.2 · Railway</div>
+    </div>
+  </aside>
 
-  <!-- MAIN CONTENT -->
-  <div class="main">
-    <div class="page-header">
-      <div class="ph-label">Supply Chain Operations</div>
-      <div class="ph-title">Hasibul's Command Centre</div>
-      <div class="ph-meta">
-        <div class="ph-tag">AIBA Sylhet · 2026</div>
-        <div class="ph-tag">SCM + MIS</div>
-        <div class="ph-tag">CSCMP Certified</div>
-        <div class="ph-tag">Hermes v0.15.2</div>
-        <div class="ph-tag">2 Cron Jobs Active</div>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-breadcrumb">WAREHOUSE / <span>HOME LAUNCHPAD</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill"><div class="status-dot"></div>HERMES LIVE</div>
+      <div class="status-pill"><div class="status-dot warn"></div>MOCK DATA</div>
+      <div class="topbar-clock" id="topbar-clock">--:--:--</div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Morning Launchpad</div>
+        <div class="sector-subtitle">Sector 01 — Daily Command Surface</div>
+      </div>
+      <div class="sector-meta">
+        <div class="sector-tag">MOCK DATA</div>
+        <div class="sector-tag live">SHELL v1</div>
       </div>
     </div>
 
-    <div class="content">
-
-      <!-- CALENDAR -->
-      <div class="card card-wide">
-        <div class="card-header">
-          <div class="card-label yellow">Academic Calendar</div>
-          <div class="todo-count" id="today-lbl"></div>
+    <!-- ROW 1: Calendar + Book Notes -->
+    <div class="bento-grid bento-grid-2-1" style="gap:1px;">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Calendar Sync <span class="panel-title-accent">// Today</span></div>
+          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
         </div>
-        <div class="card-body">
-          <div class="cal-day">Today</div>
-          <div id="today-evts">
-            <div class="cal-event">Final Semester — AIBA Sylhet</div>
-            <div class="cal-event cyan">SCM Thesis Review</div>
-          </div>
-          <div class="cal-day" id="tmrw-lbl">Tomorrow</div>
-          <div id="tmrw-evts">
-            <div class="cal-event">Operations Management Study</div>
-          </div>
-          <div class="cal-add" style="margin-top:12px">
-            <input class="field" id="evt-in" placeholder="Add event...">
-            <button class="btn" onclick="addEvt()">+ Add</button>
-          </div>
+        <div class="stub-block" style="min-height:180px;">
+          <div class="stub-label">Widget Slot</div>
+          <div class="stub-title">Calendar Sync</div>
+          <div class="stub-note">Daily agenda timeline. Mail client sync. Will populate in Sector 1 build session.</div>
         </div>
       </div>
-
-      <!-- AUTOMATIONS -->
-      <div class="card">
-        <div class="card-header"><div class="card-label green">Active Automations</div></div>
-        <div class="card-body">
-          <div class="auto-item">
-            <div class="auto-status">● RUNNING</div>
-            <div class="auto-name">SCM Morning Briefing</div>
-            <div class="auto-time">Daily · 1:00 AM UTC · 7:00 AM BD</div>
-          </div>
-          <div class="auto-item">
-            <div class="auto-status">● RUNNING</div>
-            <div class="auto-name">Freight Index Alert</div>
-            <div class="auto-time">Mon · Wed · Fri · 8:00 AM</div>
-          </div>
-          <div class="auto-item warn">
-            <div class="auto-status warn">⚠ RATE LIMIT</div>
-            <div class="auto-name">Google AI Studio</div>
-            <div class="auto-time">20 req/min · 250 req/day free tier</div>
-          </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Book Notes <span class="panel-title-accent">// Daily</span></div>
+          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
+        </div>
+        <div class="stub-block" style="min-height:180px;">
+          <div class="stub-label">Widget Slot</div>
+          <div class="stub-title">Retention Engine</div>
+          <div class="stub-note">Rotating strategic lesson from 100-book library.</div>
         </div>
       </div>
-
-      <!-- DAILY TIP -->
-      <div class="card card-wide">
-        <div class="card-header">
-          <div class="card-label green">Daily SCM Framework Tip</div>
-          <div class="todo-count" id="tip-day"></div>
-        </div>
-        <div class="card-body">
-          <div class="tip-body" id="tip-t"></div>
-          <div class="tip-source" id="tip-s"></div>
-        </div>
-      </div>
-
-      <!-- DAILY FACT -->
-      <div class="card">
-        <div class="card-header"><div class="card-label purple">Daily SCM Fact</div></div>
-        <div class="card-body">
-          <div class="fact-icon" id="fact-ico"></div>
-          <div class="fact-body" id="fact-t"></div>
-        </div>
-      </div>
-
-      <!-- TODO -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-label blue">To-Do List</div>
-          <div class="todo-count" id="todo-count"></div>
-        </div>
-        <div class="card-body">
-          <div id="todo-list"></div>
-          <div class="cal-add" style="margin-top:10px">
-            <input class="field" id="todo-in" placeholder="Add task...">
-            <button class="btn" onclick="addTodo()">Add</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- SCM INTEL -->
-      <div class="card card-wide">
-        <div class="card-header"><div class="card-label red">SCM Intelligence Feed</div></div>
-        <a class="intel-item" href="freight_intel.html">
-          <div class="intel-src" style="color:var(--red)">Freight Monitor</div>
-          <div class="intel-txt">SCFI · FBX · CCFI Index Tracker — View Dashboard →</div>
-        </a>
-        <a class="intel-item" href="https://www.freightwaves.com" target="_blank">
-          <div class="intel-src" style="color:var(--yellow)">FreightWaves</div>
-          <div class="intel-txt">Latest freight, logistics & supply chain news →</div>
-        </a>
-        <a class="intel-item" href="https://www.supplychaindive.com" target="_blank">
-          <div class="intel-src" style="color:var(--purple)">Supply Chain Dive</div>
-          <div class="intel-txt">Industry disruption, procurement & strategy →</div>
-        </a>
-        <a class="intel-item" href="https://fbx.freightos.com" target="_blank">
-          <div class="intel-src" style="color:var(--green)">Freightos Baltic Index</div>
-          <div class="intel-txt">Free weekly SCFI & global container rate data →</div>
-        </a>
-      </div>
-
     </div>
-  </div>
+
+    <!-- ROW 2: Tasks + Curiosity + Newsletter -->
+    <div class="bento-grid bento-grid-3" style="gap:1px;">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Task Manager</div>
+          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
+        </div>
+        <div class="stub-block" style="min-height:160px;">
+          <div class="stub-label">Widget Slot</div>
+          <div class="stub-title">Quick Tasks</div>
+          <div class="stub-note">Minimalist checklist. Quick-entry. Thin checkbox styling.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Curiosity Ticker <span class="panel-title-accent">// Weird Knowledge</span></div>
+          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
+        </div>
+        <div class="stub-block" style="min-height:160px;">
+          <div class="stub-label">Widget Slot</div>
+          <div class="stub-title">Daily Fact</div>
+          <div class="stub-note">Ecological, systemic, or abstract daily fact.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Newsletter Feed <span class="panel-title-accent">// AI Parsed</span></div>
+          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
+        </div>
+        <div class="stub-block" style="min-height:160px;">
+          <div class="stub-label">Widget Slot</div>
+          <div class="stub-title">Email Insights</div>
+          <div class="stub-note">Parsed newsletter bullets. 6hr scrub cycle.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
 </div>
-
-<script>
-// PASSWORD
-const PASS='collectra2026';
-function checkPw(){
-  if(document.getElementById('pw').value===PASS){
-    document.getElementById('gate').classList.add('hidden');
-    sessionStorage.setItem('auth','1');
-  } else {
-    document.getElementById('pw-err').textContent='Incorrect password.';
-    document.getElementById('pw').value='';
-  }
-}
-if(sessionStorage.getItem('auth')==='1') document.getElementById('gate').classList.add('hidden');
-
-// DATES
-const today=new Date(),tmrw=new Date();tmrw.setDate(today.getDate()+1);
-const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-document.getElementById('today-lbl').textContent=`${days[today.getDay()]}, ${today.getDate()} ${months[today.getMonth()]}`;
-document.getElementById('tmrw-lbl').textContent=`Tomorrow — ${days[tmrw.getDay()]}, ${tmrw.getDate()} ${months[tmrw.getMonth()]}`;
-
-function addEvt(){
-  const v=document.getElementById('evt-in').value.trim();
-  if(!v)return;
-  const d=document.createElement('div');d.className='cal-event cyan';d.textContent=v;
-  document.getElementById('today-evts').appendChild(d);
-  document.getElementById('evt-in').value='';
-}
-document.getElementById('evt-in').addEventListener('keydown',e=>{if(e.key==='Enter')addEvt();});
-
-// TIPS
-const tips=[
-  {t:'The SCOR Model breaks every supply chain into 5 processes: Plan, Source, Make, Deliver, Return. Use it to diagnose where your chain is weakest before proposing solutions.',s:'SCOR Framework — APICS',d:'Tip 01'},
-  {t:'The Bullwhip Effect: small demand fluctuations cause increasingly large swings upstream. Counter it with demand-driven planning and real-time data sharing with suppliers.',s:'Lee, Padmanabhan & Whang, 1997',d:'Tip 02'},
-  {t:'EOQ minimizes inventory cost by balancing ordering vs holding cost. Formula: √(2DS/H). Master this for any procurement exam or interview.',s:'Operations Management',d:'Tip 03'},
-  {t:'Dual-sourcing strategy: qualify two suppliers per critical material. Adds 5-10% cost but reduces stockout risk by 60-80% during disruptions.',s:'Supply Chain Risk Management',d:'Tip 04'},
-  {t:'FCA Incoterm 2020 update: buyer can instruct carrier to issue on-board Bill of Lading — critical for Letter of Credit transactions in containerized shipping.',s:'ICC Incoterms 2020',d:'Tip 05'},
-  {t:'Safety Stock: Z × σ × √LT. A 99% service level requires 3x the safety stock of 90%. Always calculate before setting reorder points.',s:'Inventory Optimization',d:'Tip 06'},
-  {t:'Vendor-Managed Inventory (VMI): supplier monitors your stock and triggers replenishment automatically. Reduces admin burden and improves forecast accuracy.',s:'SCM Best Practices',d:'Tip 07'}
-];
-const doy=Math.floor((today-new Date(today.getFullYear(),0,0))/86400000);
-const tip=tips[doy%tips.length];
-document.getElementById('tip-t').textContent=tip.t;
-document.getElementById('tip-s').textContent='— '+tip.s;
-document.getElementById('tip-day').textContent=tip.d+' · '+days[today.getDay()];
-
-// FACTS
-const facts=[
-  {i:'🚢',t:"The term 'Supply Chain' was coined by Keith Oliver of Booz Allen Hamilton in 1982 in an interview with the Financial Times."},
-  {i:'⚓',t:"The 2021 Suez Canal blockage by Ever Given held up $9.6 billion in trade per day for 6 days."},
-  {i:'🇧🇩',t:"Bangladesh is the world's 2nd largest garment exporter — its RMG supply chain employs over 4 million workers."},
-  {i:'📊',t:"The SCFI is published every Friday by the Shanghai Shipping Exchange — check fbx.freightos.com for free access."},
-  {i:'🏭',t:"Toyota's Just-In-Time system, developed in the 1970s, reduced inventory costs by up to 75% and became a global SCM benchmark."},
-  {i:'🌍',t:"Maersk operates the world's largest container fleet with 700+ vessels and 4 million TEU capacity."},
-  {i:'💰',t:"The global logistics market is worth $8.4 trillion annually — approximately 10% of world GDP."}
-];
-const fact=facts[doy%facts.length];
-document.getElementById('fact-ico').textContent=fact.i;
-document.getElementById('fact-t').textContent=fact.t;
-
-// TODO
-let todos=JSON.parse(localStorage.getItem('scm-todos'))||[];
-function saveTodos(){localStorage.setItem('scm-todos',JSON.stringify(todos));}
-function renderTodos(){
-  const l=document.getElementById('todo-list');l.innerHTML='';
-  const rem=todos.filter(t=>!t.done).length;
-  document.getElementById('todo-count').textContent=rem+' remaining';
-  todos.forEach((t,i)=>{
-    const div=document.createElement('div');div.className='todo-item'+(t.done?' done':'');
-    div.innerHTML=`<div class="todo-cb ${t.done?'chk':''}" onclick="toggleTodo(${i})">${t.done?'✓':''}</div><span>${t.text}</span><button class="todo-del" onclick="delTodo(${i})">✕</button>`;
-    l.appendChild(div);
-  });
-}
-function toggleTodo(i){todos[i].done=!todos[i].done;saveTodos();renderTodos();}
-function delTodo(i){todos.splice(i,1);saveTodos();renderTodos();}
-function addTodo(){
-  const v=document.getElementById('todo-in').value.trim();
-  if(v){todos.push({text:v,done:false});saveTodos();renderTodos();document.getElementById('todo-in').value='';}
-}
-document.getElementById('todo-in').addEventListener('keydown',e=>{if(e.key==='Enter')addTodo();});
-renderTodos();
-</script>
+<script src="script.js"></script>
 </body>
 </html>

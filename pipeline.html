@@ -1,87 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COLLECTRA SCM COMMAND CENTRE - Pipeline</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Warehouse — Leads Pipeline</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
-        <h1>COLLECTRA SCM COMMAND CENTRE</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="freight_intel.html">Freight Intel</a></li>
-                <li><a href="pipeline.html">Pipeline</a></li>
-                <li><a href="incoterms.html">Incoterms</a></li>
-                <li><a href="draft_desk.html">Draft Desk</a></li>
-                <li><a href="memory_vault.html">Memory Vault</a></li>
-                <li><a href="suppliers.html">Suppliers</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <h2>Pipeline Management (Kanban Board)</h2>
-        <div class="kanban-board" id="kanban-board">
-            <div class="kanban-column" data-column="vendor-id">
-                <h3>Vendor ID</h3>
-                <div class="kanban-cards" id="vendor-id-cards" ondragover="allowDrop(event)" ondrop="drop(event, 'vendor-id')"></div>
-                <form class="kanban-add-card-form" onsubmit="addCard(event, 'vendor-id')">
-                    <input type="text" placeholder="Add new card" required>
-                    <button type="submit">Add</button>
-                </form>
-            </div>
-
-            <div class="kanban-column" data-column="rfp-issued">
-                <h3>RFP Issued</h3>
-                <div class="kanban-cards" id="rfp-issued-cards" ondragover="allowDrop(event)" ondrop="drop(event, 'rfp-issued')"></div>
-                <form class="kanban-add-card-form" onsubmit="addCard(event, 'rfp-issued')">
-                    <input type="text" placeholder="Add new card" required>
-                    <button type="submit">Add</button>
-                </form>
-            </div>
-
-            <div class="kanban-column" data-column="negotiations">
-                <h3>Negotiations</h3>
-                <div class="kanban-cards" id="negotiations-cards" ondragover="allowDrop(event)" ondrop="drop(event, 'negotiations')"></div>
-                <form class="kanban-add-card-form" onsubmit="addCard(event, 'negotiations')">
-                    <input type="text" placeholder="Add new card" required>
-                    <button type="submit">Add</button>
-                </form>
-            </div>
-
-            <div class="kanban-column" data-column="contract-awarded">
-                <h3>Contract Awarded</h3>
-                <div class="kanban-cards" id="contract-awarded-cards" ondragover="allowDrop(event)" ondrop="drop(event, 'contract-awarded')"></div>
-                <form class="kanban-add-card-form" onsubmit="addCard(event, 'contract-awarded')">
-                    <input type="text" placeholder="Add new card" required>
-                    <button type="submit">Add</button>
-                </form>
-            </div>
-
-            <div class="kanban-column" data-column="in-transit">
-                <h3>In Transit</h3>
-                <div class="kanban-cards" id="in-transit-cards" ondragover="allowDrop(event)" ondrop="drop(event, 'in-transit')"></div>
-                <form class="kanban-add-card-form" onsubmit="addCard(event, 'in-transit')">
-                    <input type="text" placeholder="Add new card" required>
-                    <button type="submit">Add</button>
-                </form>
-            </div>
-
-            <div class="kanban-column" data-column="received">
-                <h3>Received</h3>
-                <div class="kanban-cards" id="received-cards" ondragover="allowDrop(event)" ondrop="drop(event, 'received')"></div>
-                <form class="kanban-add-card-form" onsubmit="addCard(event, 'received')">
-                    <input type="text" placeholder="Add new card" required>
-                    <button type="submit">Add</button>
-</form>
-            </div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-title">The Warehouse</div>
+      <div class="sidebar-logo-sub">Hermes Command Center</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Core Sectors</div>
+      <a class="nav-item" href="index.html"><span class="nav-icon">⌂</span> Home Launchpad<span class="nav-index">01</span></a>
+      <a class="nav-item" href="social_intel.html"><span class="nav-icon">◈</span> Social Intel<span class="nav-index">02</span></a>
+      <a class="nav-item" href="investment.html"><span class="nav-icon">◆</span> Investment Cmd<span class="nav-index">03</span></a>
+      <a class="nav-item" href="crm.html"><span class="nav-icon">▣</span> Client CRM<span class="nav-index">04</span></a>
+      <a class="nav-item" href="pipeline.html"><span class="nav-icon">→</span> Leads Pipeline<span class="nav-index">05</span></a>
+      <a class="nav-item" href="research.html"><span class="nav-icon">⊞</span> Research Terminal<span class="nav-index">06</span></a>
+      <a class="nav-item" href="memory_vault.html"><span class="nav-icon">◉</span> Memory World<span class="nav-index">07</span></a>
+      <a class="nav-item" href="team_payroll.html"><span class="nav-icon">▤</span> Team & Payroll<span class="nav-index">08</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">HERMES AGENT <span>ONLINE</span></div>
+      <div class="sidebar-footer-text" style="margin-top:4px;">v0.15.2 · Railway</div>
+    </div>
+  </aside>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-breadcrumb">WAREHOUSE / <span>LEADS PIPELINE</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill"><div class="status-dot"></div>HERMES LIVE</div>
+      <div class="status-pill"><div class="status-dot warn"></div>MOCK DATA</div>
+      <div class="topbar-clock" id="topbar-clock">--:--:--</div>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Leads Pipeline</div>
+        <div class="sector-subtitle">Sector 05 — Sales Engine & Deal-Flow Tracker</div>
+      </div>
+      <div class="sector-meta">
+        <div class="sector-tag">MOCK DATA</div>
+        <div class="sector-tag live">SHELL v1</div>
+      </div>
+    </div>
+    <!-- Stage Track -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Deal-Flow Track <span class="panel-title-accent">// Horizontal</span></div>
+        <button class="btn btn-primary">+ ADD LEAD</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border-color);">
+        <div class="stub-block" style="min-height:180px;">
+          <div class="stub-label">Stage 1</div>
+          <div class="stub-title">Prospect</div>
         </div>
-    </main>
-
-    <script src="kanban.js"></script>
+        <div class="stub-block" style="min-height:180px;">
+          <div class="stub-label">Stage 2</div>
+          <div class="stub-title">Interested</div>
+        </div>
+        <div class="stub-block" style="min-height:180px;">
+          <div class="stub-label">Stage 3</div>
+          <div class="stub-title">Proposal Sent</div>
+        </div>
+        <div class="stub-block" style="min-height:180px;">
+          <div class="stub-label">Stage 4</div>
+          <div class="stub-title">Nurturing</div>
+        </div>
+        <div class="stub-block" style="min-height:180px;">
+          <div class="stub-label">Stage 5</div>
+          <div class="stub-title">Won / Lost</div>
+        </div>
+      </div>
+    </div>
+    <!-- Intake Form -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Lead Intake Form <span class="panel-title-accent">// Comprehensive</span></div>
+        <span class="badge badge-muted">FIELDS: 8</span>
+      </div>
+      <div class="stub-block" style="min-height:140px;">
+        <div class="stub-label">Form Slot</div>
+        <div class="stub-title">Lead Intake</div>
+        <div class="stub-note">Business Name · Contact Name · Lead Source · Email · Phone · Domain · Opportunity Value</div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="script.js"></script>
 </body>
 </html>

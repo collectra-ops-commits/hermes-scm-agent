@@ -1,87 +1,103 @@
-// Home Page - To-Do List Functionality
+/* ============================================================
+   THE WAREHOUSE — MASTER SHARED SCRIPT
+   collectra-ops-commits/hermes-scm-agent
+   ============================================================ */
+
+'use strict';
+
+// ── CLOCK ────────────────────────────────────────────────
+function initClock() {
+  const el = document.getElementById('topbar-clock');
+  if (!el) return;
+  function tick() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    const d = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    el.textContent = `${d}  ${h}:${m}:${s}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ── ACTIVE NAV HIGHLIGHT ─────────────────────────────────
+function initNav() {
+  const current = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const href = item.getAttribute('href') || '';
+    if (href === current || (current === '' && href === 'index.html')) {
+      item.classList.add('active');
+    }
+  });
+}
+
+// ── SECTOR BREADCRUMB ────────────────────────────────────
+function setBreadcrumb(sector) {
+  const el = document.querySelector('.topbar-breadcrumb span');
+  if (el) el.textContent = sector;
+}
+
+// ── MOCK DATA LOADER ─────────────────────────────────────
+async function loadMock(filename) {
+  try {
+    const res = await fetch(`data/${filename}`);
+    if (!res.ok) throw new Error(`Mock data not found: ${filename}`);
+    return await res.json();
+  } catch (err) {
+    console.warn('[WAREHOUSE]', err.message);
+    return null;
+  }
+}
+
+// ── TOAST NOTIFICATION ───────────────────────────────────
+function toast(message, type = 'info') {
+  const colors = {
+    info:    'var(--text-muted)',
+    success: 'var(--accent-neon)',
+    warn:    'var(--accent-warm)',
+    error:   'var(--accent-red)'
+  };
+  const t = document.createElement('div');
+  t.style.cssText = `
+    position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+    background: var(--bg-panel); border: 1px solid ${colors[type]};
+    color: ${colors[type]}; font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 10px 16px; opacity: 0; transition: opacity 0.2s ease;
+  `;
+  t.textContent = `// ${message}`;
+  document.body.appendChild(t);
+  requestAnimationFrame(() => { t.style.opacity = '1'; });
+  setTimeout(() => {
+    t.style.opacity = '0';
+    setTimeout(() => t.remove(), 300);
+  }, 2800);
+}
+
+// ── FORMAT CURRENCY ──────────────────────────────────────
+function formatCurrency(value, currency = 'BDT') {
+  const formats = {
+    BDT: { locale: 'en-BD', symbol: '৳' },
+    USD: { locale: 'en-US', symbol: '$' },
+    EUR: { locale: 'de-DE', symbol: '€' }
+  };
+  const f = formats[currency] || formats.BDT;
+  return `${f.symbol}${Number(value).toLocaleString(f.locale)}`;
+}
+
+// ── ELAPSED TIME ─────────────────────────────────────────
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
+// ── INIT ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-    const todoForm = document.getElementById('todo-form');
-    const todoInput = document.getElementById('todo-input');
-    const todoList = document.getElementById('todo-list');
-
-    let todos = JSON.parse(localStorage.getItem('todos')) || [];
-
-    const saveTodos = () => {
-        localStorage.setItem('todos', JSON.stringify(todos));
-    };
-
-    const renderTodos = () => {
-        todoList.innerHTML = '';
-        todos.forEach((todo, index) => {
-            const li = document.createElement('li');
-            li.className = todo.completed ? 'completed' : '';
-            li.innerHTML = `
-                <span>${todo.text}</span>
-                <div>
-                    <button data-action="complete" data-index="${index}">Complete</button>
-                    <button data-action="delete" data-index="${index}">Delete</button>
-                </div>
-            `;
-            todoList.appendChild(li);
-        });
-    };
-
-    todoForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const newTodoText = todoInput.value.trim();
-        if (newTodoText) {
-            todos.push({ text: newTodoText, completed: false });
-            todoInput.value = '';
-            saveTodos();
-            renderTodos();
-        }
-    });
-
-    todoList.addEventListener('click', (e) => {
-        const target = e.target;
-        if (target.tagName === 'BUTTON') {
-            const action = target.dataset.action;
-            const index = parseInt(target.dataset.index);
-
-            if (action === 'complete') {
-                todos[index].completed = !todos[index].completed;
-            } else if (action === 'delete') {
-                todos.splice(index, 1);
-            }
-            saveTodos();
-            renderTodos();
-        }
-    });
-
-    renderTodos();
-
-    // Daily SCM Framework Tip
-    const scmTips = [
-        "Embrace continuous improvement in your supply chain processes.",
-        "Visibility is key: know where your goods are at all times.",
-        "Diversify your supplier base to mitigate risks.",
-        "Optimize inventory levels to reduce carrying costs.",
-        "Collaborate with partners for a more resilient supply chain."
-    ];
-
-    const scmTipElement = document.getElementById('scm-tip');
-    if (scmTipElement) {
-        const today = new Date();
-        const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-        scmTipElement.textContent = scmTips[dayOfYear % scmTips.length];
-    }
-
-    // Daily SCM Fact (placeholder for more dynamic content)
-    const scmFacts = [
-        "Did you know that the term 'supply chain' was first coined by Keith Oliver in 1982?",
-        "The Suez Canal blockage in 2021 highlighted the fragility of global supply chains.",
-        "Blockchain technology is increasingly being adopted for supply chain transparency.",
-        "Just-in-Time (JIT) inventory management aims to increase efficiency and decrease waste."
-    ];
-    const scmFactElement = document.getElementById('scm-fact');
-    if (scmFactElement) {
-        const today = new Date();
-        const dayOfMonth = today.getDate();
-        scmFactElement.textContent = scmFacts[dayOfMonth % scmFacts.length];
-    }
+  initClock();
+  initNav();
 });

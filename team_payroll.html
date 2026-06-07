@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Warehouse — Memory World</title>
+  <title>The Warehouse — Team & Payroll</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -31,7 +31,7 @@
   </aside>
   <header class="topbar">
     <div class="topbar-left">
-      <div class="topbar-breadcrumb">WAREHOUSE / <span>MEMORY WORLD</span></div>
+      <div class="topbar-breadcrumb">WAREHOUSE / <span>TEAM & PAYROLL</span></div>
     </div>
     <div class="topbar-right">
       <div class="status-pill"><div class="status-dot"></div>HERMES LIVE</div>
@@ -42,49 +42,52 @@
   <main class="main-content">
     <div class="sector-header">
       <div>
-        <div class="sector-title">Memory World</div>
-        <div class="sector-subtitle">Sector 07 — Long-Term Cognitive Backup</div>
+        <div class="sector-title">Team & Payroll</div>
+        <div class="sector-subtitle">Sector 08 — Personnel & Financial Ledger</div>
       </div>
       <div class="sector-meta">
         <div class="sector-tag">MOCK DATA</div>
         <div class="sector-tag live">SHELL v1</div>
       </div>
     </div>
-    <!-- Semantic Search -->
+
+    <!-- Auth Wall -->
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-title">Contextual Query <span class="panel-title-accent">// Natural Language</span></div>
-        <span class="badge badge-blue">SEMANTIC</span>
+        <div class="panel-title">Authorization Layer <span class="panel-title-accent">// Dev Credentials</span></div>
+        <span class="badge badge-red">LOCKED</span>
       </div>
-      <div class="panel-body">
-        <div style="display:flex;gap:1px;background:var(--border-color);">
-          <input class="input-field" type="text" placeholder='e.g. "What movie did I mention watching 6 months ago?"' style="flex:1;" />
-          <button class="btn btn-primary" style="white-space:nowrap;padding:0 16px;">QUERY MEMORY</button>
+      <div class="panel-body" style="display:flex;flex-direction:column;gap:8px;max-width:400px;">
+        <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">
+          Enter developer passphrase to access payroll ledger
         </div>
+        <input class="input-field" type="password" placeholder="PASSPHRASE" />
+        <button class="btn btn-primary" style="align-self:flex-start;padding:8px 20px;">AUTHENTICATE</button>
       </div>
     </div>
-    <!-- Concept Array + Ingest -->
-    <div class="bento-grid bento-grid-2-1" style="gap:1px;">
+
+    <!-- Roster + Ledger stubs (visible after auth in Session 9) -->
+    <div class="bento-grid bento-grid-2" style="gap:1px;">
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">Concept Array <span class="panel-title-accent">// Visual Log</span></div>
-          <span class="badge badge-muted">MOCK</span>
+          <div class="panel-title">Personnel Roster <span class="panel-title-accent">// 21 Active</span></div>
+          <span class="badge badge-muted">LOCKED</span>
         </div>
-        <div class="stub-block" style="min-height:220px;">
-          <div class="stub-label">Array Slot</div>
-          <div class="stub-title">Historical Thoughts</div>
-          <div class="stub-note">Interactive visual display of logged ideas, thoughts, and concepts over time.</div>
+        <div class="stub-block" style="min-height:200px;">
+          <div class="stub-label">Roster Slot</div>
+          <div class="stub-title">21 Team Members</div>
+          <div class="stub-note">Central database. Name · Role · Department · Status.</div>
         </div>
       </div>
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">Async Ingest <span class="panel-title-accent">// Telegram</span></div>
-          <span class="badge badge-green">BOT LINKED</span>
+          <div class="panel-title">Payroll Ledger <span class="panel-title-accent">// Disbursement</span></div>
+          <span class="badge badge-muted">LOCKED</span>
         </div>
-        <div class="stub-block" style="min-height:220px;">
-          <div class="stub-label">Ingest Slot</div>
-          <div class="stub-title">File · Audio · Text</div>
-          <div class="stub-note">Entries ingested asynchronously from Telegram bot interface.</div>
+        <div class="stub-block" style="min-height:200px;">
+          <div class="stub-label">Ledger Slot</div>
+          <div class="stub-title">Financial Registry</div>
+          <div class="stub-note">Phone · Email · Bank routing · bKash wallet. Secure payroll mapping.</div>
         </div>
       </div>
     </div>
