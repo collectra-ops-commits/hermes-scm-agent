@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COLLECTRA SCM COMMAND CENTRE - Incoterms</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>COLLECTRA SCM COMMAND CENTRE</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="freight_intel.html">Freight Intel</a></li>
+                <li><a href="pipeline.html">Pipeline</a></li>
+                <li><a href="incoterms.html">Incoterms</a></li>
+                <li><a href="draft_desk.html">Draft Desk</a></li>
+                <li><a href="memory_vault.html">Memory Vault</a></li>
+                <li><a href="suppliers.html">Suppliers</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Incoterms 2020</h2>
+        <input type="text" id="incoterm-search" placeholder="Search Incoterms..." onkeyup="filterIncoterms()">
+        <div id="incoterms-list">
+            <!-- Group E -->
+            <div class="incoterm-item" data-incoterm="EXW Ex Works">
+                <h3>EXW - Ex Works</h3>
+                <p><b>Definition:</b> The seller makes the goods available at their own premises. The buyer bears all costs and risks involved in taking the goods from the seller's premises to the desired destination.</p>
+                <p><b>Risk Transfer:</b> At seller's premises.</p>
+                <div class="diagram">Seller ---*Buyer</div>
+                <p><b>Usage Guidance:</b> Suitable for domestic trade. Buyer has maximum responsibility.</p>
+            </div>
+
+            <!-- Group F -->
+            <div class="incoterm-item" data-incoterm="FCA Free Carrier">
+                <h3>FCA - Free Carrier</h3>
+                <p><b>Definition:</b> The seller delivers the goods to the carrier or another person nominated by the buyer at the seller's premises or another named place.</p>
+                <p><b>Risk Transfer:</b> At the named place of delivery to the carrier.</p>
+                <div class="diagram">Seller --- Carrier ---*Buyer</div>
+                <p><b>Usage Guidance:</b> Flexible for any mode of transport. Common for containerized cargo.</p>
+            </div>
+            <div class="incoterm-item" data-incoterm="FAS Free Alongside Ship">
+                <h3>FAS - Free Alongside Ship</h3>
+                <p><b>Definition:</b> The seller delivers when the goods are placed alongside the vessel nominated by the buyer at the named port of shipment.</p>
+                <p><b>Risk Transfer:</b> When goods are alongside the vessel.</p>
+                <div class="diagram">Seller --- alongside Ship ---*Buyer</div>
+                <p><b>Usage Guidance:</b> For sea or inland waterway transport only. Typically for heavy or bulky goods.</p>
+            </div>
+            <div class="incoterm-item" data-incoterm="FOB Free On Board">
+                <h3>FOB - Free On Board</h3>
+                <p><b>Definition:</b> The seller delivers the goods on board the vessel nominated by the buyer at the named port of shipment or procures the goods already so delivered.</p>
+                <p><b>Risk Transfer:</b> When goods are on board the vessel.</p>
+                <div class="diagram">Seller --- on board Ship ---*Buyer</div>
+                <p><b>Usage Guidance:</b> For sea or inland waterway transport only. Commonly used, but often misunderstood.</p>
+            </div>
+
+            <!-- Group C -->
+            <div class="incoterm-item" data-incoterm="CPT Carriage Paid To">
+                <h3>CPT - Carriage Paid To</h3>
+                <p><b>Definition:</b> The seller delivers the goods to the carrier nominated by the seller at an agreed place (if any) and the seller must contract for and pay the costs of carriage necessary to bring the goods to the named place of destination.</p>
+<p><b>Risk Transfer:</b> When goods are delivered to the first carrier.</p>
+                <div class="diagram">Seller --- Carrier ---*Destination</div>
+                <p><b>Usage Guidance:</b> For any mode of transport. Cost and risk transfer at different points.</p>
+            </div>
+            <div class="incoterm-item" data-incoterm="CIP Carriage and Insurance Paid To">
+                <h3>CIP - Carriage and Insurance Paid To</h3>
+                <p><b>Definition:</b> Same as CPT, but the seller also pays for the insurance coverage against the buyer's risk of loss or damage to the goods during the carriage.</p>
+                <p><b>Risk Transfer:</b> When goods are delivered to the first carrier.</p>
+                <div class="diagram">Seller --- Carrier ---*Destination (Insured)</div>
+                <p><b>Usage Guidance:</b> For any mode of transport. Seller arranges minimal insurance.</p>
+            </div>
+            <div class="incoterm-item" data-incoterm="CFR Cost and Freight">
+                <h3>CFR - Cost and Freight</h3>
+                <p><b>Definition:</b> The seller delivers the goods on board the vessel nominated by the buyer at the named port of shipment or procures the goods already so delivered. The seller must contract for and pay the costs and freight necessary to bring the goods to the named port of destination.</p>
+                <p><b>Risk Transfer:</b> When goods are on board the vessel at port of shipment.</p>
+                <div class="diagram">Seller --- on board Ship ---*Destination Port</div>
+                <p><b>Usage Guidance:</b> For sea or inland waterway transport only. Risk transfers at shipment, cost at destination.</p>
+            </div>
+            <div class="incoterm-item" data-incoterm="CIF Cost Insurance and Freight">
+                <h3>CIF - Cost Insurance and Freight</h3>
+                <p><b>Definition:</b> Same as CFR, but the seller also pays for the insurance coverage against the buyer's risk of loss or damage to the goods during the carriage to the port of destination.</p>
+                <p><b>Risk Transfer:</b> When goods are on board the vessel at port of shipment.</p>
+                <div class="diagram">Seller --- on board Ship ---*Destination Port (Insured)</div>
+                <p><b>Usage Guidance:</b> For sea or inland waterway transport only. Seller arranges minimal insurance.</p>
+            </div>
+
+            <!-- Group D -->
+            <div class="incoterm-item" data-incoterm="DAP Delivered at Place">
+                <h3>DAP - Delivered at Place</h3>
+                <p><b>Definition:</b> The seller delivers the goods when they are placed at the disposal of the buyer on the arriving means of transport ready for unloading at the named place of destination.</p>
+                <p><b>Risk Transfer:</b> At the named place of destination.</p>
+                <div class="diagram">Seller -------------------*Destination</div>
+                <p><b>Usage Guidance:</b> For any mode of transport. Seller bears most risks and costs.</p>
+            </div>
+            <div class="incoterm-item" data-incoterm="DPU Delivered at Place Unloaded">
+                <h3>DPU - Delivered at Place Unloaded</h3>
+                <p><b>Definition:</b> The seller delivers when the goods, once unloaded from the arriving means of transport, are placed at the disposal of the buyer at a named place of destination.</p>
+                <p><b>Risk Transfer:</b> At the named place of destination, after unloading.</p>
+                <div class="diagram">Seller ------------------- Unloaded *Buyer</div>
+                <p><b>Usage Guidance:</b> For any mode of transport. Seller is responsible for unloading.</p>
+            </div>
+            <div class="incoterm-item" data-incoterm="DDP Delivered Duty Paid">
+                <h3>DDP - Delivered Duty Paid</h3>
+<p><b>Definition:</b> The seller delivers the goods when the goods are placed at the disposal of the buyer, cleared for import on the arriving means of transport ready for unloading at the named place of destination.</p>
+                <p><b>Risk Transfer:</b> At the named place of destination, cleared for import.</p>
+                <div class="diagram">Seller ------------------- Cleared *Buyer</div>
+                <p><b>Usage Guidance:</b> For any mode of transport. Seller has maximum responsibility, including duties and taxes.</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="incoterms.js"></script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COLLECTRA SCM Command Centre - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>COLLECTRA SCM COMMAND CENTRE</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="freight_intel.html">Freight Intel</a></li>
+                <li><a href="pipeline.html">Pipeline</a></li>
+                <li><a href="incoterms.html">Incoterms</a></li>
+                <li><a href="draft_desk.html">Draft Desk</a></li>
+                <li><a href="memory_vault.html">Memory Vault</a></li>
+                <li><a href="suppliers.html">Suppliers</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="hero-sub">
+            <span class="status-dot"></span>
+            Hermes Agent Online &nbsp;·&nbsp; Gemini 2.5 Flash &nbsp;·&nbsp; Telegram Active &nbsp;·&nbsp; 2 Cron Jobs Running
+        </div>
+
+        <section class="dashboard-grid">
+
+            <!-- Academic Calendar -->
+            <div class="card">
+                <h2>Academic Calendar</h2>
+                <div id="calendar-content">
+                    <div class="cal-day">
+                        <div class="cal-date" id="today-label"></div>
+                        <div id="today-events">
+                            <div class="cal-event">Final Semester — AIBA Sylhet</div>
+                            <div class="cal-event">SCM Thesis Review</div>
+                        </div>
+                    </div>
+                    <div class="cal-day" style="margin-top:12px;">
+                        <div class="cal-date" id="tomorrow-label"></div>
+                        <div id="tomorrow-events">
+                            <div class="cal-event">Operations Management Study</div>
+                        </div>
+                    </div>
+                    <form id="event-form" style="margin-top:12px;display:flex;gap:8px;">
+                        <input type="text" id="event-input" placeholder="Add event..." style="flex:1;padding:8px;background:#000;border:1px solid #333;color:#fff;border-radius:4px;">
+                        <button type="submit" style="background:#00ffff;color:#000;border:none;padding:8px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">+</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Daily SCM Tip -->
+            <div class="card">
+                <h2>Daily SCM Framework Tip</h2>
+                <p id="scm-tip" style="line-height:1.7;color:#ccc;font-size:0.95em;"></p>
+                <div id="tip-source" style="margin-top:10px;font-size:0.8em;color:#00ffff;"></div>
+            </div>
+
+            <!-- To-Do List -->
+            <div class="card">
+                <h2>To-Do List</h2>
+                <ul id="todo-list"></ul>
+                <form id="todo-form" style="display:flex;gap:8px;margin-top:12px;">
+                    <input type="text" id="new-todo" placeholder="Add a task..." required style="flex:1;padding:8px;background:#000;border:1px solid #333;color:#fff;border-radius:4px;">
+                    <button type="submit" style="background:#00ffff;color:#000;border:none;padding:8px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Add</button>
+                </form>
+            </div>
+
+            <!-- Daily SCM Fact -->
+            <div class="card">
+                <h2>Daily SCM Fact</h2>
+                <p id="scm-fact" style="line-height:1.7;color:#ccc;font-size:0.95em;"></p>
+            </div>
+
+            <!-- Cron Jobs Status -->
+            <div class="card">
+                <h2>Active Automations</h2>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <div style="background:#0d1a0d;border:1px solid #1a3a1a;border-radius:8px;padding:12px;">
+                        <div style="color:#39d98a;font-size:0.8em;font-weight:600;letter-spacing:1px;">● RUNNING</div>
+                        <div style="margin-top:4px;font-size:0.95em;">SCM Morning Briefing</div>
+                        <div style="color:#666;font-size:0.8em;margin-top:2px;">Daily · 7:00 AM Bangladesh time</div>
+                    </div>
+                    <div style="background:#0d1a0d;border:1px solid #1a3a1a;border-radius:8px;padding:12px;">
+                        <div style="color:#39d98a;font-size:0.8em;font-weight:600;letter-spacing:1px;">● RUNNING</div>
+                        <div style="margin-top:4px;font-size:0.95em;">Freight Index Alert</div>
+                        <div style="color:#666;font-size:0.8em;margin-top:2px;">Mon · Wed · Fri · 8:00 AM</div>
+                    </div>
+                    <div style="background:#1a1000;border:1px solid #3a2800;border-radius:8px;padding:12px;">
+                        <div style="color:#f5d20a;font-size:0.8em;font-weight:600;letter-spacing:1px;">⚠ NOTE</div>
+                        <div style="color:#888;font-size:0.8em;margin-top:4px;">Google AI Studio free tier: 20 req/min · 250 req/day</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Freight Newsletter Digest -->
+            <div class="card">
+                <h2>Freight Newsletter Digest</h2>
+                <p style="color:#666;font-size:0.85em;margin-bottom:12px;">Latest SCM intelligence — updated via Hermes 6-hourly</p>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <a href="freight_intel.html" style="background:#111;border:1px solid #222;border-radius:8px;padding:10px 12px;text-decoration:none;color:#ccc;font-size:0.9em;transition:border-color .2s;" onmouseover="this.style.borderColor='#00ffff'" onmouseout="this.style.borderColor='#222'">
+                        <div style="color:#00e5cc;font-size:0.75em;font-weight:600;letter-spacing:1px;margin-bottom:4px;">FREIGHT RATES</div>
+                        View SCFI · FBX · CCFI tracker →
+                    </a>
+                    <a href="https://www.freightwaves.com" target="_blank" style="background:#111;border:1px solid #222;border-radius:8px;padding:10px 12px;text-decoration:none;color:#ccc;font-size:0.9em;transition:border-color .2s;" onmouseover="this.style.borderColor='#f5d20a'" onmouseout="this.style.borderColor='#222'">
+                        <div style="color:#f5d20a;font-size:0.75em;font-weight:600;letter-spacing:1px;margin-bottom:4px;">FREIGHTWAVES</div>
+                        Latest freight & logistics news →
+                    </a>
+                    <a href="https://www.supplychaindive.com" target="_blank" style="background:#111;border:1px solid #222;border-radius:8px;padding:10px 12px;text-decoration:none;color:#ccc;font-size:0.9em;transition:border-color .2s;" onmouseover="this.style.borderColor='#b57bee'" onmouseout="this.style.borderColor='#222'">
+                        <div style="color:#b57bee;font-size:0.75em;font-weight:600;letter-spacing:1px;margin-bottom:4px;">SUPPLY CHAIN DIVE</div>
+                        Industry disruption & strategy →
+                    </a>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer>
+        <div style="text-align:center;padding:20px;color:#333;font-size:0.8em;border-top:1px solid #1a1a1a;">
+            COLLECTRA SCM · Powered by Hermes Agent · Syed Hasibul Alam Siam · AIBA Sylhet 2026
+        </div>
+    </footer>
+
+    <script>
+        // Date labels
+        const today = new Date();
+        const tomorrow = new Date(); tomorrow.setDate(today.getDate()+1);
+        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        document.getElementById('today-label').textContent = `TODAY — ${days[today.getDay()].toUpperCase()}, ${today.getDate()} ${months[today.getMonth()].toUpperCase()}`;
+        document.getElementById('tomorrow-label').textContent = `TOMORROW — ${days[tomorrow.getDay()].toUpperCase()}, ${tomorrow.getDate()} ${months[tomorrow.getMonth()].toUpperCase()}`;
+
+        // SCM Tips
+        const tips = [
+            {tip:"The SCOR Model (Supply Chain Operations Reference) breaks every supply chain into 5 processes: Plan, Source, Make, Deliver, Return. Use it to diagnose where your chain is weakest.",source:"SCOR Framework"},
+            {tip:"The Bullwhip Effect: small fluctuations in consumer demand cause increasingly large swings upstream. Counter it with demand-driven planning and real-time data sharing with suppliers.",source:"Lee et al., 1997"},
+            {tip:"EOQ (Economic Order Quantity) minimizes total inventory cost by balancing ordering cost against holding cost. Formula: √(2DS/H) where D=demand, S=order cost, H=holding cost.",source:"Operations Management"},
+            {tip:"Dual-sourcing strategy: qualify at least two suppliers for every critical material. Adds 5-10% cost but reduces stockout risk by 60-80% during disruptions.",source:"Supply Chain Risk Management"},
+            {tip:"Incoterms 2020 update: FCA now allows buyer to instruct carrier to issue on-board Bill of Lading — critical for Letter of Credit transactions in containerized shipping.",source:"ICC Incoterms 2020"},
+            {tip:"Safety Stock formula: Z × σLT × √LT — where Z is service level factor, σLT is demand std deviation, LT is lead time. Higher service level = more safety stock.",source:"Inventory Management"},
+            {tip:"Vendor-Managed Inventory (VMI): supplier monitors your stock levels and triggers replenishment automatically. Reduces your admin burden and improves supplier forecast accuracy.",source:"SCM Best Practices"}
+        ];
+        const dayOfYear = Math.floor((today - new Date(today.getFullYear(),0,0))/86400000);
+        const t = tips[dayOfYear % tips.length];
+        document.getElementById('scm-tip').textContent = t.tip;
+        document.getElementById('tip-source').textContent = '— ' + t.source;
+
+        // SCM Facts
+        const facts = [
+            "The term 'Supply Chain' was first coined by Keith Oliver of Booz Allen Hamilton in 1982.",
+            "The 2021 Suez Canal blockage by Ever Given held up an estimated $9.6 billion in trade per day.",
+            "Bangladesh is the world's 2nd largest garment exporter — its supply chain employs 4 million workers.",
+            "The Shanghai Containerized Freight Index (SCFI) is published every Friday by the Shanghai Shipping Exchange.",
+            "Just-In-Time manufacturing was developed by Toyota in the 1970s and reduced inventory costs by up to 75%.",
+            "Maersk operates the world's largest container shipping fleet with over 700 vessels and 4 million TEU capacity.",
+            "The global logistics market is worth over $8 trillion — about 10% of world GDP."
+        ];
+        document.getElementById('scm-fact').textContent = facts[dayOfYear % facts.length];
+
+        // To-Do List
+        let todos = JSON.parse(localStorage.getItem('scm-todos')) || [];
+        function saveTodos(){localStorage.setItem('scm-todos',JSON.stringify(todos));}
+        function renderTodos(){
+            const list = document.getElementById('todo-list');
+            list.innerHTML = '';
+            todos.forEach((t,i)=>{
+                const li = document.createElement('li');
+                li.style.cssText = 'display:flex;justify-content:space-between;align-items:center;background:#1a1a1a;padding:8px 12px;border-radius:6px;margin-bottom:6px;';
+                li.innerHTML = `<span style="${t.done?'text-decoration:line-through;color:#555':''}">${t.text}</span>
+                <div style="display:flex;gap:6px;">
+                    <button onclick="toggleTodo(${i})" style="background:${t.done?'#333':'#39d98a'};color:${t.done?'#888':'#000'};border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.8em;">${t.done?'Undo':'Done'}</button>
+                    <button onclick="deleteTodo(${i})" style="background:#ff3333;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.8em;">✕</button>
+                </div>`;
+                list.appendChild(li);
+            });
+        }
+        function toggleTodo(i){todos[i].done=!todos[i].done;saveTodos();renderTodos();}
+        function deleteTodo(i){todos.splice(i,1);saveTodos();renderTodos();}
+        document.getElementById('todo-form').addEventListener('submit',function(e){
+            e.preventDefault();
+            const val = document.getElementById('new-todo').value.trim();
+            if(val){todos.push({text:val,done:false});saveTodos();renderTodos();this.reset();}
+        });
+        renderTodos();
+
+        // Calendar event add
+        document.getElementById('event-form').addEventListener('submit',function(e){
+            e.preventDefault();
+            const val = document.getElementById('event-input').value.trim();
+            if(val){
+                const div = document.createElement('div');
+                div.className='cal-event';
+                div.textContent=val;
+                document.getElementById('today-events').appendChild(div);
+                this.reset();
+            }
+        });
+    </script>
+
+    <style>
+        .status-dot{display:inline-block;width:8px;height:8px;background:#39d98a;border-radius:50%;margin-right:6px;animation:pulse 2s infinite;}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+        .hero-sub{font-size:0.8em;color:#555;letter-spacing:1px;text-transform:uppercase;padding:0 20px 16px;margin-top:-10px;}
+        .cal-date{font-size:0.75em;color:#00ffff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-weight:600;}
+        .cal-event{background:#1a1a1a;border-left:3px solid #f5d20a;padding:6px 10px;margin-bottom:6px;font-size:0.9em;border-radius:0 4px 4px 0;}
+    </style>
+</body>
+</html>

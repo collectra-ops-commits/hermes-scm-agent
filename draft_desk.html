@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COLLECTRA SCM COMMAND CENTRE - Draft Desk</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>COLLECTRA SCM COMMAND CENTRE</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="freight_intel.html">Freight Intel</a></li>
+                <li><a href="pipeline.html">Pipeline</a></li>
+                <li><a href="incoterms.html">Incoterms</a></li>
+                <li><a href="draft_desk.html">Draft Desk</a></li>
+                <li><a href="memory_vault.html">Memory Vault</a></li>
+                <li><a href="suppliers.html">Suppliers</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Draft Desk (Document Generator)</h2>
+        <div class="draft-desk-buttons">
+            <button onclick="generateRFQ()">Generate RFQ</button>
+            <button onclick="generateNegotiationEmail()">Generate Negotiation Email</button>
+            <button onclick="generateBottleneckPlan()">Generate Bottleneck Plan</button>
+            <button onclick="generateCustomsChecklist()">Generate Customs Checklist</button>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h2>Generated Document</h2>
+            <textarea id="generated-document" rows="15" style="width: 100%; background-color: #000; color: #fff; border: 1px solid #00ffff; padding: 10px; border-radius: 4px;" readonly></textarea>
+        </div>
+    </main>
+
+    <script src="draft_desk.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COLLECTRA SCM COMMAND CENTRE - Suppliers</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>COLLECTRA SCM COMMAND CENTRE</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="freight_intel.html">Freight Intel</a></li>
+                <li><a href="pipeline.html">Pipeline</a></li>
+                <li><a href="incoterms.html">Incoterms</a></li>
+                <li><a href="draft_desk.html">Draft Desk</a></li>
+                <li><a href="memory_vault.html">Memory Vault</a></li>
+                <li><a href="suppliers.html">Suppliers</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2 style="font-family:'Bebas Neue',cursive;color:#ffd700;font-size:2em;margin-bottom:20px;">Supplier Directory</h2>
+
+        <div class="card" style="margin-bottom:20px;">
+            <h2>Add New Supplier</h2>
+            <form id="add-supplier-form" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <input type="text" id="s-name" placeholder="Supplier Name" required style="padding:10px;background:#000;border:1px solid #00ffff;color:#fff;border-radius:4px;">
+                <input type="text" id="s-location" placeholder="Location (e.g. Shanghai, CN)" required style="padding:10px;background:#000;border:1px solid #00ffff;color:#fff;border-radius:4px;">
+                <input type="text" id="s-product" placeholder="Product / Category" required style="padding:10px;background:#000;border:1px solid #00ffff;color:#fff;border-radius:4px;">
+                <input type="text" id="s-contact" placeholder="Contact Email / Phone" style="padding:10px;background:#000;border:1px solid #00ffff;color:#fff;border-radius:4px;">
+                <input type="text" id="s-incoterm" placeholder="Preferred Incoterm (e.g. FOB)" style="padding:10px;background:#000;border:1px solid #00ffff;color:#fff;border-radius:4px;">
+                <select id="s-rating" style="padding:10px;background:#000;border:1px solid #00ffff;color:#fff;border-radius:4px;">
+                    <option value="">Performance Rating</option>
+                    <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                    <option value="4">⭐⭐⭐⭐ Good</option>
+                    <option value="3">⭐⭐⭐ Average</option>
+                    <option value="2">⭐⭐ Below Average</option>
+                    <option value="1">⭐ Poor</option>
+                </select>
+                <textarea id="s-notes" placeholder="Notes (lead time, payment terms, reliability...)" rows="3" style="grid-column:1/3;padding:10px;background:#000;border:1px solid #00ffff;color:#fff;border-radius:4px;"></textarea>
+                <button type="submit" style="grid-column:1/3;background:#00ffff;color:#000;border:none;padding:12px;border-radius:4px;font-family:'Bebas Neue',cursive;font-size:1.3em;cursor:pointer;">Add Supplier</button>
+            </form>
+        </div>
+
+        <div style="margin-bottom:16px;">
+            <input type="text" id="supplier-search" placeholder="Search suppliers..." oninput="filterSuppliers()" style="width:100%;padding:10px;background:#000;border:1px solid #00ffff;color:#fff;border-radius:4px;box-sizing:border-box;">
+        </div>
+
+        <div class="supplier-grid" id="supplier-grid"></div>
+    </main>
+
+    <script>
+        let suppliers = JSON.parse(localStorage.getItem('suppliers')) || [
+            {name:"Shanghai Resin Co.",location:"Shanghai, CN",product:"Industrial Plastic Resin",contact:"sales@shanghairesn.com",incoterm:"FOB",rating:"3",notes:"3 quotes received. Price range $2.30-$2.80/unit. Currently in negotiations."},
+            {name:"Dhaka Packaging Ltd.",location:"Dhaka, BD",product:"Corrugated Packaging",contact:"+880-1700-000000",incoterm:"EXW",rating:"4",notes:"Reliable local supplier. 7-day lead time."}
+        ];
+
+        function saveSuppliers(){localStorage.setItem('suppliers',JSON.stringify(suppliers));}
+
+        function stars(r){return '⭐'.repeat(parseInt(r)||0);}
+
+        function renderSuppliers(list){
+            const grid=document.getElementById('supplier-grid');
+            grid.innerHTML='';
+            if(!list.length){grid.innerHTML='<p style="color:#666">No suppliers found.</p>';return;}
+            list.forEach((s,i)=>{
+                grid.innerHTML+=`
+                <div class="supplier-card">
+                    <h3>${s.name}</h3>
+                    <p>📍 ${s.location}</p>
+                    <p>📦 ${s.product}</p>
+                    <p>📞 ${s.contact||'—'}</p>
+                    <p>🚢 Incoterm: <span style="color:#00ffff">${s.incoterm||'—'}</span></p>
+                    <p>Rating: ${stars(s.rating)||'Not rated'}</p>
+                    <p style="color:#aaa;font-size:0.9em;margin-top:8px;">${s.notes||''}</p>
+                    <button onclick="deleteSupplier(${i})" style="margin-top:12px;background:#ff3333;color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;">Remove</button>
+                </div>`;
+            });
+        }
+
+        function filterSuppliers(){
+            const q=document.getElementById('supplier-search').value.toLowerCase();
+            renderSuppliers(suppliers.filter(s=>JSON.stringify(s).toLowerCase().includes(q)));
+        }
+
+        function deleteSupplier(i){
+            suppliers.splice(i,1);
+            saveSuppliers();
+            renderSuppliers(suppliers);
+        }
+
+        document.getElementById('add-supplier-form').addEventListener('submit',function(e){
+            e.preventDefault();
+            suppliers.push({
+                name:document.getElementById('s-name').value,
+                location:document.getElementById('s-location').value,
+                product:document.getElementById('s-product').value,
+                contact:document.getElementById('s-contact').value,
+                incoterm:document.getElementById('s-incoterm').value,
+                rating:document.getElementById('s-rating').value,
+                notes:document.getElementById('s-notes').value
+            });
+            saveSuppliers();
+            renderSuppliers(suppliers);
+            this.reset();
+        });
+
+        renderSuppliers(suppliers);
+    </script>
+</body>
+</html>

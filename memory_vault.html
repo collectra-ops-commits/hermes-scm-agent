@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COLLECTRA SCM COMMAND CENTRE - Memory Vault</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>COLLECTRA SCM COMMAND CENTRE</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="freight_intel.html">Freight Intel</a></li>
+                <li><a href="pipeline.html">Pipeline</a></li>
+                <li><a href="incoterms.html">Incoterms</a></li>
+                <li><a href="draft_desk.html">Draft Desk</a></li>
+                <li><a href="memory_vault.html">Memory Vault</a></li>
+                <li><a href="suppliers.html">Suppliers</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Memory Vault (Knowledge Base)</h2>
+
+        <div class="card">
+            <h2>Search Memories</h2>
+            <div class="memory-vault-search">
+                <input type="text" id="memory-search" placeholder="Search SCM notes, Incoterms, customs rules..." onkeyup="searchMemories()">
+            </div>
+            <div id="memory-results"></div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h2>Add New Memory</h2>
+            <form id="add-memory-form" class="memory-vault-add-form">
+                <input type="text" id="memory-title" placeholder="Title" required>
+                <textarea id="memory-content" rows="8" placeholder="Content (SCM notes, Incoterms, customs rules, etc.)" required></textarea>
+                <button type="submit">Save Memory</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="memory_vault.js"></script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #000000; /* Black background */
+    color: #ffffff;
+}
+
+header {
+    background-color: #1a1a1a;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px solid #00ffff; /* Cyan accent */
+}
+
+h1 {
+    font-family: 'Bebas Neue', cursive;
+    color: #ffd700; /* Yellow accent */
+    margin-bottom: 10px;
+    font-size: 3em;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+nav li {
+    margin: 0 15px;
+}
+
+nav a {
+    color: #00ffff; /* Cyan accent */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2em;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: #ffd700; /* Yellow accent on hover */
+}
+
+main {
+    padding: 20px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+    font-family: 'Bebas Neue', cursive;
+    color: #00ffff;
+    margin-top: 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* To-Do List Specifics */
+#todo-list {
+    list-style: none;
+    padding: 0;
+}
+
+#todo-list li {
+    background-color: #333;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#todo-list li.completed {
+    text-decoration: line-through;
+    color: #aaa;
+}
+
+#todo-form {
+    display: flex;
+    margin-top: 15px;
+}
+
+#todo-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #00ffff;
+    border-radius: 4px;
+    background-color: #000;
+    color: #fff;
+    margin-right: 10px;
+}
+
+#todo-form button {
+    background-color: #00ffff;
+    color: #000;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#todo-form button:hover {
+    background-color: #ffd700;
+}
+
+#todo-list li button {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+#todo-list li button:hover {
+    background-color: #cc0000;
+}
+
+/* Incoterms Page */
+.incoterm-item {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.incoterm-item h3 {
+    font-family: 'Bebas Neue', cursive;
+    color: #ffd700;
+    margin-top: 0;
+}
+
+.incoterm-item .diagram {
+    height: 50px; /* Placeholder for diagrams */
+    background-color: #333;
+    margin-top: 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+}
+
+/* Kanban Board */
+.kanban-board {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 10px;
+}
+
+.kanban-column {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 15px;
+    min-width: 280px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.kanban-column h3 {
+    font-family: 'Bebas Neue', cursive;
+    color: #00ffff;
+    margin-top: 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.kanban-cards {
+    min-height: 100px;
+}
+
+.kanban-card {
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: grab;
+    color: #fff;
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+
+.kanban-add-card-form {
+    display: flex;
+    margin-top: 15px;
+}
+
+.kanban-add-card-form input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #00ffff;
+    border-radius: 4px;
+    background-color: #000;
+    color: #fff;
+margin-right: 10px;
+}
+
+.kanban-add-card-form button {
+    background-color: #00ffff;
+    color: #000;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.kanban-add-card-form button:hover {
+    background-color: #ffd700;
+}
+
+/* Draft Desk */
+.draft-desk-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.draft-desk-buttons button {
+    background-color: #00ffff;
+    color: #000;
+    border: none;
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.5em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.draft-desk-buttons button:hover {
+    background-color: #ffd700;
+    transform: translateY(-5px);
+}
+
+/* Memory Vault */
+.memory-vault-search input[type="text"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #00ffff;
+    border-radius: 4px;
+    background-color: #000;
+    color: #fff;
+}
+
+.memory-vault-entry {
+    background-color: #333;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.memory-vault-add-form input[type="text"],
+.memory-vault-add-form textarea {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #00ffff;
+    border-radius: 4px;
+    background-color: #000;
+    color: #fff;
+}
+
+.memory-vault-add-form button {
+    background-color: #00ffff;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Supplier Directory */
+.supplier-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.supplier-card {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.supplier-card h3 {
+    font-family: 'Bebas Neue', cursive;
+    color: #ffd700;
+    margin-top: 0;
+}
+
+.supplier-card p {
+    margin: 5px 0;
+}
