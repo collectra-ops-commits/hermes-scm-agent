@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Warehouse — SCM Operations</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── SCM-SPECIFIC OVERRIDES ─────────────────────────── */
+
+    /* TAB SYSTEM */
+    .scm-tabs {
+      display: flex;
+      border-bottom: var(--panel-border);
+      background: var(--bg-sidebar);
+      gap: 0;
+    }
+    .scm-tab {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 11px 20px;
+      color: var(--text-dim);
+      cursor: pointer;
+      border-right: var(--panel-border);
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .scm-tab:hover { color: var(--text-muted); background: var(--bg-panel); }
+    .scm-tab.active {
+      color: var(--accent-neon);
+      border-bottom-color: var(--accent-neon);
+      background: var(--bg-panel);
+    }
+    .scm-tab-icon { margin-right: 6px; }
+
+    .tab-panel { display: none; padding: 20px; flex-direction: column; gap: 16px; }
+    .tab-panel.active { display: flex; }
+
+    /* ── FREIGHT INTEL ──────────────────────────────────── */
+    .freight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+    }
+    .freight-card {
+      background: var(--bg-panel);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .freight-card-label {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .freight-card-value {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .freight-card-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    .freight-delta {
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .freight-delta.up   { color: var(--accent-neon); }
+    .freight-delta.down { color: var(--accent-red); }
+    .freight-delta.flat { color: var(--text-muted); }
+
+    /* Sparkline canvas */
+    .sparkline { width: 100%; height: 40px; display: block; margin-top: 4px; }
+
+    /* Commodity table */
+    .commodity-row {
+      display: grid;
+      grid-template-columns: 1fr 120px 80px 80px;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+    }
+    .commodity-row:last-child { border-bottom: none; }
+    .commodity-row:hover { background: rgba(0,255,204,0.03); }
+    .commodity-name { color: var(--text-primary); }
+    .commodity-price { color: var(--text-primary); font-weight: 500; text-align: right; }
+    .commodity-unit  { color: var(--text-dim); font-size: 10px; text-align: right; }
+    .commodity-chg   { text-align: right; font-size: 11px; }
+
+    /* Port feed */
+    .port-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 11px;
+    }
+    .port-item:last-child { border-bottom: none; }
+    .port-name { color: var(--text-primary); }
+    .port-status { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border: 1px solid; }
+    .port-status.normal   { border-color: var(--accent-neon); color: var(--accent-neon); }
+    .port-status.delay    { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .port-status.critical { border-color: var(--accent-red); color: var(--accent-red); }
+    .port-eta { color: var(--text-muted); font-size: 10px; }
+
+    /* ── INCOTERMS ───────────────────────────────────────── */
+    .inco-search-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .inco-filter-btn {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border: var(--panel-border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .inco-filter-btn.active,
+    .inco-filter-btn:hover {
+      border-color: var(--accent-neon);
+      color: var(--accent-neon);
+    }
+
+    .inco-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+    }
+    .inco-card {
+      background: var(--bg-panel);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .inco-card:hover { background: rgba(0,255,204,0.04); }
+    .inco-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .inco-code {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent-neon);
+      font-family: var(--font-mono);
+    }
+    .inco-mode-tag {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border: 1px solid;
+    }
+    .inco-mode-tag.any  { border-color: var(--accent-blue); color: var(--accent-blue); }
+    .inco-mode-tag.sea  { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .inco-card-body { padding: 12px 14px; }
+    .inco-full-name {
+      font-size: 11px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .inco-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    /* Risk transfer bar */
+    .risk-bar-wrap { margin-top: 8px; }
+    .risk-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 8px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .risk-bar-track {
+      height: 4px;
+      background: var(--border-color);
+      position: relative;
+    }
+    .risk-bar-fill {
+      position: absolute;
+      left: 0; top: 0; height: 100%;
+      background: linear-gradient(90deg, var(--accent-neon), var(--accent-warm));
+    }
+    .risk-bar-marker {
+      position: absolute;
+      top: -3px;
+      width: 2px;
+      height: 10px;
+      background: var(--text-primary);
+    }
+    .risk-bar-tip {
+      font-size: 8px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      letter-spacing: 0.06em;
+    }
+
+    /* Expanded detail modal */
+    .inco-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 20, 16, 0.92);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    .inco-modal-overlay.open { display: flex; }
+    .inco-modal {
+      background: var(--bg-panel);
+      border: var(--panel-border);
+      width: 560px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .inco-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: var(--panel-border);
+      background: var(--bg-panel-alt);
+      position: sticky;
+      top: 0;
+    }
+    .inco-modal-title { font-family: var(--font-header); font-size: 20px; color: var(--text-primary); }
+    .inco-modal-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+    .inco-detail-row { display: flex; flex-direction: column; gap: 4px; }
+    .inco-detail-label { font-size: 9px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; }
+    .inco-detail-value { font-size: 12px; color: var(--text-primary); line-height: 1.7; }
+
+    /* ── DRAFT DESK ──────────────────────────────────────── */
+    .draft-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 1px;
+      background: var(--border-color);
+      min-height: 500px;
+    }
+    .draft-sidebar {
+      background: var(--bg-panel-alt);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .draft-type-btn {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      background: transparent;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .draft-type-btn:hover { background: var(--bg-panel); border-left-color: var(--border-active); }
+    .draft-type-btn.active {
+      background: var(--bg-panel);
+      border-left-color: var(--accent-neon);
+    }
+    .draft-type-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .draft-type-btn.active .draft-type-label { color: var(--accent-neon); }
+    .draft-type-desc {
+      font-size: 9px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .draft-workspace {
+      background: var(--bg-panel);
+      display: flex;
+      flex-direction: column;
+    }
+    .draft-form {
+      padding: 16px;
+      border-bottom: var(--panel-border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .draft-form-full { grid-column: 1 / -1; }
+    .draft-form label {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .draft-output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: var(--panel-border);
+      background: var(--bg-panel-alt);
+    }
+    .draft-output {
+      flex: 1;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.8;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      overflow-y: auto;
+      min-height: 300px;
+      background: var(--bg-main);
+      border: none;
+      resize: none;
+      outline: none;
+    }
+    .draft-output::placeholder { color: var(--text-dim); }
+
+    /* Checklist items in output */
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+    .checklist-item:last-child { border-bottom: none; }
+    .checklist-box {
+      width: 12px;
+      height: 12px;
+      border: 1px solid var(--border-active);
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+    }
+    .checklist-box.checked { border-color: var(--accent-neon); color: var(--accent-neon); }
+    .checklist-text { font-size: 11px; color: var(--text-primary); line-height: 1.6; }
+    .checklist-text.checked { color: var(--text-dim); text-decoration: line-through; }
+
+    /* ── SUPPLIERS ───────────────────────────────────────── */
+    .supplier-toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .supplier-add-form {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .supplier-add-form.open { display: flex; }
+    .supplier-add-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .supplier-add-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .supplier-table-wrap { overflow-x: auto; }
+    .supplier-status {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border: 1px solid;
+    }
+    .supplier-status.active       { border-color: var(--accent-neon); color: var(--accent-neon); }
+    .supplier-status.negotiating  { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .supplier-status.blacklisted  { border-color: var(--accent-red);  color: var(--accent-red); }
+    .supplier-status.inactive     { border-color: var(--border-active); color: var(--text-dim); }
+
+    .perf-bar-track {
+      width: 80px;
+      height: 4px;
+      background: var(--border-color);
+      position: relative;
+      display: inline-block;
+    }
+    .perf-bar-fill {
+      position: absolute;
+      left: 0; top: 0; height: 100%;
+      background: var(--accent-neon);
+    }
+    .perf-bar-fill.med { background: var(--accent-warm); }
+    .perf-bar-fill.low { background: var(--accent-red); }
+
+    .inco-badge {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      padding: 2px 6px;
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .supplier-actions { display: flex; gap: 6px; }
+
+    select.input-field option { background: var(--bg-panel); }
+
+    /* ── MISC ───────────────────────────────────────────── */
+    .section-divider {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 6px 0 4px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 12px;
+    }
+
+    .last-updated {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 900px) {
+      .freight-grid { grid-template-columns: 1fr; }
+      .inco-grid    { grid-template-columns: 1fr; }
+      .draft-layout { grid-template-columns: 1fr; }
+      .supplier-add-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-title">The Warehouse</div>
+      <div class="sidebar-logo-sub">Hermes Command Center</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Core Sectors</div>
+      <a class="nav-item" href="index.html"><span class="nav-icon">⌂</span> Home Launchpad<span class="nav-index">01</span></a>
+      <a class="nav-item" href="social_intel.html"><span class="nav-icon">◈</span> Social Intel<span class="nav-index">02</span></a>
+      <a class="nav-item" href="investment.html"><span class="nav-icon">◆</span> Investment Cmd<span class="nav-index">03</span></a>
+      <a class="nav-item" href="crm.html"><span class="nav-icon">▣</span> Client CRM<span class="nav-index">04</span></a>
+      <a class="nav-item" href="pipeline.html"><span class="nav-icon">→</span> Leads Pipeline<span class="nav-index">05</span></a>
+      <a class="nav-item" href="research.html"><span class="nav-icon">⊞</span> Research Terminal<span class="nav-index">06</span></a>
+      <a class="nav-item" href="memory_vault.html"><span class="nav-icon">◉</span> Memory World<span class="nav-index">07</span></a>
+      <a class="nav-item" href="team_payroll.html"><span class="nav-icon">▤</span> Team & Payroll<span class="nav-index">08</span></a>
+      <div class="nav-section-label" style="margin-top:8px;">Extended</div>
+      <a class="nav-item" href="scm_ops.html"><span class="nav-icon">⬡</span> SCM Operations<span class="nav-index">09</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">HERMES AGENT <span>ONLINE</span></div>
+      <div class="sidebar-footer-text" style="margin-top:4px;">v0.15.2 · Railway</div>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-breadcrumb">WAREHOUSE / <span>SCM OPERATIONS</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill"><div class="status-dot"></div>HERMES LIVE</div>
+      <div class="status-pill"><div class="status-dot warn"></div>MOCK DATA</div>
+      <div class="topbar-clock" id="topbar-clock">--:--:--</div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main-content" style="padding:0;gap:0;">
+
+    <!-- SECTOR HEADER -->
+    <div style="padding:20px 20px 0;" >
+      <div class="sector-header">
+        <div>
+          <div class="sector-title">SCM Operations</div>
+          <div class="sector-subtitle">Sector 09 — Freight · Incoterms · Drafts · Suppliers</div>
+        </div>
+        <div class="sector-meta">
+          <div class="sector-tag">4 TOOLS</div>
+          <div class="sector-tag live">LIVE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB BAR -->
+    <div class="scm-tabs">
+      <button class="scm-tab active" onclick="switchTab('freight', this)">
+        <span class="scm-tab-icon">◆</span>Freight Intel
+      </button>
+      <button class="scm-tab" onclick="switchTab('incoterms', this)">
+        <span class="scm-tab-icon">⊞</span>Incoterms 2020
+      </button>
+      <button class="scm-tab" onclick="switchTab('draft', this)">
+        <span class="scm-tab-icon">▣</span>Draft Desk
+      </button>
+      <button class="scm-tab" onclick="switchTab('suppliers', this)">
+        <span class="scm-tab-icon">◈</span>Supplier Directory
+      </button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         TAB 1: FREIGHT INTEL
+    ══════════════════════════════════════════════════ -->
+    <div id="tab-freight" class="tab-panel active">
+
+      <!-- Index Cards -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Shipping Index Monitor <span class="panel-title-accent">// Live Rates</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="last-updated" id="freight-timestamp">Updated: --</span>
+            <button class="btn btn-primary" onclick="refreshFreight()">⟳ REFRESH</button>
+          </div>
+        </div>
+        <div class="freight-grid" id="freight-index-grid">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <!-- Two columns: Commodities + Port Feed -->
+      <div class="bento-grid bento-grid-2" style="gap:1px;">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Commodity Prices <span class="panel-title-accent">// Key Materials</span></div>
+            <span class="badge badge-muted">MOCK</span>
+          </div>
+          <div id="commodity-table">
+            <div class="commodity-row" style="background:var(--bg-panel-alt);">
+              <div style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;">Commodity</div>
+              <div style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;text-align:right;">Price</div>
+              <div style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;text-align:right;">Unit</div>
+              <div style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;text-align:right;">24h Δ</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Port Disruption Feed <span class="panel-title-accent">// Global</span></div>
+            <span class="badge badge-muted">MOCK</span>
+          </div>
+          <div id="port-feed">
+            <!-- populated by JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         TAB 2: INCOTERMS 2020
+    ══════════════════════════════════════════════════ -->
+    <div id="tab-incoterms" class="tab-panel">
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Incoterms 2020 Navigator <span class="panel-title-accent">// 11 Terms</span></div>
+          <span class="badge badge-blue">ICC 2020</span>
+        </div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="inco-search-bar">
+            <input class="input-field" id="inco-search" type="text" placeholder="Search term, code, or keyword..." style="flex:1;" oninput="filterIncoterms()" />
+            <button class="inco-filter-btn active" onclick="filterMode('all',this)">All</button>
+            <button class="inco-filter-btn" onclick="filterMode('any',this)">Any Transport</button>
+            <button class="inco-filter-btn" onclick="filterMode('sea',this)">Sea Only</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inco-grid" id="inco-grid">
+        <!-- populated by JS -->
+      </div>
+
+    </div>
+
+    <!-- Incoterm Modal -->
+    <div class="inco-modal-overlay" id="inco-modal">
+      <div class="inco-modal">
+        <div class="inco-modal-header">
+          <div class="inco-modal-title" id="modal-title">—</div>
+          <button class="btn" onclick="closeIncoModal()">✕ CLOSE</button>
+        </div>
+        <div class="inco-modal-body" id="modal-body">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         TAB 3: DRAFT DESK
+    ══════════════════════════════════════════════════ -->
+    <div id="tab-draft" class="tab-panel">
+      <div class="panel" style="flex:1;">
+        <div class="panel-header">
+          <div class="panel-title">Document Generator <span class="panel-title-accent">// 4 Templates</span></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary" onclick="generateDoc()">▶ GENERATE</button>
+            <button class="btn" onclick="copyDoc()">⎘ COPY</button>
+            <button class="btn" onclick="clearDoc()">✕ CLEAR</button>
+          </div>
+        </div>
+        <div class="draft-layout">
+          <!-- Type selector -->
+          <div class="draft-sidebar">
+            <button class="draft-type-btn active" onclick="selectDraftType('rfq',this)">
+              <span class="draft-type-label">RFQ</span>
+              <span class="draft-type-desc">Request for Quotation — supplier pricing inquiry with specs</span>
+            </button>
+            <button class="draft-type-btn" onclick="selectDraftType('nego',this)">
+              <span class="draft-type-label">Negotiation Email</span>
+              <span class="draft-type-desc">Structured counteroffer with terms and closing</span>
+            </button>
+            <button class="draft-type-btn" onclick="selectDraftType('bottleneck',this)">
+              <span class="draft-type-label">Bottleneck Plan</span>
+              <span class="draft-type-desc">5-phase structured supply disruption response</span>
+            </button>
+            <button class="draft-type-btn" onclick="selectDraftType('customs',this)">
+              <span class="draft-type-label">Customs Checklist</span>
+              <span class="draft-type-desc">Import/export compliance checklist with checkboxes</span>
+            </button>
+          </div>
+          <!-- Workspace -->
+          <div class="draft-workspace">
+            <!-- Dynamic form fields -->
+            <div class="draft-form" id="draft-form-fields">
+              <!-- populated by JS -->
+            </div>
+            <div class="draft-output-header">
+              <span class="panel-title" id="draft-output-label">OUTPUT // RFQ DOCUMENT</span>
+              <span class="last-updated" id="draft-gen-time">Not generated</span>
+            </div>
+            <div id="draft-output-area" style="flex:1;overflow-y:auto;background:var(--bg-main);padding:16px;min-height:280px;">
+              <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.06em;">
+                // Fill fields above and click GENERATE
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         TAB 4: SUPPLIER DIRECTORY
+    ══════════════════════════════════════════════════ -->
+    <div id="tab-suppliers" class="tab-panel">
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Supplier Directory <span class="panel-title-accent">// CRUD</span></div>
+          <div class="supplier-toolbar">
+            <input class="input-field" id="supplier-search" type="text" placeholder="Search suppliers..." style="width:200px;" oninput="renderSuppliers()" />
+            <button class="btn btn-primary" onclick="toggleAddForm()">+ ADD SUPPLIER</button>
+          </div>
+        </div>
+
+        <!-- Add Form -->
+        <div class="supplier-add-form" id="supplier-add-form" style="padding:16px;border-bottom:var(--panel-border);">
+          <div class="section-divider">New Supplier Entry</div>
+          <div class="supplier-add-grid">
+            <div>
+              <label style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:4px;">Supplier Name *</label>
+              <input class="input-field" id="s-name" type="text" placeholder="e.g. Shanghai Resin Co." />
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:4px;">Location *</label>
+              <input class="input-field" id="s-location" type="text" placeholder="e.g. Shanghai, CN" />
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:4px;">Product / Category *</label>
+              <input class="input-field" id="s-product" type="text" placeholder="e.g. Industrial Plastic Resin" />
+            </div>
+          </div>
+          <div class="supplier-add-row">
+            <div>
+              <label style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:4px;">Contact</label>
+              <input class="input-field" id="s-contact" type="text" placeholder="Email or phone" />
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:4px;">Preferred Incoterm</label>
+              <select class="input-field" id="s-incoterm">
+                <option value="">Select...</option>
+                <option>EXW</option><option>FCA</option><option>FAS</option>
+                <option>FOB</option><option>CPT</option><option>CIP</option>
+                <option>CFR</option><option>CIF</option><option>DAP</option>
+                <option>DPU</option><option>DDP</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:4px;">Performance (1–5)</label>
+              <select class="input-field" id="s-rating">
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Good</option>
+                <option value="3" selected>3 — Average</option>
+                <option value="2">2 — Below Avg</option>
+                <option value="1">1 — Poor</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:4px;">Status</label>
+              <select class="input-field" id="s-status">
+                <option value="active">Active</option>
+                <option value="negotiating">Negotiating</option>
+                <option value="inactive">Inactive</option>
+                <option value="blacklisted">Blacklisted</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:4px;">Notes</label>
+            <input class="input-field" id="s-notes" type="text" placeholder="Lead time, payment terms, reliability notes..." />
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary" onclick="addSupplier()">✓ SAVE SUPPLIER</button>
+            <button class="btn" onclick="toggleAddForm()">✕ CANCEL</button>
+          </div>
+        </div>
+
+        <!-- Supplier Table -->
+        <div class="supplier-table-wrap">
+          <table class="data-table" id="supplier-table">
+            <thead>
+              <tr>
+                <th>Supplier</th>
+                <th>Location</th>
+                <th>Product</th>
+                <th>Incoterm</th>
+                <th>Status</th>
+                <th>Performance</th>
+                <th>Contact</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="supplier-tbody">
+              <!-- populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty state -->
+        <div id="supplier-empty" style="display:none;">
+          <div class="stub-block" style="min-height:120px;">
+            <div class="stub-label">No Results</div>
+            <div class="stub-title">No suppliers found</div>
+            <div class="stub-note">Add a supplier or adjust your search filter.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════
+// TAB SYSTEM
+// ══════════════════════════════════════════════════════════
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.scm-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════
+// FREIGHT INTEL
+// ══════════════════════════════════════════════════════════
+const FREIGHT_MOCK = {
+  indices: [
+    { code: 'SCFI', name: 'Shanghai Containerized Freight Index', value: 3482, prev: 3430, unit: 'pts', desc: 'Spot rates ex-Shanghai' },
+    { code: 'FBX', name: 'Freightos Baltic Index', value: 2810, prev: 2857, unit: 'pts', desc: 'Global container avg' },
+    { code: 'BDI', name: 'Baltic Dry Index', value: 1654, prev: 1601, unit: 'pts', desc: 'Dry bulk shipping rates' },
+    { code: 'CCFI', name: 'China Containerized Freight Index', value: 1128, prev: 1128, unit: 'pts', desc: 'Comprehensive container index' },
+    { code: 'WCI', name: 'Drewry World Container Index', value: 4310, prev: 4180, unit: 'USD/FEU', desc: '40ft container avg spot' },
+    { code: 'HREX', name: 'Harpex Index', value: 892, prev: 920, unit: 'pts', desc: 'Container charter rates' },
+  ],
+  sparkData: {
+    SCFI:  [3100,3200,3180,3350,3400,3430,3482],
+    FBX:   [2950,2900,2870,2840,2870,2857,2810],
+    BDI:   [1400,1450,1500,1580,1610,1601,1654],
+    CCFI:  [1050,1080,1100,1110,1120,1128,1128],
+    WCI:   [3800,3900,4000,4100,4180,4200,4310],
+    HREX:  [980,960,950,940,930,920,892],
+  }
+};
+
+const COMMODITIES = [
+  { name: 'Crude Oil (WTI)', price: 75.42, unit: '/barrel', chg: +0.8 },
+  { name: 'Polypropylene Resin', price: 1.28, unit: '/lb', chg: -0.02 },
+  { name: 'Steel (HRC)', price: 987, unit: '/MT', chg: +12 },
+  { name: 'Aluminum', price: 2341, unit: '/MT', chg: -8 },
+  { name: 'Natural Gas', price: 2.85, unit: '/MMBtu', chg: +0.04 },
+  { name: 'Cotton', price: 0.79, unit: '/lb', chg: 0 },
+];
+
+const PORTS = [
+  { name: 'Shanghai, CN', status: 'delay', note: 'Typhoon advisory. +2 day delays.' },
+  { name: 'Rotterdam, NL', status: 'normal', note: 'Normal operations.' },
+  { name: 'Singapore', status: 'normal', note: 'Normal operations.' },
+  { name: 'Los Angeles, US', status: 'delay', note: 'Longshoremen negotiations ongoing.' },
+  { name: 'Chittagong, BD', status: 'normal', note: 'Port operations normal.' },
+  { name: 'Hamburg, DE', status: 'critical', note: 'Rail strike. Inland delays 4–6 days.' },
+  { name: 'Busan, KR', status: 'normal', note: 'Normal operations.' },
+  { name: 'Dubai, UAE', status: 'normal', note: 'Normal operations.' },
+];
+
+function drawSparkline(canvas, data, isUp) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const pts = data.map((v, i) => ({
+    x: (i / (data.length - 1)) * W,
+    y: H - ((v - min) / range) * H * 0.85 - H * 0.05
+  }));
+  ctx.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.strokeStyle = isUp ? '#00FFCC' : '#FF4C4C';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  // dot at end
+  const last = pts[pts.length - 1];
+  ctx.beginPath();
+  ctx.arc(last.x, last.y, 2.5, 0, Math.PI * 2);
+  ctx.fillStyle = isUp ? '#00FFCC' : '#FF4C4C';
+  ctx.fill();
+}
+
+function renderFreight() {
+  const grid = document.getElementById('freight-index-grid');
+  grid.innerHTML = '';
+  FREIGHT_MOCK.indices.forEach(idx => {
+    const delta = idx.value - idx.prev;
+    const isUp = delta >= 0;
+    const pct = ((delta / idx.prev) * 100).toFixed(2);
+    const id = 'spark-' + idx.code;
+    grid.innerHTML += `
+      <div class="freight-card">
+        <div class="freight-card-label">${idx.code} — ${idx.name}</div>
+        <div class="freight-card-value">${idx.value.toLocaleString()}</div>
+        <div class="freight-card-sub">${idx.unit}</div>
+        <div class="freight-delta ${isUp ? 'up' : 'down'}">
+          ${isUp ? '▲' : '▼'} ${Math.abs(delta).toLocaleString()} (${isUp ? '+' : ''}${pct}%)
+        </div>
+        <canvas class="sparkline" id="${id}" width="180" height="40"></canvas>
+        <div style="font-size:9px;color:var(--text-dim);">${idx.desc}</div>
+      </div>`;
+  });
+  // Draw sparklines after DOM insert
+  requestAnimationFrame(() => {
+    FREIGHT_MOCK.indices.forEach(idx => {
+      const c = document.getElementById('spark-' + idx.code);
+      if (c) drawSparkline(c, FREIGHT_MOCK.sparkData[idx.code], idx.value >= idx.prev);
+    });
+  });
+
+  // Commodities
+  const ct = document.getElementById('commodity-table');
+  // keep header row
+  const header = ct.firstElementChild;
+  ct.innerHTML = '';
+  ct.appendChild(header);
+  COMMODITIES.forEach(c => {
+    const isUp = c.chg > 0, isFlat = c.chg === 0;
+    const chgColor = isFlat ? 'var(--text-dim)' : isUp ? 'var(--accent-neon)' : 'var(--accent-red)';
+    const chgStr = isFlat ? '—' : (isUp ? '+' : '') + c.chg;
+    ct.innerHTML += `
+      <div class="commodity-row">
+        <div class="commodity-name">${c.name}</div>
+        <div class="commodity-price">$${c.price.toLocaleString()}</div>
+        <div class="commodity-unit">${c.unit}</div>
+        <div class="commodity-chg" style="color:${chgColor}">${chgStr}</div>
+      </div>`;
+  });
+
+  // Port feed
+  const pf = document.getElementById('port-feed');
+  pf.innerHTML = '';
+  PORTS.forEach(p => {
+    pf.innerHTML += `
+      <div class="port-item">
+        <span class="port-name">${p.name}</span>
+        <span style="display:flex;align-items:center;gap:12px;">
+          <span class="port-eta">${p.note}</span>
+          <span class="port-status ${p.status}">${p.status.toUpperCase()}</span>
+        </span>
+      </div>`;
+  });
+
+  document.getElementById('freight-timestamp').textContent =
+    'Updated: ' + new Date().toLocaleTimeString('en-GB');
+}
+
+function refreshFreight() {
+  // Simulate slight value variation on refresh
+  FREIGHT_MOCK.indices.forEach(idx => {
+    idx.prev = idx.value;
+    idx.value += Math.round((Math.random() - 0.45) * 40);
+    FREIGHT_MOCK.sparkData[idx.code].push(idx.value);
+    FREIGHT_MOCK.sparkData[idx.code].shift();
+  });
+  renderFreight();
+}
+
+// ══════════════════════════════════════════════════════════
+// INCOTERMS
+// ══════════════════════════════════════════════════════════
+const INCOTERMS = [
+  {
+    code: 'EXW', name: 'Ex Works', group: 'E', mode: 'any',
+    risk: 5, // seller responsibility: 5% (min)
+    desc: 'Seller makes goods available at their premises. Buyer bears all costs and risks from that point.',
+    riskNote: 'Risk transfers at seller\'s premises — maximum buyer responsibility.',
+    usage: 'Best for domestic trade or when buyer has strong logistics capability.',
+    sellerDoes: 'Make goods available. Basic packaging.',
+    buyerDoes: 'Everything: loading, export, freight, import, delivery.',
+  },
+  {
+    code: 'FCA', name: 'Free Carrier', group: 'F', mode: 'any',
+    risk: 25,
+    desc: 'Seller delivers goods to carrier or buyer-nominated party at a named place.',
+    riskNote: 'Risk transfers at the named delivery point to carrier.',
+    usage: 'Flexible for any transport mode. Standard for containerized cargo.',
+    sellerDoes: 'Export clearance. Deliver to named carrier.',
+    buyerDoes: 'Main carriage, insurance, import duties, last-mile delivery.',
+  },
+  {
+    code: 'FAS', name: 'Free Alongside Ship', group: 'F', mode: 'sea',
+    risk: 30,
+    desc: 'Seller delivers when goods are placed alongside the nominated vessel at port of shipment.',
+    riskNote: 'Risk transfers when goods are alongside the vessel at shipment port.',
+    usage: 'Sea/inland waterway only. Typically for bulk or heavy cargo.',
+    sellerDoes: 'Export clearance. Deliver alongside vessel.',
+    buyerDoes: 'Loading, freight, insurance, import clearance.',
+  },
+  {
+    code: 'FOB', name: 'Free On Board', group: 'F', mode: 'sea',
+    risk: 40,
+    desc: 'Seller delivers goods on board the vessel at named port of shipment.',
+    riskNote: 'Risk transfers when goods cross the ship\'s rail at port of loading.',
+    usage: 'Sea/inland waterway only. Most widely used — often misapplied.',
+    sellerDoes: 'Export clearance. Load goods on vessel.',
+    buyerDoes: 'Freight, insurance, import clearance, delivery.',
+  },
+  {
+    code: 'CPT', name: 'Carriage Paid To', group: 'C', mode: 'any',
+    risk: 45,
+    desc: 'Seller pays carriage to named destination, but risk transfers to buyer at first carrier.',
+    riskNote: 'Cost and risk transfer at different points — seller pays freight but risk leaves early.',
+    usage: 'Any transport mode. Common for multimodal shipments.',
+    sellerDoes: 'Export, arrange and pay main carriage.',
+    buyerDoes: 'Insurance, import clearance, last-mile.',
+  },
+  {
+    code: 'CIP', name: 'Carriage & Insurance Paid To', group: 'C', mode: 'any',
+    risk: 50,
+    desc: 'Same as CPT but seller also contracts and pays for cargo insurance.',
+    riskNote: 'Same risk transfer as CPT; seller must insure to minimum coverage (Institute Cargo A).',
+    usage: 'Any mode. Seller arranges comprehensive insurance — good for high-value cargo.',
+    sellerDoes: 'Export, main carriage, comprehensive insurance.',
+    buyerDoes: 'Import clearance, last-mile delivery.',
+  },
+  {
+    code: 'CFR', name: 'Cost & Freight', group: 'C', mode: 'sea',
+    risk: 45,
+    desc: 'Seller pays freight to destination port, but risk transfers when goods are loaded on vessel.',
+    riskNote: 'Sea only. Risk/cost split: risk leaves at loading, cost extends to destination.',
+    usage: 'Sea/inland waterway only. Common but requires careful insurance planning.',
+    sellerDoes: 'Export clearance, ocean freight to destination.',
+    buyerDoes: 'Insurance, import clearance, unloading, delivery.',
+  },
+  {
+    code: 'CIF', name: 'Cost, Insurance & Freight', group: 'C', mode: 'sea',
+    risk: 50,
+    desc: 'Same as CFR but seller pays for minimum cargo insurance to destination port.',
+    riskNote: 'Sea only. Seller insures to minimum (Institute Cargo C). Buyer should top up.',
+    usage: 'Sea only. Very common in commodity trade and Letter of Credit transactions.',
+    sellerDoes: 'Export, ocean freight, minimum insurance.',
+    buyerDoes: 'Import clearance, unloading, delivery.',
+  },
+  {
+    code: 'DAP', name: 'Delivered at Place', group: 'D', mode: 'any',
+    risk: 80,
+    desc: 'Seller delivers goods at named destination, ready for unloading. Buyer handles import.',
+    riskNote: 'Risk transfers at named destination — high seller responsibility.',
+    usage: 'Any mode. Common for e-commerce and when seller has strong destination logistics.',
+    sellerDoes: 'All costs and risks to named destination. Not import duties.',
+    buyerDoes: 'Import clearance, duties, taxes, unloading.',
+  },
+  {
+    code: 'DPU', name: 'Delivered at Place Unloaded', group: 'D', mode: 'any',
+    risk: 88,
+    desc: 'Seller delivers and unloads goods at named destination. Only term requiring seller to unload.',
+    riskNote: 'Risk transfers after unloading at destination. Unique responsibility.',
+    usage: 'Any mode. Seller must be able to handle unloading at destination.',
+    sellerDoes: 'All costs, risks, AND unloading at destination.',
+    buyerDoes: 'Import clearance, duties, taxes, onward delivery.',
+  },
+  {
+    code: 'DDP', name: 'Delivered Duty Paid', group: 'D', mode: 'any',
+    risk: 95,
+    desc: 'Seller delivers to buyer\'s named destination, cleared for import with all duties paid.',
+    riskNote: 'Maximum seller responsibility — seller handles everything including import duties.',
+    usage: 'Any mode. Simplest for buyer but seller must have import authority in destination country.',
+    sellerDoes: 'Everything: export, freight, insurance, import clearance, duties, last-mile.',
+    buyerDoes: 'Unloading (unless specified otherwise).',
+  },
+];
+
+let incoModeFilter = 'all';
+
+function filterMode(mode, btn) {
+  incoModeFilter = mode;
+  document.querySelectorAll('.inco-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderIncoterms();
+}
+
+function filterIncoterms() { renderIncoterms(); }
+
+function renderIncoterms() {
+  const q = (document.getElementById('inco-search').value || '').toLowerCase();
+  const grid = document.getElementById('inco-grid');
+  grid.innerHTML = '';
+
+  const filtered = INCOTERMS.filter(t => {
+    const modeOk = incoModeFilter === 'all' || t.mode === incoModeFilter;
+    const qOk = !q || t.code.toLowerCase().includes(q) || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q);
+    return modeOk && qOk;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="stub-block" style="grid-column:1/-1;min-height:100px;"><div class="stub-label">No results</div><div class="stub-title">No matching Incoterms</div></div>';
+    return;
+  }
+
+  filtered.forEach(t => {
+    const pct = t.risk;
+    grid.innerHTML += `
+      <div class="inco-card" onclick="openIncoModal('${t.code}')">
+        <div class="inco-card-header">
+          <span class="inco-code">${t.code}</span>
+          <span class="inco-mode-tag ${t.mode}">${t.mode === 'any' ? 'ANY TRANSPORT' : 'SEA ONLY'}</span>
+        </div>
+        <div class="inco-card-body">
+          <div class="inco-full-name">${t.name}</div>
+          <div class="inco-desc">${t.desc}</div>
+          <div class="risk-bar-wrap">
+            <div class="risk-bar-labels">
+              <span>Seller ←</span>
+              <span>→ Buyer</span>
+            </div>
+            <div class="risk-bar-track">
+              <div class="risk-bar-fill" style="width:${pct}%"></div>
+              <div class="risk-bar-marker" style="left:${pct}%"></div>
+            </div>
+            <div class="risk-bar-tip">Seller responsibility: ${pct}% | Group ${t.group}</div>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+function openIncoModal(code) {
+  const t = INCOTERMS.find(x => x.code === code);
+  if (!t) return;
+  document.getElementById('modal-title').textContent = `${t.code} — ${t.name}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="inco-detail-row">
+      <div class="inco-detail-label">Definition</div>
+      <div class="inco-detail-value">${t.desc}</div>
+    </div>
+    <div class="inco-detail-row">
+      <div class="inco-detail-label">Risk Transfer Point</div>
+      <div class="inco-detail-value" style="color:var(--accent-warm);">${t.riskNote}</div>
+    </div>
+    <div class="risk-bar-wrap" style="padding:0 0 4px;">
+      <div class="risk-bar-labels"><span>Seller ←</span><span>→ Buyer</span></div>
+      <div class="risk-bar-track" style="height:6px;">
+        <div class="risk-bar-fill" style="width:${t.risk}%;"></div>
+        <div class="risk-bar-marker" style="left:${t.risk}%;height:14px;top:-4px;"></div>
+      </div>
+      <div class="risk-bar-tip" style="margin-top:6px;">Seller bears ${t.risk}% of responsibility chain · Group ${t.group}</div>
+    </div>
+    <div class="bento-grid bento-grid-2" style="gap:1px;">
+      <div style="background:var(--bg-panel-alt);padding:12px;">
+        <div class="inco-detail-label" style="margin-bottom:6px;">Seller Obligations</div>
+        <div class="inco-detail-value" style="font-size:11px;color:var(--accent-neon);">${t.sellerDoes}</div>
+      </div>
+      <div style="background:var(--bg-panel-alt);padding:12px;">
+        <div class="inco-detail-label" style="margin-bottom:6px;">Buyer Obligations</div>
+        <div class="inco-detail-value" style="font-size:11px;color:var(--accent-warm);">${t.buyerDoes}</div>
+      </div>
+    </div>
+    <div class="inco-detail-row">
+      <div class="inco-detail-label">Usage Guidance</div>
+      <div class="inco-detail-value">${t.usage}</div>
+    </div>
+    <div class="inco-detail-row">
+      <div class="inco-detail-label">Transport Mode</div>
+      <div class="inco-detail-value">
+        <span class="inco-mode-tag ${t.mode}" style="font-size:10px;">${t.mode === 'any' ? 'ANY MODE OF TRANSPORT' : 'SEA / INLAND WATERWAY ONLY'}</span>
+      </div>
+    </div>`;
+  document.getElementById('inco-modal').classList.add('open');
+}
+
+function closeIncoModal() {
+  document.getElementById('inco-modal').classList.remove('open');
+}
+
+// Close on overlay click
+document.getElementById('inco-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeIncoModal();
+});
+
+// ══════════════════════════════════════════════════════════
+// DRAFT DESK
+// ══════════════════════════════════════════════════════════
+let currentDraftType = 'rfq';
+
+const DRAFT_FORMS = {
+  rfq: {
+    label: 'OUTPUT // RFQ DOCUMENT',
+    fields: [
+      { id: 'rfq-company', label: 'Your Company Name', placeholder: 'Collectra Ops Ltd.' },
+      { id: 'rfq-supplier', label: 'Supplier Name', placeholder: 'Shanghai Resin Co.' },
+      { id: 'rfq-product', label: 'Product / Material', placeholder: 'Industrial Polypropylene Resin' },
+      { id: 'rfq-qty', label: 'Quantity Required', placeholder: 'e.g. 5,000 MT' },
+      { id: 'rfq-incoterm', label: 'Requested Incoterm', placeholder: 'FOB Shanghai' },
+      { id: 'rfq-delivery', label: 'Required Delivery Date', placeholder: 'e.g. 30 days after PO' },
+    ]
+  },
+  nego: {
+    label: 'OUTPUT // NEGOTIATION EMAIL',
+    fields: [
+      { id: 'nego-from', label: 'Your Name & Title', placeholder: 'Siam, SCM Manager' },
+      { id: 'nego-to', label: 'Recipient Name', placeholder: 'Mr. Zhang, Sales Director' },
+      { id: 'nego-product', label: 'Product', placeholder: 'PP Resin Grade X100' },
+      { id: 'nego-offered', label: 'Their Quoted Price', placeholder: 'e.g. $2.80/kg FOB' },
+      { id: 'nego-target', label: 'Your Target Price', placeholder: 'e.g. $2.40/kg FOB' },
+      { id: 'nego-leverage', label: 'Your Leverage Point', placeholder: 'e.g. 3-year contract, 500MT/month' },
+    ]
+  },
+  bottleneck: {
+    label: 'OUTPUT // BOTTLENECK PLAN',
+    fields: [
+      { id: 'bn-company', label: 'Company Name', placeholder: 'Collectra Ops Ltd.' },
+      { id: 'bn-issue', label: 'Disruption Type', placeholder: 'e.g. Port congestion at Chittagong' },
+      { id: 'bn-material', label: 'Affected Material / SKU', placeholder: 'e.g. Recycled HDPE pellets' },
+      { id: 'bn-impact', label: 'Impact Severity', placeholder: 'e.g. 15-day delay, 200MT affected' },
+    ]
+  },
+  customs: {
+    label: 'OUTPUT // CUSTOMS CHECKLIST',
+    fields: [
+      { id: 'cx-product', label: 'Product', placeholder: 'e.g. Plastic Granules (HS 3901)' },
+      { id: 'cx-origin', label: 'Country of Origin', placeholder: 'e.g. China' },
+      { id: 'cx-dest', label: 'Destination Country', placeholder: 'e.g. Bangladesh' },
+      { id: 'cx-incoterm', label: 'Incoterm', placeholder: 'e.g. CIF Chittagong' },
+    ]
+  }
+};
+
+function selectDraftType(type, btn) {
+  currentDraftType = type;
+  document.querySelectorAll('.draft-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDraftForm();
+  document.getElementById('draft-output-area').innerHTML =
+    '<div style="font-size:10px;color:var(--text-dim);letter-spacing:0.06em;">// Fill fields above and click GENERATE</div>';
+  document.getElementById('draft-gen-time').textContent = 'Not generated';
+  document.getElementById('draft-output-label').textContent = DRAFT_FORMS[type].label;
+}
+
+function renderDraftForm() {
+  const form = DRAFT_FORMS[currentDraftType];
+  const container = document.getElementById('draft-form-fields');
+  container.innerHTML = '';
+  form.fields.forEach(f => {
+    const isLast = form.fields.indexOf(f) === form.fields.length - 1 && form.fields.length % 2 !== 0;
+    container.innerHTML += `
+      <div ${isLast ? 'class="draft-form-full"' : ''}>
+        <label>${f.label}</label>
+        <input class="input-field" id="${f.id}" type="text" placeholder="${f.placeholder}" />
+      </div>`;
+  });
+}
+
+function getVal(id) {
+  const el = document.getElementById(id);
+  return el ? (el.value.trim() || el.placeholder) : '—';
+}
+
+function generateDoc() {
+  const area = document.getElementById('draft-output-area');
+  const now = new Date().toLocaleString('en-GB');
+  document.getElementById('draft-gen-time').textContent = 'Generated: ' + now;
+
+  if (currentDraftType === 'rfq') {
+    const co = getVal('rfq-company'), sup = getVal('rfq-supplier'),
+          prod = getVal('rfq-product'), qty = getVal('rfq-qty'),
+          inco = getVal('rfq-incoterm'), del = getVal('rfq-delivery');
+    area.innerHTML = '';
+    area.style.fontFamily = 'var(--font-mono)';
+    area.style.whiteSpace = 'pre-wrap';
+    area.textContent = `REQUEST FOR QUOTATION
+${'─'.repeat(52)}
+Date:       ${now}
+From:       ${co}
+To:         ${sup}
+
+Dear ${sup} Team,
+
+We are writing to request a formal quotation for the following goods:
+
+PRODUCT DETAILS
+${'─'.repeat(52)}
+  Material     :  ${prod}
+  Quantity     :  ${qty}
+  Incoterm     :  ${inco}
+  Delivery     :  ${del}
+
+REQUIRED IN YOUR QUOTATION
+${'─'.repeat(52)}
+  [ ] Unit price (${inco})
+  [ ] Minimum order quantity (MOQ)
+  [ ] Lead time from PO confirmation
+  [ ] Payment terms (LC / TT / DAP)
+  [ ] Product spec sheet / TDS
+  [ ] Packaging details
+  [ ] Country of origin & HS code
+
+Please respond within 5 business days.
+
+Sincerely,
+${co}
+${'─'.repeat(52)}
+// Generated by The Warehouse · Draft Desk`;
+
+  } else if (currentDraftType === 'nego') {
+    const from = getVal('nego-from'), to = getVal('nego-to'),
+          prod = getVal('nego-product'), offered = getVal('nego-offered'),
+          target = getVal('nego-target'), leverage = getVal('nego-leverage');
+    area.style.whiteSpace = 'pre-wrap';
+    area.style.fontFamily = 'var(--font-mono)';
+    area.textContent = `NEGOTIATION EMAIL
+${'─'.repeat(52)}
+Date:  ${now}
+From:  ${from}
+To:    ${to}
+
+Subject: Revised Pricing Discussion — ${prod}
+
+Dear ${to},
+
+Thank you for sending through your quotation for ${prod} at ${offered}. We appreciate the detail and have reviewed it internally.
+
+Having assessed current market benchmarks — including the latest SCFI and comparable supplier offers — we would like to propose a revised commercial arrangement at ${target}.
+
+This counteroffer is informed by:
+  • ${leverage}
+  • Current spot market alignment
+  • Our intent for a long-term supply relationship
+
+We believe ${target} reflects a fair and sustainable price point for both parties and positions us to move quickly on a formal Purchase Order.
+
+We are open to discussing payment structure, volume commitments, or delivery flexibility to reach an agreement that works for your team as well.
+
+Could we schedule a brief call this week to finalize terms?
+
+Sincerely,
+${from}
+${'─'.repeat(52)}
+// Generated by The Warehouse · Draft Desk`;
+
+  } else if (currentDraftType === 'bottleneck') {
+    const co = getVal('bn-company'), issue = getVal('bn-issue'),
+          mat = getVal('bn-material'), impact = getVal('bn-impact');
+    area.style.whiteSpace = 'pre-wrap';
+    area.style.fontFamily = 'var(--font-mono)';
+    area.textContent = `SUPPLY CHAIN BOTTLENECK RESPONSE PLAN
+${'─'.repeat(52)}
+Company  :  ${co}
+Issue    :  ${issue}
+Affected :  ${mat}
+Impact   :  ${impact}
+Date     :  ${now}
+
+PHASE 1 — IMMEDIATE RESPONSE (Day 0–2)
+${'─'.repeat(52)}
+  [ ] Confirm disruption scope and duration
+  [ ] Notify internal stakeholders (ops, finance, clients)
+  [ ] Activate safety stock review — check buffer levels
+  [ ] Communicate with affected suppliers for ETA update
+  [ ] Escalate to senior ops if impact > 5 days
+
+PHASE 2 — ALTERNATE SOURCING (Day 1–5)
+${'─'.repeat(52)}
+  [ ] Identify 2–3 backup suppliers for ${mat}
+  [ ] Issue emergency RFQ with 48hr response window
+  [ ] Compare quotes on landed cost basis (not ex-factory)
+  [ ] Evaluate alternative transport modes (air vs sea)
+
+PHASE 3 — DEMAND MANAGEMENT (Day 2–7)
+${'─'.repeat(52)}
+  [ ] Review open orders at risk — prioritize by margin
+  [ ] Contact key accounts proactively with revised ETAs
+  [ ] Defer non-critical purchase orders where possible
+  [ ] Adjust production schedule around available stock
+
+PHASE 4 — STABILIZATION (Week 2)
+${'─'.repeat(52)}
+  [ ] Confirm alternate supplier PO and shipment schedule
+  [ ] Update ERP/inventory system with revised lead times
+  [ ] Re-run MRP with updated parameters
+  [ ] Review safety stock policy for ${mat}
+
+PHASE 5 — POST-INCIDENT REVIEW (Week 3–4)
+${'─'.repeat(52)}
+  [ ] Full root cause analysis — document findings
+  [ ] Update supplier risk scores
+  [ ] Revise supply continuity plan (SCP)
+  [ ] Implement dual-source policy if single-source risk confirmed
+
+${'─'.repeat(52)}
+// Generated by The Warehouse · Draft Desk`;
+
+  } else if (currentDraftType === 'customs') {
+    const prod = getVal('cx-product'), origin = getVal('cx-origin'),
+          dest = getVal('cx-dest'), inco = getVal('cx-incoterm');
+
+    const items = [
+      `Commercial Invoice — ${prod} from ${origin}`,
+      `Packing List (quantity, weight, dimensions per carton)`,
+      `Bill of Lading / Airway Bill (confirm consignee details)`,
+      `Certificate of Origin (for preferential duty rates)`,
+      `HS Code Classification confirmed — check ${dest} tariff schedule`,
+      `Import Permit / License if product is controlled`,
+      `Phytosanitary / Health Certificate if applicable`,
+      `Insurance Certificate (required for ${inco})`,
+      `Letter of Credit / Payment terms documented`,
+      `Customs bond / CH Agent appointed in ${dest}`,
+      `VAT / AIT registration confirmed`,
+      `Anti-dumping duty check for ${origin} → ${dest} route`,
+      `Port of entry declared — single consignment check`,
+      `Post-clearance audit readiness — keep docs 5 years`,
+    ];
+
+    area.style.whiteSpace = 'normal';
+    area.style.fontFamily = 'var(--font-mono)';
+    area.innerHTML = `
+      <div style="font-size:10px;color:var(--text-dim);margin-bottom:12px;letter-spacing:0.06em;">
+        CUSTOMS CLEARANCE CHECKLIST // ${prod} · ${origin} → ${dest} · ${inco}
+        <span style="float:right;">${now}</span>
+      </div>
+      ${items.map((item, i) => `
+        <div class="checklist-item" onclick="toggleCheck(this)">
+          <div class="checklist-box" id="ck-${i}">□</div>
+          <div class="checklist-text">${item}</div>
+        </div>`).join('')}`;
+  }
+}
+
+function toggleCheck(row) {
+  const box = row.querySelector('.checklist-box');
+  const txt = row.querySelector('.checklist-text');
+  const checked = box.classList.toggle('checked');
+  txt.classList.toggle('checked', checked);
+  box.textContent = checked ? '✓' : '□';
+}
+
+function copyDoc() {
+  const area = document.getElementById('draft-output-area');
+  const text = area.textContent || area.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    if (typeof toast === 'function') toast('Document copied to clipboard', 'success');
+  });
+}
+
+function clearDoc() {
+  document.getElementById('draft-output-area').innerHTML =
+    '<div style="font-size:10px;color:var(--text-dim);letter-spacing:0.06em;">// Fill fields above and click GENERATE</div>';
+  document.getElementById('draft-gen-time').textContent = 'Not generated';
+  document.querySelectorAll('.draft-form input').forEach(i => i.value = '');
+}
+
+// ══════════════════════════════════════════════════════════
+// SUPPLIER DIRECTORY
+// ══════════════════════════════════════════════════════════
+let suppliers = [
+  { name: 'Shanghai Resin Co.', location: 'Shanghai, CN', product: 'Industrial PP Resin', contact: 'sales@shanghairesn.com', incoterm: 'FOB', rating: 3, status: 'negotiating', notes: 'Price range $2.30–2.80/unit. 3 quotes received.' },
+  { name: 'Dhaka Packaging Ltd.', location: 'Dhaka, BD', product: 'Corrugated Packaging', contact: '+880-1700-000000', incoterm: 'EXW', rating: 4, status: 'active', notes: '7-day lead time. Reliable.' },
+  { name: 'Chittagong Polymers', location: 'Chittagong, BD', product: 'Recycled HDPE Pellets', contact: 'ops@ctgpolymers.bd', incoterm: 'DAP', rating: 5, status: 'active', notes: 'Primary local recycler. ISO certified.' },
+  { name: 'Guangzhou PlastiTech', location: 'Guangzhou, CN', product: 'LDPE Film Grade', contact: 'trade@gzplastitech.cn', incoterm: 'CIF', rating: 2, status: 'inactive', notes: 'Quality issues in last shipment. On hold.' },
+  { name: 'Türkiye Kimya AS', location: 'Istanbul, TR', product: 'PET Resin Chips', contact: 'export@trkimya.com.tr', incoterm: 'CPT', rating: 4, status: 'active', notes: 'Good pricing. 21-day lead time.' },
+];
+
+function perfBarHTML(rating) {
+  const pct = (rating / 5) * 100;
+  const cls = rating >= 4 ? '' : rating === 3 ? 'med' : 'low';
+  return `<div style="display:flex;align-items:center;gap:8px;">
+    <div class="perf-bar-track"><div class="perf-bar-fill ${cls}" style="width:${pct}%"></div></div>
+    <span style="font-size:10px;color:var(--text-muted);">${rating}/5</span>
+  </div>`;
+}
+
+function renderSuppliers() {
+  const q = (document.getElementById('supplier-search').value || '').toLowerCase();
+  const tbody = document.getElementById('supplier-tbody');
+  const empty = document.getElementById('supplier-empty');
+  tbody.innerHTML = '';
+
+  const filtered = suppliers.filter(s =>
+    JSON.stringify(s).toLowerCase().includes(q)
+  );
+
+  if (!filtered.length) {
+    empty.style.display = 'block';
+    document.getElementById('supplier-table').style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  document.getElementById('supplier-table').style.display = 'table';
+
+  filtered.forEach((s, i) => {
+    const realIdx = suppliers.indexOf(s);
+    tbody.innerHTML += `
+      <tr>
+        <td style="font-weight:500;">${s.name}</td>
+        <td style="color:var(--text-muted);">${s.location}</td>
+        <td>${s.product}</td>
+        <td><span class="inco-badge">${s.incoterm || '—'}</span></td>
+        <td><span class="supplier-status ${s.status}">${s.status.toUpperCase()}</span></td>
+        <td>${perfBarHTML(s.rating)}</td>
+        <td style="color:var(--text-muted);font-size:10px;">${s.contact || '—'}</td>
+        <td>
+          <div class="supplier-actions">
+            <button class="btn btn-warn" style="padding:3px 8px;font-size:9px;" onclick="cycleStatus(${realIdx})">STATUS</button>
+            <button class="btn btn-danger" style="padding:3px 8px;font-size:9px;" onclick="deleteSupplier(${realIdx})">✕</button>
+          </div>
+        </td>
+      </tr>`;
+  });
+}
+
+function cycleStatus(i) {
+  const states = ['active', 'negotiating', 'inactive', 'blacklisted'];
+  const cur = states.indexOf(suppliers[i].status);
+  suppliers[i].status = states[(cur + 1) % states.length];
+  renderSuppliers();
+}
+
+function deleteSupplier(i) {
+  if (confirm(`Remove ${suppliers[i].name}?`)) {
+    suppliers.splice(i, 1);
+    renderSuppliers();
+  }
+}
+
+function toggleAddForm() {
+  const f = document.getElementById('supplier-add-form');
+  f.classList.toggle('open');
+}
+
+function addSupplier() {
+  const name = document.getElementById('s-name').value.trim();
+  if (!name) { alert('Supplier name required.'); return; }
+  suppliers.push({
+    name,
+    location: document.getElementById('s-location').value.trim() || '—',
+    product:  document.getElementById('s-product').value.trim() || '—',
+    contact:  document.getElementById('s-contact').value.trim() || '—',
+    incoterm: document.getElementById('s-incoterm').value || '—',
+    rating:   parseInt(document.getElementById('s-rating').value) || 3,
+    status:   document.getElementById('s-status').value || 'active',
+    notes:    document.getElementById('s-notes').value.trim() || '',
+  });
+  toggleAddForm();
+  ['s-name','s-location','s-product','s-contact','s-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  renderSuppliers();
+  if (typeof toast === 'function') toast('Supplier added', 'success');
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderFreight();
+  renderIncoterms();
+  renderDraftForm();
+  renderSuppliers();
+});
+</script>
+</body>
+</html>
