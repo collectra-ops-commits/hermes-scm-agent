@@ -5,9 +5,277 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Warehouse — Leads Pipeline</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ══════════════════════════════════════════════════
+       SECTOR 5 — LEADS PIPELINE
+    ══════════════════════════════════════════════════ */
+
+    /* ── METRICS BAR ────────────────────────────────── */
+    .pipeline-metrics {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+      margin-bottom: 0;
+    }
+    .metric-cell {
+      background: var(--bg-panel);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border-bottom: var(--panel-border);
+    }
+    .metric-cell-label {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .metric-cell-value {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .metric-cell-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── KANBAN BOARD ───────────────────────────────── */
+    .kanban-board {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+      flex: 1;
+      min-height: 0;
+    }
+
+    .kanban-col {
+      background: var(--bg-panel-alt);
+      display: flex;
+      flex-direction: column;
+      min-height: 480px;
+    }
+
+    .kanban-col-header {
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--bg-panel-alt);
+      z-index: 2;
+    }
+    .kanban-col-header.prospect    { border-bottom-color: var(--text-muted); }
+    .kanban-col-header.interested  { border-bottom-color: var(--accent-blue); }
+    .kanban-col-header.proposal    { border-bottom-color: var(--accent-warm); }
+    .kanban-col-header.nurturing   { border-bottom-color: #DA70D6; }
+    .kanban-col-header.closed      { border-bottom-color: var(--accent-neon); }
+
+    .kanban-col-title {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .kanban-col-count {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--border-color);
+      padding: 1px 7px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .kanban-cards {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* ── LEAD CARD ──────────────────────────────────── */
+    .lead-card {
+      background: var(--bg-panel);
+      border: var(--panel-border);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+    }
+    .lead-card:hover {
+      border-color: var(--border-active);
+      background: rgba(0,255,204,0.02);
+    }
+    .lead-card.won  { border-color: var(--accent-neon) !important; background: rgba(0,255,204,0.04); }
+    .lead-card.lost { border-color: var(--accent-red)  !important; background: rgba(255,76,76,0.04); opacity: 0.6; }
+
+    .lead-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .lead-company {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      flex: 1;
+    }
+    .lead-source-badge {
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 5px;
+      border: 1px solid;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .lead-source-badge.Referral  { border-color: var(--accent-neon); color: var(--accent-neon); }
+    .lead-source-badge.Cold      { border-color: var(--text-dim);    color: var(--text-dim); }
+    .lead-source-badge.LinkedIn  { border-color: var(--accent-blue); color: var(--accent-blue); }
+    .lead-source-badge.Web       { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .lead-source-badge.Walkin    { border-color: #DA70D6;            color: #DA70D6; }
+
+    .lead-contact {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .lead-email {
+      font-size: 9px;
+      color: var(--text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lead-card-mid {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .lead-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-neon);
+      font-family: var(--font-mono);
+    }
+    .lead-value.lost-val { color: var(--accent-red); }
+    .lead-days {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+    .lead-days.stale { color: var(--accent-warm); }
+
+    .lead-card-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .lead-action-btn {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.12s;
+      flex: 1;
+      text-align: center;
+    }
+    .lead-action-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+    .lead-action-btn.move-fwd:hover { border-color: var(--accent-neon); color: var(--accent-neon); }
+    .lead-action-btn.move-bck:hover { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .lead-action-btn.win-btn:hover  { border-color: var(--accent-neon); color: var(--accent-neon); background: rgba(0,255,204,0.08); }
+    .lead-action-btn.lose-btn:hover { border-color: var(--accent-red);  color: var(--accent-red);  background: rgba(255,76,76,0.08); }
+    .lead-action-btn.del-btn:hover  { border-color: var(--accent-red);  color: var(--accent-red); }
+
+    /* ── ADD LEAD PANEL ─────────────────────────────── */
+    .add-lead-panel {
+      display: none;
+      background: var(--bg-panel);
+      border: var(--panel-border);
+      border-color: var(--border-active);
+    }
+    .add-lead-panel.open { display: block; }
+
+    .add-lead-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 16px;
+    }
+    .add-lead-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .add-lead-label {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .add-lead-row2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 0 16px 16px;
+    }
+    .add-lead-actions {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: var(--panel-border);
+      background: var(--bg-panel-alt);
+    }
+
+    /* ── COLUMN DROP ZONE ───────────────────────────── */
+    .kanban-empty {
+      padding: 20px 12px;
+      text-align: center;
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px dashed var(--border-color);
+      margin: 8px;
+    }
+
+    @media (max-width: 1100px) {
+      .kanban-board { grid-template-columns: 1fr 1fr; }
+      .pipeline-metrics { grid-template-columns: repeat(3,1fr); }
+    }
+    @media (max-width: 700px) {
+      .kanban-board { grid-template-columns: 1fr; }
+      .add-lead-grid { grid-template-columns: 1fr 1fr; }
+      .add-lead-row2 { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell">
+
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-title">The Warehouse</div>
@@ -31,6 +299,8 @@
       <div class="sidebar-footer-text" style="margin-top:4px;">v0.15.2 · Railway</div>
     </div>
   </aside>
+
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-left">
       <div class="topbar-breadcrumb">WAREHOUSE / <span>LEADS PIPELINE</span></div>
@@ -41,60 +311,353 @@
       <div class="topbar-clock" id="topbar-clock">--:--:--</div>
     </div>
   </header>
-  <main class="main-content">
-    <div class="sector-header">
-      <div>
-        <div class="sector-title">Leads Pipeline</div>
-        <div class="sector-subtitle">Sector 05 — Sales Engine & Deal-Flow Tracker</div>
-      </div>
-      <div class="sector-meta">
-        <div class="sector-tag">MOCK DATA</div>
-        <div class="sector-tag live">SHELL v1</div>
-      </div>
-    </div>
-    <!-- Stage Track -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Deal-Flow Track <span class="panel-title-accent">// Horizontal</span></div>
-        <button class="btn btn-primary">+ ADD LEAD</button>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border-color);">
-        <div class="stub-block" style="min-height:180px;">
-          <div class="stub-label">Stage 1</div>
-          <div class="stub-title">Prospect</div>
+
+  <!-- MAIN -->
+  <main class="main-content" style="gap:0;padding:0;">
+
+    <!-- SECTOR HEADER -->
+    <div style="padding:20px 20px 12px;">
+      <div class="sector-header" style="margin-bottom:0;">
+        <div>
+          <div class="sector-title">Leads Pipeline</div>
+          <div class="sector-subtitle">Sector 05 — Sales Engine & Deal-Flow Tracker</div>
         </div>
-        <div class="stub-block" style="min-height:180px;">
-          <div class="stub-label">Stage 2</div>
-          <div class="stub-title">Interested</div>
-        </div>
-        <div class="stub-block" style="min-height:180px;">
-          <div class="stub-label">Stage 3</div>
-          <div class="stub-title">Proposal Sent</div>
-        </div>
-        <div class="stub-block" style="min-height:180px;">
-          <div class="stub-label">Stage 4</div>
-          <div class="stub-title">Nurturing</div>
-        </div>
-        <div class="stub-block" style="min-height:180px;">
-          <div class="stub-label">Stage 5</div>
-          <div class="stub-title">Won / Lost</div>
+        <div class="sector-meta">
+          <button class="btn btn-primary" onclick="toggleAddForm()">+ NEW LEAD</button>
+          <div class="sector-tag live">LIVE</div>
         </div>
       </div>
     </div>
-    <!-- Intake Form -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Lead Intake Form <span class="panel-title-accent">// Comprehensive</span></div>
-        <span class="badge badge-muted">FIELDS: 8</span>
+
+    <!-- METRICS BAR -->
+    <div class="pipeline-metrics" id="metrics-bar" style="margin:0 20px 1px;">
+      <!-- populated by JS -->
+    </div>
+
+    <!-- ADD LEAD PANEL -->
+    <div class="add-lead-panel" id="add-lead-panel" style="margin:0 20px 1px;">
+      <div class="panel-header" style="background:var(--bg-panel-alt);">
+        <div class="panel-title">New Lead Intake <span class="panel-title-accent">// Fill & Submit</span></div>
+        <button class="btn" onclick="toggleAddForm()" style="padding:3px 10px;font-size:9px;">✕ CLOSE</button>
       </div>
-      <div class="stub-block" style="min-height:140px;">
-        <div class="stub-label">Form Slot</div>
-        <div class="stub-title">Lead Intake</div>
-        <div class="stub-note">Business Name · Contact Name · Lead Source · Email · Phone · Domain · Opportunity Value</div>
+      <div class="add-lead-grid">
+        <div class="add-lead-field">
+          <label class="add-lead-label">Business Name *</label>
+          <input class="input-field" id="f-company" type="text" placeholder="e.g. Akij Group" />
+        </div>
+        <div class="add-lead-field">
+          <label class="add-lead-label">Contact Name *</label>
+          <input class="input-field" id="f-contact" type="text" placeholder="e.g. Rahim Chowdhury" />
+        </div>
+        <div class="add-lead-field">
+          <label class="add-lead-label">Email</label>
+          <input class="input-field" id="f-email" type="email" placeholder="contact@company.com" />
+        </div>
+        <div class="add-lead-field">
+          <label class="add-lead-label">Phone</label>
+          <input class="input-field" id="f-phone" type="text" placeholder="+880 1X XX XXX XXX" />
+        </div>
+      </div>
+      <div class="add-lead-row2">
+        <div class="add-lead-field">
+          <label class="add-lead-label">Domain</label>
+          <input class="input-field" id="f-domain" type="text" placeholder="company.com" />
+        </div>
+        <div class="add-lead-field">
+          <label class="add-lead-label">Lead Source</label>
+          <select class="input-field" id="f-source">
+            <option value="Referral">Referral</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Cold">Cold Outreach</option>
+            <option value="Web">Web Inquiry</option>
+            <option value="Walkin">Walk-in</option>
+          </select>
+        </div>
+        <div class="add-lead-field">
+          <label class="add-lead-label">Opportunity Value (BDT)</label>
+          <input class="input-field" id="f-value" type="number" placeholder="e.g. 250000" />
+        </div>
+        <div class="add-lead-field">
+          <label class="add-lead-label">Sector / Industry</label>
+          <input class="input-field" id="f-sector" type="text" placeholder="e.g. FMCG, Textile" />
+        </div>
+        <div class="add-lead-field">
+          <label class="add-lead-label">Notes</label>
+          <input class="input-field" id="f-notes" type="text" placeholder="Quick context..." />
+        </div>
+      </div>
+      <div class="add-lead-actions">
+        <button class="btn btn-primary" onclick="submitLead()" style="padding:8px 20px;">✓ ADD TO PIPELINE</button>
+        <button class="btn" onclick="resetForm()" style="padding:8px 14px;">RESET</button>
       </div>
     </div>
+
+    <!-- KANBAN BOARD -->
+    <div style="padding:0 20px 20px;flex:1;display:flex;flex-direction:column;min-height:0;margin-top:1px;">
+      <div class="kanban-board" id="kanban-board">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
   </main>
 </div>
+
 <script src="script.js"></script>
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════
+const STAGES = [
+  { id: 'prospect',   label: 'Prospect',      cls: 'prospect' },
+  { id: 'interested', label: 'Interested',    cls: 'interested' },
+  { id: 'proposal',   label: 'Proposal Sent', cls: 'proposal' },
+  { id: 'nurturing',  label: 'Nurturing',     cls: 'nurturing' },
+  { id: 'closed',     label: 'Won / Lost',    cls: 'closed' },
+];
+
+let leads = [
+  { id:1,  company:'Meghna Group',        contact:'Farhan Hossain',   email:'fhossain@meghnagroup.com',    phone:'+880 1711 001001', domain:'meghnagroup.com',    source:'Referral', value:850000,  sector:'Conglomerate',  stage:'proposal',   days:8,  status:'open',  notes:'SEO + web revamp. CFO intro via Nabil.' },
+  { id:2,  company:'Square Pharma',       contact:'Tasnim Akter',     email:'t.akter@squarepharma.bd',     phone:'+880 1811 002002', domain:'squarepharma.bd',    source:'LinkedIn', value:1200000, sector:'Pharma',        stage:'interested', days:4,  status:'open',  notes:'Full digital stack. Very warm response.' },
+  { id:3,  company:'BRAC Bank',           contact:'Rezaul Karim',     email:'rkarim@bracbank.com',         phone:'+880 1911 003003', domain:'bracbank.com',        source:'Referral', value:2400000, sector:'Banking',       stage:'nurturing',  days:21, status:'open',  notes:'Long sales cycle. Decision Q3.' },
+  { id:4,  company:'Shajahan Textiles',   contact:'Shajahan Mia',     email:'info@shajahantext.com',       phone:'+880 1611 004004', domain:'shajahantext.com',    source:'Walkin',   value:180000,  sector:'Textile',       stage:'prospect',   days:2,  status:'open',  notes:'Walk-in at Sylhet chamber event.' },
+  { id:5,  company:'ACI Limited',         contact:'Nadira Begum',     email:'nadira.b@aci.com.bd',         phone:'+880 1711 005005', domain:'aci.com.bd',          source:'Cold',     value:950000,  sector:'FMCG',          stage:'proposal',   days:12, status:'open',  notes:'Google Ads + analytics stack.' },
+  { id:6,  company:'Transcom Group',      contact:'Zubayer Rahman',   email:'z.rahman@transcom.com.bd',    phone:'+880 1811 006006', domain:'transcom.com.bd',     source:'LinkedIn', value:1800000, sector:'Conglomerate',  stage:'closed',     days:30, status:'won',   notes:'Full retainer signed. 12-month contract.' },
+  { id:7,  company:'Partex Group',        contact:'Anisul Islam',     email:'anisul@partexgroup.com',      phone:'+880 1911 007007', domain:'partexgroup.com',     source:'Referral', value:670000,  sector:'Manufacturing', stage:'interested', days:7,  status:'open',  notes:'Meta + Google. Strong interest.' },
+  { id:8,  company:'Runner Automobiles',  contact:'Kazi Mehedi',      email:'kmehedi@runner-bd.com',       phone:'+880 1611 008008', domain:'runner-bd.com',       source:'Web',      value:420000,  sector:'Automotive',    stage:'prospect',   days:1,  status:'open',  notes:'Web inquiry — ecommerce + SEO.' },
+  { id:9,  company:'Jamuna Group',        contact:'Sultana Razia',    email:'srazia@jamunagroup.com',      phone:'+880 1711 009009', domain:'jamunagroup.com',     source:'Cold',     value:3100000, sector:'Conglomerate',  stage:'closed',     days:45, status:'lost',  notes:'Lost to competitor. Pricing mismatch.' },
+  { id:10, company:'Pran-RFL Group',      contact:'Imran Hossain',    email:'imran.h@prangroup.com',       phone:'+880 1811 010010', domain:'prangroup.com',       source:'Referral', value:2200000, sector:'FMCG',          stage:'nurturing',  days:18, status:'open',  notes:'Board approval pending. Q2 target.' },
+  { id:11, company:'Walton Hi-Tech',      contact:'Mamunur Rashid',   email:'m.rashid@waltonbd.com',       phone:'+880 1911 011011', domain:'waltonbd.com',        source:'LinkedIn', value:1500000, sector:'Electronics',   stage:'prospect',   days:3,  status:'open',  notes:'Scouted via competitor sponsor scan.' },
+  { id:12, company:'City Group BD',       contact:'Jakia Sultana',    email:'jakia@citygroup.com.bd',      phone:'+880 1611 012012', domain:'citygroup.com.bd',    source:'Web',      value:580000,  sector:'Food & Bev',    stage:'proposal',   days:6,  status:'open',  notes:'SEO + newsletter. Responsive.' },
+];
+let leadIdCounter = 20;
+
+// ══════════════════════════════════════════════════════════
+// METRICS
+// ══════════════════════════════════════════════════════════
+function calcMetrics() {
+  const open    = leads.filter(l => l.status === 'open');
+  const won     = leads.filter(l => l.status === 'won');
+  const lost    = leads.filter(l => l.status === 'lost');
+  const closed  = won.length + lost.length;
+  const pipeline= open.reduce((s,l) => s + l.value, 0);
+  const winRate = closed ? Math.round((won.length / closed) * 100) : 0;
+  const avgDeal = won.length ? Math.round(won.reduce((s,l) => s + l.value,0) / won.length) : 0;
+
+  return { pipeline, total: leads.length, open: open.length, won: won.length, lost: lost.length, winRate, avgDeal };
+}
+
+function fmtBDT(v) {
+  if (v >= 1000000) return '৳' + (v/1000000).toFixed(1) + 'M';
+  if (v >= 1000)    return '৳' + Math.round(v/1000) + 'K';
+  return '৳' + v.toLocaleString();
+}
+
+function renderMetrics() {
+  const m = calcMetrics();
+  const bar = document.getElementById('metrics-bar');
+  bar.innerHTML = `
+    <div class="metric-cell">
+      <div class="metric-cell-label">Pipeline Value</div>
+      <div class="metric-cell-value" style="color:var(--accent-neon);">${fmtBDT(m.pipeline)}</div>
+      <div class="metric-cell-sub">Open opportunities</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Total Leads</div>
+      <div class="metric-cell-value">${m.total}</div>
+      <div class="metric-cell-sub">${m.open} active · ${m.won + m.lost} closed</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Won</div>
+      <div class="metric-cell-value" style="color:var(--accent-neon);">${m.won}</div>
+      <div class="metric-cell-sub">Closed deals</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Win Rate</div>
+      <div class="metric-cell-value" style="color:${m.winRate >= 50 ? 'var(--accent-neon)' : 'var(--accent-warm)'};">${m.winRate}%</div>
+      <div class="metric-cell-sub">Won vs total closed</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Avg Deal Size</div>
+      <div class="metric-cell-value">${avgDeal(m)}</div>
+      <div class="metric-cell-sub">Won deals avg</div>
+    </div>`;
+}
+
+function avgDeal(m) {
+  const won = leads.filter(l => l.status === 'won');
+  if (!won.length) return '—';
+  const avg = won.reduce((s,l) => s + l.value, 0) / won.length;
+  return fmtBDT(Math.round(avg));
+}
+
+// ══════════════════════════════════════════════════════════
+// KANBAN BOARD
+// ══════════════════════════════════════════════════════════
+function stageIndex(id) { return STAGES.findIndex(s => s.id === id); }
+
+function renderBoard() {
+  const board = document.getElementById('kanban-board');
+  board.innerHTML = '';
+
+  STAGES.forEach(stage => {
+    const stageLeads = leads.filter(l => l.stage === stage.id);
+    const stageValue = stageLeads.reduce((s,l) => s + l.value, 0);
+
+    let cardsHTML = '';
+    if (!stageLeads.length) {
+      cardsHTML = `<div class="kanban-empty">// No leads</div>`;
+    } else {
+      stageLeads.forEach(lead => {
+        const si = stageIndex(lead.stage);
+        const isFirst = si === 0;
+        const isLast  = si === STAGES.length - 1;
+        const stale   = lead.days > 14;
+        const isWon   = lead.status === 'won';
+        const isLost  = lead.status === 'lost';
+
+        let actionsHTML = '';
+        if (isLast) {
+          // Won/Lost buttons if not already set
+          if (lead.status === 'open') {
+            actionsHTML = `
+              <button class="lead-action-btn win-btn"  onclick="setStatus(${lead.id},'won')">✓ WON</button>
+              <button class="lead-action-btn lose-btn" onclick="setStatus(${lead.id},'lost')">✕ LOST</button>`;
+          } else {
+            actionsHTML = `
+              <button class="lead-action-btn move-bck" onclick="moveBack(${lead.id})">← REOPEN</button>
+              <button class="lead-action-btn del-btn"  onclick="deleteLead(${lead.id})">✕ REMOVE</button>`;
+          }
+        } else {
+          actionsHTML = `
+            ${!isFirst ? `<button class="lead-action-btn move-bck" onclick="moveBack(${lead.id})">← BACK</button>` : ''}
+            <button class="lead-action-btn move-fwd" onclick="moveFwd(${lead.id})">→ ADVANCE</button>
+            <button class="lead-action-btn del-btn"  onclick="deleteLead(${lead.id})">✕</button>`;
+        }
+
+        cardsHTML += `
+          <div class="lead-card ${isWon ? 'won' : isLost ? 'lost' : ''}">
+            <div class="lead-card-top">
+              <div class="lead-company">${lead.company}</div>
+              <span class="lead-source-badge ${lead.source}">${lead.source}</span>
+            </div>
+            <div class="lead-contact">▸ ${lead.contact}</div>
+            <div class="lead-email">${lead.email}</div>
+            ${lead.sector ? `<div style="font-size:8px;color:var(--text-dim);letter-spacing:0.06em;">${lead.sector}</div>` : ''}
+            <div class="lead-card-mid">
+              <div class="lead-value ${isLost ? 'lost-val' : ''}">${fmtBDT(lead.value)}</div>
+              <div class="lead-days ${stale && !isLost ? 'stale' : ''}">${lead.days}d in stage${stale && !isLost ? ' ⚠' : ''}</div>
+            </div>
+            ${lead.notes ? `<div style="font-size:9px;color:var(--text-dim);line-height:1.5;border-top:1px solid var(--border-color);padding-top:5px;">${lead.notes}</div>` : ''}
+            <div class="lead-card-actions">${actionsHTML}</div>
+          </div>`;
+      });
+    }
+
+    board.innerHTML += `
+      <div class="kanban-col">
+        <div class="kanban-col-header ${stage.cls}">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span class="kanban-col-title">${stage.label}</span>
+            ${stageValue ? `<span style="font-size:8px;color:var(--text-dim);">${fmtBDT(stageValue)}</span>` : ''}
+          </div>
+          <span class="kanban-col-count">${stageLeads.length}</span>
+        </div>
+        <div class="kanban-cards">${cardsHTML}</div>
+      </div>`;
+  });
+}
+
+function render() {
+  renderMetrics();
+  renderBoard();
+}
+
+// ══════════════════════════════════════════════════════════
+// LEAD ACTIONS
+// ══════════════════════════════════════════════════════════
+function moveFwd(id) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  const si = stageIndex(lead.stage);
+  if (si < STAGES.length - 1) {
+    lead.stage = STAGES[si + 1].id;
+    lead.days = 0;
+  }
+  render();
+}
+
+function moveBack(id) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  const si = stageIndex(lead.stage);
+  if (si > 0) {
+    lead.stage = STAGES[si - 1].id;
+    lead.status = 'open';
+    lead.days = 0;
+  }
+  render();
+}
+
+function setStatus(id, status) {
+  const lead = leads.find(l => l.id === id);
+  if (lead) lead.status = status;
+  render();
+}
+
+function deleteLead(id) {
+  leads = leads.filter(l => l.id !== id);
+  render();
+}
+
+// ══════════════════════════════════════════════════════════
+// ADD LEAD FORM
+// ══════════════════════════════════════════════════════════
+function toggleAddForm() {
+  const panel = document.getElementById('add-lead-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    document.getElementById('f-company').focus();
+  }
+}
+
+function resetForm() {
+  ['f-company','f-contact','f-email','f-phone','f-domain','f-value','f-sector','f-notes']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+}
+
+function submitLead() {
+  const company = document.getElementById('f-company').value.trim();
+  const contact = document.getElementById('f-contact').value.trim();
+  if (!company) { alert('Business name is required.'); return; }
+  if (!contact) { alert('Contact name is required.'); return; }
+
+  leads.push({
+    id:      ++leadIdCounter,
+    company,
+    contact,
+    email:   document.getElementById('f-email').value.trim() || '—',
+    phone:   document.getElementById('f-phone').value.trim() || '—',
+    domain:  document.getElementById('f-domain').value.trim() || '—',
+    source:  document.getElementById('f-source').value || 'Cold',
+    value:   parseInt(document.getElementById('f-value').value) || 0,
+    sector:  document.getElementById('f-sector').value.trim() || '',
+    notes:   document.getElementById('f-notes').value.trim() || '',
+    stage:   'prospect',
+    days:    0,
+    status:  'open',
+  });
+
+  resetForm();
+  toggleAddForm();
+  render();
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', render);
+</script>
 </body>
 </html>
