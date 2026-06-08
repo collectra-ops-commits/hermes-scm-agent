@@ -5,9 +5,353 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Warehouse — Client CRM</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ══════════════════════════════════════════════════
+       SECTOR 4 — CLIENT CRM
+    ══════════════════════════════════════════════════ */
+
+    /* ── METRICS BAR ────────────────────────────────── */
+    .crm-metrics {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+    }
+    .crm-metric-cell {
+      background: var(--bg-panel);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .crm-metric-label {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .crm-metric-value {
+      font-size: 22px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .crm-metric-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    /* ── FILTER BAR ─────────────────────────────────── */
+    .crm-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 0 0;
+    }
+    .crm-filter-btn {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border: var(--panel-border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .crm-filter-btn:hover,
+    .crm-filter-btn.active {
+      border-color: var(--accent-neon);
+      color: var(--accent-neon);
+    }
+    .crm-search {
+      margin-left: auto;
+      width: 200px;
+    }
+
+    /* ── CLIENT CARD GRID ───────────────────────────── */
+    .crm-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+    }
+
+    .client-card {
+      background: var(--bg-panel);
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+    .client-card:hover { background: rgba(0,255,204,0.03); }
+    .client-card.active-card { border-color: var(--accent-neon); }
+    .client-card.expired-card { opacity: 0.5; }
+
+    .client-card-header {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .client-monogram {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-header);
+      font-size: 16px;
+      font-weight: 700;
+      flex-shrink: 0;
+      border: 1px solid;
+    }
+    .client-name-block { flex: 1; }
+    .client-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .client-industry {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .client-card-body { padding: 10px 14px; flex: 1; display: flex; flex-direction: column; gap: 7px; }
+
+    .client-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+    }
+    .client-row-label { color: var(--text-dim); letter-spacing: 0.06em; text-transform: uppercase; font-size: 9px; }
+    .client-row-value { color: var(--text-primary); font-weight: 500; }
+
+    .health-bar-track {
+      width: 60px;
+      height: 3px;
+      background: var(--border-color);
+      position: relative;
+      display: inline-block;
+    }
+    .health-bar-fill {
+      position: absolute;
+      left: 0; top: 0; height: 100%;
+    }
+
+    .client-card-footer {
+      padding: 8px 14px;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-panel-alt);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* ── DETAIL PANEL ───────────────────────────────── */
+    .detail-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(7,20,16,0.7);
+      z-index: 400;
+    }
+    .detail-overlay.open { display: block; }
+
+    .detail-panel {
+      position: fixed;
+      top: 0; right: 0;
+      width: 680px;
+      max-width: 95vw;
+      height: 100vh;
+      background: var(--bg-panel);
+      border-left: var(--panel-border);
+      display: flex;
+      flex-direction: column;
+      z-index: 500;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      overflow: hidden;
+    }
+    .detail-panel.open { transform: translateX(0); }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: var(--panel-border);
+      background: var(--bg-panel-alt);
+      flex-shrink: 0;
+    }
+    .detail-header-left { display: flex; align-items: center; gap: 14px; }
+    .detail-monogram {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-header);
+      font-size: 20px;
+      font-weight: 700;
+      border: 1px solid;
+    }
+    .detail-name { font-family: var(--font-header); font-size: 20px; color: var(--text-primary); }
+    .detail-industry { font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+
+    .detail-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .detail-section-title {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding-bottom: 6px;
+      border-bottom: var(--panel-border);
+      margin-bottom: 2px;
+    }
+
+    /* Quick info row */
+    .detail-info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+    }
+    .detail-info-cell {
+      background: var(--bg-panel-alt);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .detail-info-label { font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+    .detail-info-value { font-size: 13px; color: var(--text-primary); font-weight: 500; }
+
+    /* SEO table */
+    .seo-table { width: 100%; border-collapse: collapse; }
+    .seo-table th {
+      font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-dim); padding: 6px 10px;
+      border-bottom: var(--panel-border); text-align: left; font-weight: 400;
+    }
+    .seo-table td {
+      font-size: 11px; color: var(--text-primary);
+      padding: 8px 10px; border-bottom: 1px solid var(--border-color);
+    }
+    .seo-table tr:last-child td { border-bottom: none; }
+    .seo-table tr:hover td { background: rgba(0,255,204,0.02); }
+    .seo-delta { font-weight: 600; }
+    .seo-delta.up   { color: var(--accent-neon); }
+    .seo-delta.down { color: var(--accent-red); }
+    .seo-delta.flat { color: var(--text-dim); }
+    .seo-rank { font-family: var(--font-mono); font-size: 13px; }
+
+    /* Ad spend */
+    .ad-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+    }
+    .ad-cell {
+      background: var(--bg-panel-alt);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ad-cell-label { font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+    .ad-cell-value { font-size: 16px; font-weight: 600; font-family: var(--font-mono); color: var(--text-primary); }
+    .ad-cell-sub   { font-size: 9px; color: var(--text-muted); }
+
+    /* Project tracker */
+    .project-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .project-item:last-child { border-bottom: none; }
+    .project-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .project-name { font-size: 11px; color: var(--text-primary); font-weight: 500; }
+    .project-deadline { font-size: 9px; color: var(--text-dim); letter-spacing: 0.06em; }
+    .project-assigned { font-size: 9px; color: var(--text-muted); letter-spacing: 0.04em; }
+    .project-progress-track {
+      height: 3px;
+      background: var(--border-color);
+      position: relative;
+    }
+    .project-progress-fill {
+      position: absolute;
+      left: 0; top: 0; height: 100%;
+      transition: width 0.3s ease;
+    }
+    .project-status-tag {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border: 1px solid;
+    }
+    .project-status-tag.active     { border-color: var(--accent-neon); color: var(--accent-neon); }
+    .project-status-tag.review     { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .project-status-tag.complete   { border-color: var(--text-dim);    color: var(--text-dim); }
+    .project-status-tag.hold       { border-color: var(--accent-red);  color: var(--accent-red); }
+
+    /* Detail footer */
+    .detail-footer {
+      padding: 12px 20px;
+      border-top: var(--panel-border);
+      background: var(--bg-panel-alt);
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 1100px) {
+      .crm-grid { grid-template-columns: repeat(2,1fr); }
+      .crm-metrics { grid-template-columns: repeat(3,1fr); }
+    }
+    @media (max-width: 700px) {
+      .crm-grid { grid-template-columns: 1fr; }
+      .detail-panel { width: 100vw; }
+      .ad-grid { grid-template-columns: 1fr 1fr; }
+      .detail-info-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell">
+
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-title">The Warehouse</div>
@@ -31,6 +375,8 @@
       <div class="sidebar-footer-text" style="margin-top:4px;">v0.15.2 · Railway</div>
     </div>
   </aside>
+
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-left">
       <div class="topbar-breadcrumb">WAREHOUSE / <span>CLIENT CRM</span></div>
@@ -41,44 +387,571 @@
       <div class="topbar-clock" id="topbar-clock">--:--:--</div>
     </div>
   </header>
-  <main class="main-content">
+
+  <!-- MAIN -->
+  <main class="main-content" style="gap:12px;">
+
+    <!-- SECTOR HEADER -->
     <div class="sector-header">
       <div>
         <div class="sector-title">Client CRM</div>
         <div class="sector-subtitle">Sector 04 — Account Lifecycle Management</div>
       </div>
       <div class="sector-meta">
-        <div class="sector-tag">MOCK DATA</div>
-        <div class="sector-tag live">SHELL v1</div>
+        <div class="sector-tag" id="crm-count-tag">— clients</div>
+        <div class="sector-tag live">LIVE</div>
       </div>
     </div>
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Active Accounts <span class="panel-title-accent">// Identity Cards</span></div>
-        <div style="display:flex;gap:8px;">
-          <span class="badge badge-green">ACTIVE</span>
-          <span class="badge badge-muted">EXPIRED</span>
-        </div>
-      </div>
-      <div class="stub-block" style="min-height:200px;">
-        <div class="stub-label">Grid Slot</div>
-        <div class="stub-title">Client Identity Cards</div>
-        <div class="stub-note">Clean minimal company cards. Click to expand → SEO targets, ad spend, web project status. Archive mechanism for expired accounts.</div>
-      </div>
+
+    <!-- METRICS -->
+    <div class="crm-metrics" id="crm-metrics"></div>
+
+    <!-- FILTER + SEARCH -->
+    <div class="crm-filter-bar">
+      <button class="crm-filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="crm-filter-btn" onclick="setFilter('active',this)">Active</button>
+      <button class="crm-filter-btn" onclick="setFilter('expired',this)">Expired</button>
+      <input class="input-field crm-search" id="crm-search" type="text"
+             placeholder="Search client..." oninput="renderGrid()" />
     </div>
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Expanded Panel <span class="panel-title-accent">// Click a Client</span></div>
-        <span class="badge badge-muted">SELECT CLIENT</span>
-      </div>
-      <div class="stub-block" style="min-height:140px;">
-        <div class="stub-label">Detail Panel Slot</div>
-        <div class="stub-title">Client Deep Metrics</div>
-        <div class="stub-note">SEO keyword tracking · Ranking trends · Meta/Google ad spend · Web engineering status.</div>
-      </div>
-    </div>
+
+    <!-- CARD GRID -->
+    <div class="crm-grid" id="crm-grid"></div>
+
   </main>
 </div>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detail-panel">
+  <div class="detail-header">
+    <div class="detail-header-left">
+      <div class="detail-monogram" id="dp-monogram">—</div>
+      <div>
+        <div class="detail-name" id="dp-name">—</div>
+        <div class="detail-industry" id="dp-industry">—</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span class="badge" id="dp-status-badge">—</span>
+      <button class="btn" onclick="closeDetail()" style="padding:4px 12px;font-size:9px;">✕ CLOSE</button>
+    </div>
+  </div>
+
+  <div class="detail-body" id="detail-body">
+    <!-- populated by JS -->
+  </div>
+
+  <div class="detail-footer" id="detail-footer">
+    <!-- populated by JS -->
+  </div>
+</div>
+
 <script src="script.js"></script>
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════
+// CLIENT DATA
+// ══════════════════════════════════════════════════════════
+const CLIENTS = [
+  {
+    id: 1,
+    name: 'Meghna Group', industry: 'Conglomerate', domain: 'meghnagroup.com',
+    contact: 'Farhan Hossain', email: 'fhossain@meghnagroup.com', phone: '+880 1711 001001',
+    color: '#00FFCC', textColor: '#0B1D17',
+    retainer: 120000, status: 'active', health: 92,
+    startDate: '2024-01-15', renewDate: '2025-01-15',
+    seo: [
+      { keyword: 'meghna group bangladesh', target: 1, current: 1, vol: 8100 },
+      { keyword: 'edible oil manufacturer bd', target: 3, current: 5, vol: 3400 },
+      { keyword: 'fresh cement price bd', target: 2, current: 4, vol: 2900 },
+      { keyword: 'meghna industrial', target: 2, current: 3, vol: 1800 },
+    ],
+    ads: { meta: 45000, google: 62000, roas: 4.2 },
+    projects: [
+      { name: 'Corporate Website Revamp', status: 'active', progress: 65, deadline: 'Jul 30', assigned: 'Dev Team' },
+      { name: 'SEO Sprint Q2', status: 'active', progress: 80, deadline: 'Jun 30', assigned: 'SEO Lead' },
+      { name: 'Brand Guidelines Update', status: 'complete', progress: 100, deadline: 'May 01', assigned: 'Design' },
+    ],
+    notes: 'Key account. CFO relationship via Nabil. Board review Q3.',
+  },
+  {
+    id: 2,
+    name: 'Square Pharma', industry: 'Pharmaceuticals', domain: 'squarepharma.bd',
+    contact: 'Tasnim Akter', email: 't.akter@squarepharma.bd', phone: '+880 1811 002002',
+    color: '#4CC9F0', textColor: '#071410',
+    retainer: 95000, status: 'active', health: 87,
+    startDate: '2024-03-01', renewDate: '2025-03-01',
+    seo: [
+      { keyword: 'square pharmaceuticals bangladesh', target: 1, current: 1, vol: 12000 },
+      { keyword: 'medicine manufacturer bangladesh', target: 4, current: 6, vol: 4500 },
+      { keyword: 'square hospital dhaka', target: 2, current: 2, vol: 6700 },
+    ],
+    ads: { meta: 28000, google: 55000, roas: 3.8 },
+    projects: [
+      { name: 'Google Ads Restructure', status: 'active', progress: 45, deadline: 'Jul 15', assigned: 'PPC Team' },
+      { name: 'Landing Page — New Product', status: 'review', progress: 90, deadline: 'Jun 20', assigned: 'Dev Team' },
+    ],
+    notes: 'Regulatory constraints on ad copy. Verify all claims.',
+  },
+  {
+    id: 3,
+    name: 'ACI Limited', industry: 'FMCG / Pharma', domain: 'aci.com.bd',
+    contact: 'Nadira Begum', email: 'nadira.b@aci.com.bd', phone: '+880 1711 005005',
+    color: '#FFD166', textColor: '#071410',
+    retainer: 85000, status: 'active', health: 78,
+    startDate: '2023-11-01', renewDate: '2024-11-01',
+    seo: [
+      { keyword: 'aci limited bangladesh', target: 1, current: 1, vol: 9200 },
+      { keyword: 'aci pure flour price', target: 2, current: 3, vol: 5600 },
+      { keyword: 'aci fertilizer bd', target: 3, current: 7, vol: 2100 },
+      { keyword: 'savlon bangladesh', target: 1, current: 2, vol: 8800 },
+    ],
+    ads: { meta: 62000, google: 38000, roas: 3.1 },
+    projects: [
+      { name: 'E-commerce Platform MVP', status: 'active', progress: 30, deadline: 'Sep 01', assigned: 'Dev Team' },
+      { name: 'Meta Campaign Q2', status: 'active', progress: 60, deadline: 'Jun 30', assigned: 'PPC Team' },
+      { name: 'Analytics Dashboard', status: 'hold', progress: 15, deadline: 'TBD', assigned: 'Dev Team' },
+    ],
+    notes: 'Budget review pending after Q2 results. Push analytics dashboard.',
+  },
+  {
+    id: 4,
+    name: 'Walton Hi-Tech', industry: 'Electronics', domain: 'waltonbd.com',
+    contact: 'Mamunur Rashid', email: 'm.rashid@waltonbd.com', phone: '+880 1911 011011',
+    color: '#FF4C4C', textColor: '#F4EFEA',
+    retainer: 140000, status: 'active', health: 95,
+    startDate: '2024-02-01', renewDate: '2025-02-01',
+    seo: [
+      { keyword: 'walton fridge price bangladesh', target: 1, current: 1, vol: 22000 },
+      { keyword: 'walton tv price bd 2024', target: 1, current: 1, vol: 18000 },
+      { keyword: 'walton ac price bangladesh', target: 2, current: 2, vol: 15000 },
+      { keyword: 'buy walton laptop online', target: 3, current: 5, vol: 7400 },
+    ],
+    ads: { meta: 95000, google: 120000, roas: 5.6 },
+    projects: [
+      { name: 'Season Campaign — Eid', status: 'complete', progress: 100, deadline: 'Apr 05', assigned: 'All Teams' },
+      { name: 'Product Page Optimization (200 SKUs)', status: 'active', progress: 55, deadline: 'Aug 01', assigned: 'SEO Lead' },
+      { name: 'Affiliate Network Setup', status: 'review', progress: 85, deadline: 'Jun 28', assigned: 'Dev Team' },
+    ],
+    notes: 'Top revenue account. Monthly report due 1st. Sponsor scan active.',
+  },
+  {
+    id: 5,
+    name: 'Partex Group', industry: 'Manufacturing', domain: 'partexgroup.com',
+    contact: 'Anisul Islam', email: 'anisul@partexgroup.com', phone: '+880 1911 007007',
+    color: '#DA70D6', textColor: '#071410',
+    retainer: 72000, status: 'active', health: 71,
+    startDate: '2024-04-01', renewDate: '2025-04-01',
+    seo: [
+      { keyword: 'partex furniture bangladesh', target: 2, current: 3, vol: 6800 },
+      { keyword: 'partex star group bd', target: 1, current: 2, vol: 4200 },
+      { keyword: 'mdf board price bangladesh', target: 4, current: 8, vol: 3100 },
+    ],
+    ads: { meta: 35000, google: 22000, roas: 2.7 },
+    projects: [
+      { name: 'Website Redesign — Furniture Div', status: 'active', progress: 40, deadline: 'Aug 15', assigned: 'Dev Team' },
+      { name: 'Google Shopping Setup', status: 'active', progress: 70, deadline: 'Jul 01', assigned: 'PPC Team' },
+    ],
+    notes: 'ROAS underperforming. Shopping campaign restructure is priority.',
+  },
+  {
+    id: 6,
+    name: 'Pran-RFL Group', industry: 'FMCG', domain: 'prangroup.com',
+    contact: 'Imran Hossain', email: 'imran.h@prangroup.com', phone: '+880 1811 010010',
+    color: '#90EE90', textColor: '#071410',
+    retainer: 110000, status: 'active', health: 83,
+    startDate: '2023-09-01', renewDate: '2024-09-01',
+    seo: [
+      { keyword: 'pran juice bangladesh', target: 1, current: 1, vol: 14000 },
+      { keyword: 'rfl products price bangladesh', target: 2, current: 3, vol: 9800 },
+      { keyword: 'pran food products bd', target: 1, current: 1, vol: 11200 },
+      { keyword: 'buy pran online bd', target: 3, current: 4, vol: 5500 },
+    ],
+    ads: { meta: 75000, google: 48000, roas: 4.0 },
+    projects: [
+      { name: 'Export Market Landing Pages (5)', status: 'active', progress: 50, deadline: 'Jul 20', assigned: 'Dev Team' },
+      { name: 'Meta Retargeting Funnel', status: 'complete', progress: 100, deadline: 'May 15', assigned: 'PPC Team' },
+    ],
+    notes: 'Renewal due Sep. Strong relationship. Upsell export content package.',
+  },
+  {
+    id: 7,
+    name: 'City Group BD', industry: 'Food & Beverage', domain: 'citygroup.com.bd',
+    contact: 'Jakia Sultana', email: 'jakia@citygroup.com.bd', phone: '+880 1611 012012',
+    color: '#FF8C00', textColor: '#071410',
+    retainer: 48000, status: 'expired', health: 60,
+    startDate: '2023-01-01', renewDate: '2024-01-01',
+    seo: [
+      { keyword: 'city group bangladesh', target: 2, current: 4, vol: 3200 },
+      { keyword: 'city alo edible oil price', target: 3, current: 6, vol: 4100 },
+    ],
+    ads: { meta: 0, google: 0, roas: 0 },
+    projects: [
+      { name: 'Annual Report Design', status: 'complete', progress: 100, deadline: 'Dec 30', assigned: 'Design' },
+    ],
+    notes: 'Contract expired Jan 2024. Re-engagement attempted. Follow up Q3.',
+  },
+  {
+    id: 8,
+    name: 'Transcom Group', industry: 'Conglomerate', domain: 'transcom.com.bd',
+    contact: 'Zubayer Rahman', email: 'z.rahman@transcom.com.bd', phone: '+880 1811 006006',
+    color: '#7A9A8F', textColor: '#F4EFEA',
+    retainer: 165000, status: 'expired', health: 55,
+    startDate: '2022-06-01', renewDate: '2023-06-01',
+    seo: [
+      { keyword: 'transcom group bangladesh', target: 1, current: 3, vol: 5600 },
+      { keyword: 'pepsi bangladesh distributor', target: 2, current: 5, vol: 7800 },
+    ],
+    ads: { meta: 0, google: 0, roas: 0 },
+    projects: [
+      { name: 'Brand Audit 2022', status: 'complete', progress: 100, deadline: 'Aug 2022', assigned: 'Strategy' },
+    ],
+    notes: 'Large account. Lost to Dhaka agency. Reachable through Nabil contact.',
+  },
+];
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let currentFilter = 'all';
+let selectedId    = null;
+
+// ══════════════════════════════════════════════════════════
+// METRICS
+// ══════════════════════════════════════════════════════════
+function fmtBDT(v) {
+  if (v >= 1000000) return '৳' + (v/1000000).toFixed(1) + 'M';
+  if (v >= 1000)    return '৳' + Math.round(v/1000) + 'K';
+  return '৳' + v.toLocaleString();
+}
+
+function renderMetrics() {
+  const active   = CLIENTS.filter(c => c.status === 'active');
+  const retainer = active.reduce((s,c) => s + c.retainer, 0);
+  const adSpend  = active.reduce((s,c) => s + c.ads.meta + c.ads.google, 0);
+  const avgHealth= Math.round(active.reduce((s,c) => s + c.health, 0) / (active.length||1));
+  const projects = active.reduce((s,c) => s + c.projects.filter(p=>p.status==='active').length, 0);
+
+  document.getElementById('crm-metrics').innerHTML = `
+    <div class="crm-metric-cell">
+      <div class="crm-metric-label">Active Clients</div>
+      <div class="crm-metric-value" style="color:var(--accent-neon);">${active.length}</div>
+      <div class="crm-metric-sub">${CLIENTS.filter(c=>c.status==='expired').length} expired</div>
+    </div>
+    <div class="crm-metric-cell">
+      <div class="crm-metric-label">Monthly Retainer</div>
+      <div class="crm-metric-value">${fmtBDT(retainer)}</div>
+      <div class="crm-metric-sub">Recurring revenue</div>
+    </div>
+    <div class="crm-metric-cell">
+      <div class="crm-metric-label">Ad Spend / Mo</div>
+      <div class="crm-metric-value">${fmtBDT(adSpend)}</div>
+      <div class="crm-metric-sub">Meta + Google managed</div>
+    </div>
+    <div class="crm-metric-cell">
+      <div class="crm-metric-label">Avg Account Health</div>
+      <div class="crm-metric-value" style="color:${avgHealth>=80?'var(--accent-neon)':avgHealth>=60?'var(--accent-warm)':'var(--accent-red)'};">${avgHealth}<span style="font-size:14px;">%</span></div>
+      <div class="crm-metric-sub">Active accounts only</div>
+    </div>
+    <div class="crm-metric-cell">
+      <div class="crm-metric-label">Active Projects</div>
+      <div class="crm-metric-value">${projects}</div>
+      <div class="crm-metric-sub">In progress across accounts</div>
+    </div>`;
+
+  document.getElementById('crm-count-tag').textContent = CLIENTS.length + ' clients';
+}
+
+// ══════════════════════════════════════════════════════════
+// CARD GRID
+// ══════════════════════════════════════════════════════════
+function healthColor(h) {
+  if (h >= 80) return 'var(--accent-neon)';
+  if (h >= 60) return 'var(--accent-warm)';
+  return 'var(--accent-red)';
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.crm-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function renderGrid() {
+  const q = (document.getElementById('crm-search').value || '').toLowerCase();
+  const grid = document.getElementById('crm-grid');
+  grid.innerHTML = '';
+
+  const filtered = CLIENTS.filter(c => {
+    const fOk = currentFilter === 'all' || c.status === currentFilter;
+    const qOk = !q || c.name.toLowerCase().includes(q) || c.industry.toLowerCase().includes(q) || c.domain.toLowerCase().includes(q);
+    return fOk && qOk;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="stub-block" style="grid-column:1/-1;min-height:120px;">
+      <div class="stub-label">No results</div>
+      <div class="stub-title">No clients match filter</div></div>`;
+    return;
+  }
+
+  filtered.forEach(c => {
+    const initials = c.name.split(' ').slice(0,2).map(w=>w[0]).join('');
+    const hc = healthColor(c.health);
+    const isExp = c.status === 'expired';
+    const isSelected = c.id === selectedId;
+
+    grid.innerHTML += `
+      <div class="client-card ${isExp ? 'expired-card' : ''} ${isSelected ? 'active-card' : ''}"
+           onclick="openDetail(${c.id})">
+        <div class="client-card-header">
+          <div class="client-monogram" style="background:${c.color}20;color:${c.color};border-color:${c.color}40;">
+            ${initials}
+          </div>
+          <div class="client-name-block">
+            <div class="client-name">${c.name}</div>
+            <div class="client-industry">${c.industry}</div>
+          </div>
+          <span class="badge ${isExp ? 'badge-muted' : 'badge-green'}">${isExp ? 'EXPIRED' : 'ACTIVE'}</span>
+        </div>
+        <div class="client-card-body">
+          <div class="client-row">
+            <span class="client-row-label">Retainer</span>
+            <span class="client-row-value" style="color:${isExp?'var(--text-muted)':'var(--accent-neon)'};">${fmtBDT(c.retainer)}/mo</span>
+          </div>
+          <div class="client-row">
+            <span class="client-row-label">Contact</span>
+            <span class="client-row-value" style="font-size:10px;">${c.contact}</span>
+          </div>
+          <div class="client-row">
+            <span class="client-row-label">Ad Spend</span>
+            <span class="client-row-value">${c.ads.meta+c.ads.google > 0 ? fmtBDT(c.ads.meta+c.ads.google)+'/mo' : '—'}</span>
+          </div>
+          <div class="client-row">
+            <span class="client-row-label">Health</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="health-bar-track">
+                <div class="health-bar-fill" style="width:${c.health}%;background:${hc};"></div>
+              </div>
+              <span style="font-size:10px;color:${hc};">${c.health}%</span>
+            </div>
+          </div>
+        </div>
+        <div class="client-card-footer">
+          <span>${c.domain}</span>
+          <span>${c.projects.filter(p=>p.status==='active').length} active projects</span>
+        </div>
+      </div>`;
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// DETAIL PANEL
+// ══════════════════════════════════════════════════════════
+function openDetail(id) {
+  const c = CLIENTS.find(x => x.id === id);
+  if (!c) return;
+  selectedId = id;
+  renderGrid();
+
+  const initials = c.name.split(' ').slice(0,2).map(w=>w[0]).join('');
+  const isExp = c.status === 'expired';
+
+  // Header
+  const mono = document.getElementById('dp-monogram');
+  mono.textContent = initials;
+  mono.style.background = c.color + '25';
+  mono.style.color = c.color;
+  mono.style.borderColor = c.color + '60';
+  document.getElementById('dp-name').textContent = c.name;
+  document.getElementById('dp-industry').textContent = c.industry + ' · ' + c.domain;
+  const badge = document.getElementById('dp-status-badge');
+  badge.textContent = isExp ? 'EXPIRED' : 'ACTIVE';
+  badge.className = 'badge ' + (isExp ? 'badge-muted' : 'badge-green');
+
+  // Body
+  const body = document.getElementById('detail-body');
+
+  // SEO rows
+  const seoRows = c.seo.map(kw => {
+    const delta = kw.current - kw.target;
+    const deltaLabel = delta === 0 ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
+    const deltaCls = delta === 0 ? 'flat' : delta > 0 ? 'down' : 'up';
+    return `<tr>
+      <td>${kw.keyword}</td>
+      <td class="seo-rank" style="text-align:center;">${kw.target}</td>
+      <td class="seo-rank" style="text-align:center;color:${delta<=0?'var(--accent-neon)':'var(--accent-warm)'};">${kw.current}</td>
+      <td class="seo-delta ${deltaCls}" style="text-align:center;">${deltaLabel}</td>
+      <td style="text-align:right;color:var(--text-muted);">${kw.vol.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+
+  // Project rows
+  const projRows = c.projects.map(p => {
+    const fillColor = p.status === 'complete' ? 'var(--text-dim)' :
+                      p.status === 'hold'     ? 'var(--accent-red)' :
+                      p.status === 'review'   ? 'var(--accent-warm)' : 'var(--accent-neon)';
+    return `<div class="project-item">
+      <div class="project-top">
+        <div class="project-name">${p.name}</div>
+        <span class="project-status-tag ${p.status}">${p.status.toUpperCase()}</span>
+      </div>
+      <div class="project-progress-track">
+        <div class="project-progress-fill" style="width:${p.progress}%;background:${fillColor};"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:3px;">
+        <span class="project-assigned">↳ ${p.assigned}</span>
+        <span class="project-deadline">Due: ${p.deadline}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  body.innerHTML = `
+    <!-- Quick Info -->
+    <div>
+      <div class="detail-section-title">Account Info</div>
+      <div class="detail-info-grid">
+        <div class="detail-info-cell">
+          <div class="detail-info-label">Monthly Retainer</div>
+          <div class="detail-info-value" style="color:var(--accent-neon);">${fmtBDT(c.retainer)}</div>
+        </div>
+        <div class="detail-info-cell">
+          <div class="detail-info-label">Primary Contact</div>
+          <div class="detail-info-value" style="font-size:12px;">${c.contact}</div>
+        </div>
+        <div class="detail-info-cell">
+          <div class="detail-info-label">Account Health</div>
+          <div class="detail-info-value" style="color:${healthColor(c.health)};">${c.health}%</div>
+        </div>
+        <div class="detail-info-cell">
+          <div class="detail-info-label">Email</div>
+          <div class="detail-info-value" style="font-size:11px;">${c.email}</div>
+        </div>
+        <div class="detail-info-cell">
+          <div class="detail-info-label">Phone</div>
+          <div class="detail-info-value" style="font-size:12px;">${c.phone}</div>
+        </div>
+        <div class="detail-info-cell">
+          <div class="detail-info-label">Start / Renew</div>
+          <div class="detail-info-value" style="font-size:11px;">${c.startDate} → ${c.renewDate}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO -->
+    <div>
+      <div class="detail-section-title">SEO Keyword Tracker</div>
+      <table class="seo-table">
+        <thead>
+          <tr>
+            <th>Keyword</th>
+            <th style="text-align:center;">Target</th>
+            <th style="text-align:center;">Current</th>
+            <th style="text-align:center;">Δ</th>
+            <th style="text-align:right;">Vol/mo</th>
+          </tr>
+        </thead>
+        <tbody>${seoRows}</tbody>
+      </table>
+    </div>
+
+    <!-- Ad Spend -->
+    <div>
+      <div class="detail-section-title">Advertising Spend</div>
+      <div class="ad-grid">
+        <div class="ad-cell">
+          <div class="ad-cell-label">Meta Ads</div>
+          <div class="ad-cell-value" style="color:#4CC9F0;">${fmtBDT(c.ads.meta)}</div>
+          <div class="ad-cell-sub">/ month managed</div>
+        </div>
+        <div class="ad-cell">
+          <div class="ad-cell-label">Google Ads</div>
+          <div class="ad-cell-value" style="color:var(--accent-warm);">${fmtBDT(c.ads.google)}</div>
+          <div class="ad-cell-sub">/ month managed</div>
+        </div>
+        <div class="ad-cell">
+          <div class="ad-cell-label">Total Spend</div>
+          <div class="ad-cell-value">${fmtBDT(c.ads.meta + c.ads.google)}</div>
+          <div class="ad-cell-sub">/ month combined</div>
+        </div>
+        <div class="ad-cell">
+          <div class="ad-cell-label">ROAS</div>
+          <div class="ad-cell-value" style="color:${c.ads.roas>=4?'var(--accent-neon)':c.ads.roas>=3?'var(--accent-warm)':'var(--accent-red)'};">${c.ads.roas > 0 ? c.ads.roas.toFixed(1)+'x' : '—'}</div>
+          <div class="ad-cell-sub">Return on ad spend</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projects -->
+    <div>
+      <div class="detail-section-title">Web Engineering Projects</div>
+      ${projRows}
+    </div>
+
+    <!-- Notes -->
+    <div>
+      <div class="detail-section-title">Notes</div>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.8;padding:10px;background:var(--bg-panel-alt);border:var(--panel-border);">
+        ${c.notes}
+      </div>
+    </div>`;
+
+  // Footer
+  const footer = document.getElementById('detail-footer');
+  footer.innerHTML = isExp
+    ? `<button class="btn btn-primary" onclick="reactivate(${c.id})" style="padding:8px 16px;">↑ REACTIVATE</button>
+       <button class="btn btn-danger"  onclick="removeClient(${c.id})" style="padding:8px 16px;">✕ REMOVE</button>
+       <button class="btn" onclick="closeDetail()" style="padding:8px 16px;margin-left:auto;">CLOSE</button>`
+    : `<button class="btn btn-danger" onclick="archiveClient(${c.id})" style="padding:8px 16px;">→ MARK EXPIRED</button>
+       <button class="btn" onclick="closeDetail()" style="padding:8px 16px;margin-left:auto;">CLOSE</button>`;
+
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function closeDetail() {
+  selectedId = null;
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.getElementById('detail-panel').classList.remove('open');
+  renderGrid();
+}
+
+function archiveClient(id) {
+  const c = CLIENTS.find(x => x.id === id);
+  if (c) { c.status = 'expired'; c.health = Math.min(c.health, 55); }
+  closeDetail();
+  renderMetrics();
+  renderGrid();
+}
+
+function reactivate(id) {
+  const c = CLIENTS.find(x => x.id === id);
+  if (c) c.status = 'active';
+  closeDetail();
+  renderMetrics();
+  renderGrid();
+}
+
+function removeClient(id) {
+  const idx = CLIENTS.findIndex(x => x.id === id);
+  if (idx !== -1) CLIENTS.splice(idx, 1);
+  closeDetail();
+  renderMetrics();
+  renderGrid();
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderMetrics();
+  renderGrid();
+});
+</script>
 </body>
 </html>
