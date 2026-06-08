@@ -5,6 +5,406 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Warehouse — Home Launchpad</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ══════════════════════════════════════════════════
+       SECTOR 1 — HOME LAUNCHPAD STYLES
+    ══════════════════════════════════════════════════ */
+
+    /* ── CALENDAR ───────────────────────────────────── */
+    .cal-day-label {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 8px 14px 4px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-panel-alt);
+    }
+    .cal-event {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.12s;
+    }
+    .cal-event:hover { background: rgba(0,255,204,0.03); }
+    .cal-event-bar {
+      width: 3px;
+      flex-shrink: 0;
+    }
+    .cal-event-inner {
+      padding: 9px 14px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .cal-event-time {
+      font-size: 10px;
+      color: var(--text-dim);
+      min-width: 70px;
+      letter-spacing: 0.04em;
+    }
+    .cal-event-title {
+      font-size: 11px;
+      color: var(--text-primary);
+      flex: 1;
+    }
+    .cal-event-tag {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .cal-now-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      position: relative;
+    }
+    .cal-now-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-neon);
+      box-shadow: 0 0 6px var(--accent-neon);
+      flex-shrink: 0;
+    }
+    .cal-now-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--accent-neon);
+      opacity: 0.4;
+    }
+    .cal-now-time {
+      font-size: 9px;
+      color: var(--accent-neon);
+      letter-spacing: 0.08em;
+    }
+    .cal-empty {
+      padding: 14px;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── BOOK NOTES ─────────────────────────────────── */
+    .book-layout {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .book-cover {
+      width: 60px;
+      min-width: 60px;
+      height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: var(--panel-border);
+      font-size: 8px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 6px 4px;
+      line-height: 1.4;
+      font-family: var(--font-mono);
+    }
+    .book-meta { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .book-title-text {
+      font-family: var(--font-header);
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .book-author {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .book-lesson-label {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .book-lesson {
+      font-size: 11px;
+      color: var(--text-primary);
+      line-height: 1.7;
+    }
+    .book-quote {
+      font-size: 10px;
+      color: var(--accent-neon);
+      font-style: italic;
+      border-left: 2px solid var(--accent-neon);
+      padding-left: 10px;
+      margin-top: 4px;
+      line-height: 1.6;
+    }
+    .book-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .book-counter {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── TASK MANAGER ───────────────────────────────── */
+    .task-input-row {
+      display: flex;
+      gap: 1px;
+      background: var(--border-color);
+      border-bottom: var(--panel-border);
+    }
+    .task-priority-select {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      background: var(--bg-panel-alt);
+      border: none;
+      color: var(--text-muted);
+      padding: 0 10px;
+      cursor: pointer;
+      outline: none;
+      text-transform: uppercase;
+    }
+    .task-input-field {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--bg-main);
+      border: none;
+      color: var(--text-primary);
+      padding: 10px 12px;
+      flex: 1;
+      outline: none;
+    }
+    .task-input-field::placeholder { color: var(--text-dim); }
+    .task-add-btn {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      background: var(--bg-panel-alt);
+      border: none;
+      border-left: 1px solid var(--border-color);
+      color: var(--accent-neon);
+      padding: 0 14px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background 0.12s;
+    }
+    .task-add-btn:hover { background: rgba(0,255,204,0.08); }
+
+    .task-list { max-height: 220px; overflow-y: auto; }
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.12s;
+    }
+    .task-item:hover { background: rgba(0,255,204,0.02); }
+    .task-item:last-child { border-bottom: none; }
+    .task-checkbox {
+      width: 13px;
+      height: 13px;
+      border: 1px solid var(--border-active);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      flex-shrink: 0;
+      transition: all 0.12s;
+    }
+    .task-checkbox.done {
+      border-color: var(--accent-neon);
+      color: var(--accent-neon);
+      background: rgba(0,255,204,0.08);
+    }
+    .task-text {
+      flex: 1;
+      font-size: 11px;
+      color: var(--text-primary);
+      transition: all 0.15s;
+    }
+    .task-text.done {
+      color: var(--text-dim);
+      text-decoration: line-through;
+    }
+    .task-pri {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 5px;
+      border: 1px solid;
+    }
+    .task-pri.HIGH { border-color: var(--accent-red);  color: var(--accent-red); }
+    .task-pri.MED  { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .task-pri.LOW  { border-color: var(--border-active); color: var(--text-dim); }
+    .task-del {
+      font-size: 10px;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 2px 4px;
+      opacity: 0;
+      transition: opacity 0.12s;
+      background: none;
+      border: none;
+    }
+    .task-item:hover .task-del { opacity: 1; }
+    .task-del:hover { color: var(--accent-red); }
+    .task-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      border-top: var(--panel-border);
+      background: var(--bg-panel-alt);
+    }
+    .task-footer-count {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── CURIOSITY TICKER ───────────────────────────── */
+    .curiosity-category {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border: 1px solid;
+    }
+    .curiosity-category.Biology  { border-color: var(--accent-neon); color: var(--accent-neon); }
+    .curiosity-category.Systems  { border-color: var(--accent-blue); color: var(--accent-blue); }
+    .curiosity-category.Physics  { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .curiosity-category.Ecology  { border-color: #90EE90; color: #90EE90; }
+    .curiosity-category.Cognition{ border-color: #DA70D6; color: #DA70D6; }
+    .curiosity-category.Economics{ border-color: var(--accent-red); color: var(--accent-red); }
+
+    .curiosity-fact {
+      font-family: var(--font-header);
+      font-size: 15px;
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin: 10px 0 8px;
+    }
+    .curiosity-source {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      margin-top: 6px;
+    }
+    .curiosity-shuffle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    /* ── NEWSLETTER FEED ────────────────────────────── */
+    .nl-scrub-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 14px;
+      border-bottom: var(--panel-border);
+      background: var(--bg-panel-alt);
+    }
+    .nl-scrub-text {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+    .nl-cycle-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nl-cycle-fill {
+      height: 2px;
+      background: var(--accent-neon);
+      opacity: 0.5;
+      transition: width 1s linear;
+    }
+    .nl-cycle-track {
+      width: 60px;
+      height: 2px;
+      background: var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nl-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.12s;
+      cursor: pointer;
+    }
+    .nl-item:hover { background: rgba(0,255,204,0.02); }
+    .nl-item.read { opacity: 0.45; }
+    .nl-item:last-child { border-bottom: none; }
+    .nl-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-neon);
+      margin-top: 5px;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .nl-item.read .nl-dot { background: var(--text-dim); }
+    .nl-content { flex: 1; }
+    .nl-source-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .nl-source {
+      font-size: 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-neon);
+    }
+    .nl-item.read .nl-source { color: var(--text-dim); }
+    .nl-time {
+      font-size: 8px;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+    .nl-text {
+      font-size: 11px;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    .nl-item.read .nl-text { color: var(--text-muted); }
+    .nl-tag {
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border: 1px solid var(--border-active);
+      color: var(--text-dim);
+      margin-top: 4px;
+      display: inline-block;
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell">
@@ -17,38 +417,14 @@
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section-label">Core Sectors</div>
-      <a class="nav-item" href="index.html">
-        <span class="nav-icon">⌂</span> Home Launchpad
-        <span class="nav-index">01</span>
-      </a>
-      <a class="nav-item" href="social_intel.html">
-        <span class="nav-icon">◈</span> Social Intel
-        <span class="nav-index">02</span>
-      </a>
-      <a class="nav-item" href="investment.html">
-        <span class="nav-icon">◆</span> Investment Cmd
-        <span class="nav-index">03</span>
-      </a>
-      <a class="nav-item" href="crm.html">
-        <span class="nav-icon">▣</span> Client CRM
-        <span class="nav-index">04</span>
-      </a>
-      <a class="nav-item" href="pipeline.html">
-        <span class="nav-icon">→</span> Leads Pipeline
-        <span class="nav-index">05</span>
-      </a>
-      <a class="nav-item" href="research.html">
-        <span class="nav-icon">⊞</span> Research Terminal
-        <span class="nav-index">06</span>
-      </a>
-      <a class="nav-item" href="memory_vault.html">
-        <span class="nav-icon">◉</span> Memory World
-        <span class="nav-index">07</span>
-      </a>
-      <a class="nav-item" href="team_payroll.html">
-        <span class="nav-icon">▤</span> Team & Payroll
-        <span class="nav-index">08</span>
-      </a>
+      <a class="nav-item" href="index.html"><span class="nav-icon">⌂</span> Home Launchpad<span class="nav-index">01</span></a>
+      <a class="nav-item" href="social_intel.html"><span class="nav-icon">◈</span> Social Intel<span class="nav-index">02</span></a>
+      <a class="nav-item" href="investment.html"><span class="nav-icon">◆</span> Investment Cmd<span class="nav-index">03</span></a>
+      <a class="nav-item" href="crm.html"><span class="nav-icon">▣</span> Client CRM<span class="nav-index">04</span></a>
+      <a class="nav-item" href="pipeline.html"><span class="nav-icon">→</span> Leads Pipeline<span class="nav-index">05</span></a>
+      <a class="nav-item" href="research.html"><span class="nav-icon">⊞</span> Research Terminal<span class="nav-index">06</span></a>
+      <a class="nav-item" href="memory_vault.html"><span class="nav-icon">◉</span> Memory World<span class="nav-index">07</span></a>
+      <a class="nav-item" href="team_payroll.html"><span class="nav-icon">▤</span> Team & Payroll<span class="nav-index">08</span></a>
       <div class="nav-section-label" style="margin-top:8px;">Extended</div>
       <a class="nav-item" href="scm_ops.html"><span class="nav-icon">⬡</span> SCM Operations<span class="nav-index">09</span></a>
     </nav>
@@ -79,76 +455,602 @@
         <div class="sector-subtitle">Sector 01 — Daily Command Surface</div>
       </div>
       <div class="sector-meta">
-        <div class="sector-tag">MOCK DATA</div>
-        <div class="sector-tag live">SHELL v1</div>
+        <div class="sector-tag">5 WIDGETS</div>
+        <div class="sector-tag live">LIVE</div>
+        <div id="today-date" class="sector-tag" style="border-color:var(--accent-neon);color:var(--accent-neon);"></div>
       </div>
     </div>
 
-    <!-- ROW 1: Calendar + Book Notes -->
-    <div class="bento-grid bento-grid-2-1" style="gap:1px;">
+    <!-- ROW 1: Calendar + Book Notes (2/3 + 1/3) -->
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:1px;background:var(--border-color);">
+
+      <!-- WIDGET 1: CALENDAR -->
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">Calendar Sync <span class="panel-title-accent">// Today</span></div>
-          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
+          <div class="panel-title">Calendar Sync <span class="panel-title-accent">// Agenda</span></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="badge badge-muted" id="cal-event-count">— events</span>
+            <button class="btn" style="padding:3px 10px;font-size:9px;" onclick="calToggleDay()">TOGGLE DAY</button>
+          </div>
         </div>
-        <div class="stub-block" style="min-height:180px;">
-          <div class="stub-label">Widget Slot</div>
-          <div class="stub-title">Calendar Sync</div>
-          <div class="stub-note">Daily agenda timeline. Mail client sync. Will populate in Sector 1 build session.</div>
+        <div id="calendar-widget" style="max-height:320px;overflow-y:auto;">
+          <!-- populated by JS -->
         </div>
       </div>
+
+      <!-- WIDGET 2: BOOK NOTES -->
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">Book Notes <span class="panel-title-accent">// Daily</span></div>
-          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
+          <div class="panel-title">Book Notes <span class="panel-title-accent">// Daily Lesson</span></div>
+          <span class="badge badge-green">ROTATING</span>
         </div>
-        <div class="stub-block" style="min-height:180px;">
-          <div class="stub-label">Widget Slot</div>
-          <div class="stub-title">Retention Engine</div>
-          <div class="stub-note">Rotating strategic lesson from 100-book library.</div>
+        <div class="panel-body">
+          <div class="book-layout">
+            <div class="book-cover" id="book-cover">—</div>
+            <div class="book-meta">
+              <div class="book-title-text" id="book-title">—</div>
+              <div class="book-author" id="book-author">—</div>
+              <div class="book-lesson-label">Today's Lesson</div>
+              <div class="book-lesson" id="book-lesson">—</div>
+            </div>
+          </div>
+          <div class="book-quote" id="book-quote">—</div>
+          <div class="book-controls">
+            <div class="book-counter" id="book-counter">— / —</div>
+            <div style="display:flex;gap:6px;">
+              <button class="btn" style="padding:4px 10px;font-size:9px;" onclick="bookPrev()">← PREV</button>
+              <button class="btn" style="padding:4px 10px;font-size:9px;" onclick="bookNext()">NEXT →</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- ROW 2: Tasks + Curiosity + Newsletter -->
-    <div class="bento-grid bento-grid-3" style="gap:1px;">
-      <div class="panel">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:1px;background:var(--border-color);">
+
+      <!-- WIDGET 3: TASK MANAGER -->
+      <div class="panel" style="display:flex;flex-direction:column;">
         <div class="panel-header">
-          <div class="panel-title">Task Manager</div>
-          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
+          <div class="panel-title">Tasks <span class="panel-title-accent">// Quick Entry</span></div>
+          <button class="btn btn-danger" style="padding:3px 8px;font-size:8px;" onclick="clearDone()">CLEAR DONE</button>
         </div>
-        <div class="stub-block" style="min-height:160px;">
-          <div class="stub-label">Widget Slot</div>
-          <div class="stub-title">Quick Tasks</div>
-          <div class="stub-note">Minimalist checklist. Quick-entry. Thin checkbox styling.</div>
+        <div class="task-input-row">
+          <select class="task-priority-select" id="task-priority">
+            <option value="HIGH">HIGH</option>
+            <option value="MED" selected>MED</option>
+            <option value="LOW">LOW</option>
+          </select>
+          <input class="task-input-field" id="task-input" type="text" placeholder="Add task, press Enter..." />
+          <button class="task-add-btn" onclick="addTask()">+ ADD</button>
+        </div>
+        <div class="task-list" id="task-list">
+          <!-- populated by JS -->
+        </div>
+        <div class="task-footer">
+          <span class="task-footer-count" id="task-count">0 remaining</span>
+          <span class="task-footer-count" id="task-done-count">0 done</span>
         </div>
       </div>
+
+      <!-- WIDGET 4: CURIOSITY TICKER -->
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">Curiosity Ticker <span class="panel-title-accent">// Weird Knowledge</span></div>
-          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
+          <div class="panel-title">Weird Knowledge <span class="panel-title-accent">// Daily</span></div>
+          <span id="curiosity-cat-badge" class="curiosity-category Biology">Biology</span>
         </div>
-        <div class="stub-block" style="min-height:160px;">
-          <div class="stub-label">Widget Slot</div>
-          <div class="stub-title">Daily Fact</div>
-          <div class="stub-note">Ecological, systemic, or abstract daily fact.</div>
+        <div class="panel-body">
+          <div class="curiosity-fact" id="curiosity-fact">—</div>
+          <div class="curiosity-source" id="curiosity-source">—</div>
+          <div class="curiosity-shuffle">
+            <span style="font-size:9px;color:var(--text-dim);" id="curiosity-counter">— / —</span>
+            <div style="display:flex;gap:6px;">
+              <button class="btn" style="padding:4px 10px;font-size:9px;" onclick="curiosityPrev()">← PREV</button>
+              <button class="btn btn-primary" style="padding:4px 10px;font-size:9px;" onclick="curiosityNext()">SHUFFLE →</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="panel">
+
+      <!-- WIDGET 5: NEWSLETTER FEED -->
+      <div class="panel" style="display:flex;flex-direction:column;">
         <div class="panel-header">
           <div class="panel-title">Newsletter Feed <span class="panel-title-accent">// AI Parsed</span></div>
-          <div class="panel-controls"><span class="badge badge-muted">MOCK</span></div>
+          <button class="btn btn-primary" style="padding:3px 10px;font-size:9px;" onclick="markAllRead()">MARK ALL READ</button>
         </div>
-        <div class="stub-block" style="min-height:160px;">
-          <div class="stub-label">Widget Slot</div>
-          <div class="stub-title">Email Insights</div>
-          <div class="stub-note">Parsed newsletter bullets. 6hr scrub cycle.</div>
+        <div class="nl-scrub-bar">
+          <span class="nl-scrub-text">Last scrubbed: <span id="nl-scrub-time">—</span></span>
+          <div class="nl-cycle-bar">
+            <span style="font-size:8px;color:var(--text-dim);">NEXT CYCLE</span>
+            <div class="nl-cycle-track">
+              <div class="nl-cycle-fill" id="nl-cycle-fill" style="width:0%;"></div>
+            </div>
+          </div>
+        </div>
+        <div id="nl-feed" style="flex:1;overflow-y:auto;max-height:280px;">
+          <!-- populated by JS -->
         </div>
       </div>
+
     </div>
 
   </main>
 </div>
+
 <script src="script.js"></script>
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════
+// WIDGET 1 — CALENDAR
+// ══════════════════════════════════════════════════════════
+const CAL_COLORS = {
+  work:    { bar: '#00FFCC', tag: 'var(--accent-neon)', label: 'WORK' },
+  meeting: { bar: '#4CC9F0', tag: 'var(--accent-blue)', label: 'MEETING' },
+  focus:   { bar: '#FFD166', tag: 'var(--accent-warm)', label: 'DEEP WORK' },
+  review:  { bar: '#FF4C4C', tag: 'var(--accent-red)',  label: 'REVIEW' },
+  admin:   { bar: '#7A9A8F', tag: 'var(--text-muted)',  label: 'ADMIN' },
+};
+
+const MOCK_EVENTS = {
+  today: [
+    { time: '07:30', end: '08:00', title: 'Morning review — Warehouse dashboard', type: 'focus' },
+    { time: '09:00', end: '10:00', title: 'Poriborton supplier call — Shanghai Resin', type: 'meeting' },
+    { time: '10:30', end: '11:30', title: 'CS Draft review — Jamdani metrics', type: 'work' },
+    { time: '13:00', end: '14:00', title: 'Lunch / break', type: 'admin' },
+    { time: '14:30', end: '16:00', title: 'Hermes agent config — Railway webhook', type: 'focus' },
+    { time: '16:30', end: '17:00', title: 'Client CRM update — 3 accounts', type: 'review' },
+    { time: '18:00', end: '18:30', title: 'EOD summary — Telegram digest', type: 'admin' },
+  ],
+  tomorrow: [
+    { time: '08:00', end: '09:00', title: 'Weekly ops review — Poriborton KPIs', type: 'review' },
+    { time: '10:00', end: '11:00', title: 'CS submission prep — NSDA/BTEB format', type: 'work' },
+    { time: '12:00', end: '13:00', title: 'Investment portfolio rebalance check', type: 'focus' },
+    { time: '15:00', end: '16:00', title: 'Social Intel content planning — 5 nodes', type: 'work' },
+    { time: '17:00', end: '18:00', title: 'Team sync — payroll cycle check', type: 'meeting' },
+  ],
+};
+
+let calShowDay = 'today';
+
+function timeToMins(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function nowMins() {
+  const n = new Date();
+  return n.getHours() * 60 + n.getMinutes();
+}
+
+function renderCalendar() {
+  const widget = document.getElementById('calendar-widget');
+  const events = MOCK_EVENTS[calShowDay];
+  const now = nowMins();
+  let html = '';
+  let nowInserted = false;
+  let totalEvents = 0;
+
+  const dayLabel = calShowDay === 'today'
+    ? 'Today — ' + new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })
+    : 'Tomorrow — ' + new Date(Date.now() + 86400000).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+
+  html += `<div class="cal-day-label">${dayLabel}</div>`;
+
+  events.forEach(ev => {
+    const startM = timeToMins(ev.time);
+    const endM   = timeToMins(ev.end);
+    const c = CAL_COLORS[ev.type];
+    const isPast = calShowDay === 'today' && endM < now;
+    const isNow  = calShowDay === 'today' && startM <= now && endM >= now;
+
+    // Insert now line before first future event
+    if (calShowDay === 'today' && !nowInserted && startM > now) {
+      const nh = String(new Date().getHours()).padStart(2,'0');
+      const nm = String(new Date().getMinutes()).padStart(2,'0');
+      html += `<div class="cal-now-line" style="padding:6px 14px;">
+        <div class="cal-now-dot"></div>
+        <div class="cal-now-rule"></div>
+        <div class="cal-now-time">${nh}:${nm}</div>
+      </div>`;
+      nowInserted = true;
+    }
+
+    html += `<div class="cal-event" style="opacity:${isPast ? 0.4 : 1};">
+      <div class="cal-event-bar" style="background:${isNow ? c.bar : isPast ? 'var(--border-active)' : c.bar};opacity:${isPast ? 0.5 : 1};"></div>
+      <div class="cal-event-inner">
+        <div class="cal-event-time">${ev.time} – ${ev.end}</div>
+        <div class="cal-event-title">${isNow ? '▶ ' : ''}${ev.title}</div>
+        <div class="cal-event-tag" style="border-color:${c.tag};color:${c.tag};">${c.label}</div>
+      </div>
+    </div>`;
+    totalEvents++;
+  });
+
+  if (!events.length) {
+    html += `<div class="cal-empty">// No events scheduled</div>`;
+  }
+
+  widget.innerHTML = html;
+  document.getElementById('cal-event-count').textContent = totalEvents + ' events';
+}
+
+function calToggleDay() {
+  calShowDay = calShowDay === 'today' ? 'tomorrow' : 'today';
+  renderCalendar();
+}
+
+// ══════════════════════════════════════════════════════════
+// WIDGET 2 — BOOK NOTES ENGINE
+// ══════════════════════════════════════════════════════════
+const BOOKS = [
+  {
+    title: 'The Goal',
+    author: 'Eliyahu M. Goldratt',
+    color: '#0E3A2F',
+    textColor: '#00FFCC',
+    lesson: 'Every system has one bottleneck that limits its total throughput. Optimizing anything other than the constraint is an illusion — it improves nothing.',
+    quote: '"The goal is not to improve one measurement in isolation, but to make money now and in the future."',
+  },
+  {
+    title: 'Zero to One',
+    author: 'Peter Thiel',
+    color: '#1A1A2E',
+    textColor: '#4CC9F0',
+    lesson: 'Competition is for losers. Every great business is a monopoly in disguise — it creates a new category rather than fighting for an existing one.',
+    quote: '"The best problems to work on are the ones nobody else is working on."',
+  },
+  {
+    title: 'Thinking in Systems',
+    author: 'Donella Meadows',
+    color: '#1E2D1A',
+    textColor: '#90EE90',
+    lesson: 'Systems resist change because they are self-correcting. To change a system, you must identify its feedback loops — the places where information flows back to influence behavior.',
+    quote: '"You can\'t navigate in a complex system without a mental model. The question is how good is your model."',
+  },
+  {
+    title: 'Good to Great',
+    author: 'Jim Collins',
+    color: '#2D1A00',
+    textColor: '#FFD166',
+    lesson: 'Greatness is a deliberate choice, not circumstance. The Hedgehog Concept: find the intersection of what you are passionate about, what you can be best in the world at, and what drives your economic engine.',
+    quote: '"Good is the enemy of great."',
+  },
+  {
+    title: 'The Lean Startup',
+    author: 'Eric Ries',
+    color: '#2D0A0A',
+    textColor: '#FF4C4C',
+    lesson: 'Build-Measure-Learn. Validated learning beats elaborate planning. A startup\'s currency is not revenue — it is progress toward a validated business model.',
+    quote: '"The only way to win is to learn faster than anyone else."',
+  },
+  {
+    title: 'Antifragile',
+    author: 'Nassim Nicholas Taleb',
+    color: '#1A0A2E',
+    textColor: '#DA70D6',
+    lesson: 'Fragile things break under stress. Robust things resist it. Antifragile things get stronger. Build systems that benefit from volatility, disorder, and shock.',
+    quote: '"Wind extinguishes a candle and energizes fire."',
+  },
+  {
+    title: 'The E-Myth Revisited',
+    author: 'Michael E. Gerber',
+    color: '#0A2020',
+    textColor: '#00FFCC',
+    lesson: 'Work ON your business, not IN it. Most businesses fail because the founder is a technician who has an entrepreneurial seizure — not a systems builder.',
+    quote: '"The system runs the business. The people run the system."',
+  },
+  {
+    title: 'Blue Ocean Strategy',
+    author: 'Kim & Mauborgne',
+    color: '#001A2E',
+    textColor: '#4CC9F0',
+    lesson: 'Stop competing in bloody red oceans. Create uncontested market space — a blue ocean — by making competition irrelevant through value innovation.',
+    quote: '"Value innovation is the cornerstone of blue ocean strategy."',
+  },
+  {
+    title: 'Principles',
+    author: 'Ray Dalio',
+    color: '#1A1A0A',
+    textColor: '#FFD166',
+    lesson: 'Pain + Reflection = Progress. Every setback is a clue about a weakness in your mental model. Systematize your decision-making into explicit written principles.',
+    quote: '"He who lives by the crystal ball will eat shattered glass."',
+  },
+  {
+    title: 'The Hard Thing About Hard Things',
+    author: 'Ben Horowitz',
+    color: '#1A0A00',
+    textColor: '#FF8C00',
+    lesson: 'There is no formula for the hardest decisions in business. The only preparation is to develop the mental toughness to make a decision with incomplete information and live with the outcome.',
+    quote: '"Every time you make the hard, correct decision you become a bit more courageous."',
+  },
+];
+
+// Use day-of-year to auto-rotate daily
+function getDayIndex() {
+  const stored = sessionStorage.getItem('book-manual-index');
+  if (stored !== null) return parseInt(stored);
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  return Math.floor(diff / oneDay) % BOOKS.length;
+}
+
+let bookIndex = getDayIndex();
+
+function renderBook() {
+  const b = BOOKS[bookIndex];
+  document.getElementById('book-cover').style.background = b.color;
+  document.getElementById('book-cover').style.color = b.textColor;
+  document.getElementById('book-cover').style.borderColor = b.textColor + '40';
+  document.getElementById('book-cover').textContent = b.title;
+  document.getElementById('book-title').textContent = b.title;
+  document.getElementById('book-author').textContent = b.author;
+  document.getElementById('book-lesson').textContent = b.lesson;
+  document.getElementById('book-quote').textContent = b.quote;
+  document.getElementById('book-counter').textContent = `${bookIndex + 1} / ${BOOKS.length}`;
+}
+
+function bookNext() {
+  bookIndex = (bookIndex + 1) % BOOKS.length;
+  sessionStorage.setItem('book-manual-index', bookIndex);
+  renderBook();
+}
+function bookPrev() {
+  bookIndex = (bookIndex - 1 + BOOKS.length) % BOOKS.length;
+  sessionStorage.setItem('book-manual-index', bookIndex);
+  renderBook();
+}
+
+// ══════════════════════════════════════════════════════════
+// WIDGET 3 — TASK MANAGER
+// ══════════════════════════════════════════════════════════
+let tasks = [
+  { id: 1, text: 'Push shell files to GitHub repo', priority: 'HIGH', done: false },
+  { id: 2, text: 'Review CS Jamdani draft metrics', priority: 'HIGH', done: false },
+  { id: 3, text: 'Check Railway Hermes agent logs', priority: 'MED', done: false },
+  { id: 4, text: 'Update supplier directory — add Chittagong contact', priority: 'MED', done: true },
+  { id: 5, text: 'Read: Antifragile — Chapter 7', priority: 'LOW', done: false },
+];
+let taskIdCounter = 10;
+
+function renderTasks() {
+  const list = document.getElementById('task-list');
+  list.innerHTML = '';
+  const active = tasks.filter(t => !t.done);
+  const done   = tasks.filter(t => t.done);
+  [...active, ...done].forEach(t => {
+    list.innerHTML += `
+      <div class="task-item" id="task-${t.id}">
+        <div class="task-checkbox ${t.done ? 'done' : ''}" onclick="toggleTask(${t.id})">
+          ${t.done ? '✓' : ''}
+        </div>
+        <div class="task-text ${t.done ? 'done' : ''}">${t.text}</div>
+        <div class="task-pri ${t.priority}">${t.priority}</div>
+        <button class="task-del" onclick="deleteTask(${t.id})">✕</button>
+      </div>`;
+  });
+  document.getElementById('task-count').textContent = active.length + ' remaining';
+  document.getElementById('task-done-count').textContent = done.length + ' done';
+}
+
+function toggleTask(id) {
+  const t = tasks.find(x => x.id === id);
+  if (t) t.done = !t.done;
+  renderTasks();
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(x => x.id !== id);
+  renderTasks();
+}
+
+function addTask() {
+  const input = document.getElementById('task-input');
+  const priority = document.getElementById('task-priority').value;
+  const text = input.value.trim();
+  if (!text) return;
+  tasks.unshift({ id: ++taskIdCounter, text, priority, done: false });
+  input.value = '';
+  renderTasks();
+}
+
+function clearDone() {
+  tasks = tasks.filter(t => !t.done);
+  renderTasks();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('task-input');
+  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+});
+
+// ══════════════════════════════════════════════════════════
+// WIDGET 4 — CURIOSITY TICKER
+// ══════════════════════════════════════════════════════════
+const CURIOSITY_FACTS = [
+  {
+    fact: 'Octopuses have three hearts, blue blood, and neurons distributed throughout their arms — each arm can taste, feel, and make local decisions independently of the brain.',
+    source: 'Cephalopod Neuroscience · Woods Hole Oceanographic',
+    category: 'Biology',
+  },
+  {
+    fact: 'Trees in a forest share carbon, water, and chemical signals through mycorrhizal fungal networks — a single fungal web can link hundreds of trees across acres. Called the "Wood Wide Web".',
+    source: 'Suzanne Simard · Forest Ecology Research',
+    category: 'Ecology',
+  },
+  {
+    fact: 'Cladoptosis: trees deliberately shed entire living branches — not just dead ones — as a strategic resource allocation mechanism when nutrients are limited.',
+    source: 'Arboricultural Research · Journal of Botany',
+    category: 'Biology',
+  },
+  {
+    fact: 'In complex adaptive systems, the most resilient configurations are neither fully ordered nor fully chaotic — they exist at the "edge of chaos," where maximum information processing occurs.',
+    source: 'Stuart Kauffman · Santa Fe Institute',
+    category: 'Systems',
+  },
+  {
+    fact: 'A neutron star is so dense that a teaspoon of its material would weigh approximately 4 billion tonnes on Earth. Its gravity is 200 billion times stronger than Earth\'s.',
+    source: 'NASA Chandra X-Ray Observatory',
+    category: 'Physics',
+  },
+  {
+    fact: 'Tardigrades — microscopic water bears — can survive the vacuum of space, extreme radiation, and temperatures from -272°C to +150°C by entering a state called cryptobiosis.',
+    source: 'European Space Agency · Tardigrade Research',
+    category: 'Biology',
+  },
+  {
+    fact: 'The Jevons Paradox: when technology improves the efficiency of a resource, total consumption of that resource typically increases rather than decreases due to induced demand.',
+    source: 'William Stanley Jevons · The Coal Question (1865)',
+    category: 'Economics',
+  },
+  {
+    fact: 'Slime molds (Physarum polycephalum) have no brain or nervous system yet can solve mazes, find shortest paths, and approximate the Tokyo rail network layout through chemical gradient sensing.',
+    source: 'Toshiyuki Nakagaki · Science, Vol. 407',
+    category: 'Systems',
+  },
+  {
+    fact: 'The human gut contains approximately 38 trillion bacteria — roughly equal to the number of human cells. This microbiome produces 95% of the body\'s serotonin.',
+    source: 'Cell Host & Microbe · Sonnenburg Lab, Stanford',
+    category: 'Biology',
+  },
+  {
+    fact: 'Dunbar\'s Number: human cognitive architecture limits stable social relationships to approximately 150 people — a constraint that appears across hunter-gatherer bands, military units, and village sizes across history.',
+    source: 'Robin Dunbar · Oxford Evolutionary Anthropology',
+    category: 'Cognition',
+  },
+  {
+    fact: 'The Great Pacific Garbage Patch is not a solid island of trash — it is a diffuse zone where microplastics are suspended at multiple ocean depths, covering an area twice the size of Texas.',
+    source: 'The Ocean Cleanup Foundation · NOAA',
+    category: 'Ecology',
+  },
+  {
+    fact: 'Quantum entanglement allows two particles to instantaneously correlate their states regardless of distance — but cannot be used to transmit information faster than light due to the no-communication theorem.',
+    source: 'Bell\'s Theorem · CERN Quantum Research',
+    category: 'Physics',
+  },
+];
+
+let curiosityIndex = (() => {
+  const now = new Date();
+  return (now.getDate() + now.getMonth()) % CURIOSITY_FACTS.length;
+})();
+
+function renderCuriosity() {
+  const f = CURIOSITY_FACTS[curiosityIndex];
+  document.getElementById('curiosity-fact').textContent = f.fact;
+  document.getElementById('curiosity-source').textContent = '// ' + f.source;
+  document.getElementById('curiosity-counter').textContent =
+    (curiosityIndex + 1) + ' / ' + CURIOSITY_FACTS.length;
+  const badge = document.getElementById('curiosity-cat-badge');
+  badge.textContent = f.category;
+  badge.className = 'curiosity-category ' + f.category;
+}
+
+function curiosityNext() {
+  curiosityIndex = (curiosityIndex + 1) % CURIOSITY_FACTS.length;
+  renderCuriosity();
+}
+function curiosityPrev() {
+  curiosityIndex = (curiosityIndex - 1 + CURIOSITY_FACTS.length) % CURIOSITY_FACTS.length;
+  renderCuriosity();
+}
+
+// ══════════════════════════════════════════════════════════
+// WIDGET 5 — NEWSLETTER FEED
+// ══════════════════════════════════════════════════════════
+const NL_ITEMS = [
+  { source: 'MORNING BREW', time: '06:12', tag: 'MACRO', text: 'Fed holds rates at 5.25–5.50%. Powell signals two cuts possible in H2 if inflation continues downward trajectory.', read: false },
+  { source: 'STRATECHERY', time: '07:44', tag: 'TECH', text: 'OpenAI\'s operator model shifts AI from consumer apps to enterprise process automation — implications for B2B SaaS valuation multiples are significant.', read: false },
+  { source: 'THE HUSTLE', time: '08:01', tag: 'STARTUPS', text: 'Southeast Asia\'s circular economy startups raised $340M in Q1 — plastic recycling and e-waste dominate the deal flow.', read: false },
+  { source: 'SUPPLY CHAIN DIVE', time: '08:15', tag: 'SCM', text: 'Red Sea disruptions push container spot rates +18% WoW. Shippers rerouting via Cape of Good Hope adding 10–14 transit days.', read: false },
+  { source: 'FINIMIZE', time: '08:30', tag: 'MARKETS', text: 'Bangladesh garment export revenues hit $4.7B in Q1 — new EU sustainability disclosure rules may create compliance premium for certified factories.', read: false },
+  { source: 'LENNY\'S NEWSLETTER', time: '09:00', tag: 'PRODUCT', text: 'The best product frameworks emerge from constraints, not abundance. Scarcity of resources forces clarity of priorities.', read: false },
+  { source: 'IMPORT/EXPORT GAZETTE', time: '09:18', tag: 'TRADE', text: 'Bangladesh NBR extends SRO duty waiver on recycled plastic raw material imports through December — significant for Poriborton input cost model.', read: false },
+  { source: 'EVERY', time: '10:05', tag: 'AI', text: 'Agentic AI systems moving from demos to production: companies running autonomous agents on Railway, Render, and Modal report 60–70% task completion rates on structured workflows.', read: false },
+];
+
+// Calculate next scrub time
+function getNextScrubTime() {
+  const now = new Date();
+  const cycleHours = 6;
+  const hoursSinceMidnight = now.getHours() + now.getMinutes() / 60;
+  const nextCycle = Math.ceil(hoursSinceMidnight / cycleHours) * cycleHours;
+  const next = new Date(now);
+  next.setHours(Math.floor(nextCycle), (nextCycle % 1) * 60, 0);
+  return next;
+}
+
+function renderNLFeed() {
+  const feed = document.getElementById('nl-feed');
+  feed.innerHTML = '';
+  NL_ITEMS.forEach((item, i) => {
+    feed.innerHTML += `
+      <div class="nl-item ${item.read ? 'read' : ''}" onclick="toggleNLRead(${i})">
+        <div class="nl-dot"></div>
+        <div class="nl-content">
+          <div class="nl-source-row">
+            <span class="nl-source">${item.source}</span>
+            <span class="nl-time">${item.time}</span>
+          </div>
+          <div class="nl-text">${item.text}</div>
+          <span class="nl-tag">${item.tag}</span>
+        </div>
+      </div>`;
+  });
+
+  // Scrub time
+  const lastScrub = new Date();
+  lastScrub.setHours(lastScrub.getHours() - (lastScrub.getHours() % 6), 0, 0);
+  document.getElementById('nl-scrub-time').textContent =
+    lastScrub.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+  // Cycle progress bar
+  updateNLCycleBar();
+}
+
+function updateNLCycleBar() {
+  const now = new Date();
+  const minsSinceCycle = (now.getHours() % 6) * 60 + now.getMinutes();
+  const pct = (minsSinceCycle / 360) * 100;
+  const fill = document.getElementById('nl-cycle-fill');
+  if (fill) fill.style.width = pct + '%';
+}
+
+function toggleNLRead(i) {
+  NL_ITEMS[i].read = !NL_ITEMS[i].read;
+  renderNLFeed();
+}
+
+function markAllRead() {
+  NL_ITEMS.forEach(item => item.read = true);
+  renderNLFeed();
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Today date tag
+  const dateEl = document.getElementById('today-date');
+  if (dateEl) {
+    dateEl.textContent = new Date().toLocaleDateString('en-GB', {
+      weekday: 'short', day: '2-digit', month: 'short'
+    }).toUpperCase();
+  }
+
+  renderCalendar();
+  renderBook();
+  renderTasks();
+  renderCuriosity();
+  renderNLFeed();
+
+  // Refresh calendar every minute (keeps now-line accurate)
+  setInterval(renderCalendar, 60000);
+  // Refresh NL cycle bar every minute
+  setInterval(updateNLCycleBar, 60000);
+});
+</script>
 </body>
 </html>
