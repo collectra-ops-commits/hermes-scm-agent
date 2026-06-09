@@ -5,9 +5,257 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Warehouse — Memory World</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ══════════════════════════════════════════════════
+       SECTOR 7 — MEMORY WORLD
+    ══════════════════════════════════════════════════ */
+
+    .memory-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      grid-template-rows: auto 1fr;
+      gap: 1px;
+      background: var(--border-color);
+      flex: 1;
+      min-height: 0;
+      height: calc(100vh - 180px);
+    }
+
+    /* ── STAR CANVAS ────────────────────────────────── */
+    .star-canvas-wrap {
+      grid-row: 1 / 3;
+      background: #050E0A;
+      position: relative;
+      overflow: hidden;
+      min-height: 520px;
+    }
+
+    #star-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* ── MEMORY POPUP CARD ──────────────────────────── */
+    .memory-popup {
+      display: none;
+      position: absolute;
+      z-index: 100;
+      width: 280px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-active);
+      box-shadow: 0 0 24px rgba(0,0,0,0.8);
+      pointer-events: all;
+    }
+    .memory-popup.open { display: block; }
+    .memory-popup-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-bottom: var(--panel-border);
+      background: var(--bg-panel-alt);
+    }
+    .memory-popup-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      flex: 1;
+      line-height: 1.3;
+    }
+    .memory-popup-close {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0 0 0 8px;
+      transition: color 0.12s;
+    }
+    .memory-popup-close:hover { color: var(--accent-red); }
+    .memory-popup-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .memory-popup-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .memory-popup-content {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .memory-cat-badge {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border: 1px solid;
+    }
+    .memory-date {
+      font-size: 8px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+    .memory-importance {
+      display: flex;
+      gap: 2px;
+    }
+    .imp-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    /* ── RIGHT PANEL: SEARCH + ADD ──────────────────── */
+    .memory-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      background: var(--bg-panel);
+    }
+
+    /* Search */
+    .memory-search-panel {
+      padding: 14px;
+      border-bottom: var(--panel-border);
+    }
+    .memory-search-wrap {
+      display: flex;
+      gap: 1px;
+      background: var(--border-color);
+    }
+    .search-results-count {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-top: 6px;
+    }
+
+    /* Category filters */
+    .cat-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 10px;
+    }
+    .cat-filter-btn {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.12s;
+      color: var(--text-dim);
+    }
+    .cat-filter-btn.active { color: var(--text-primary); }
+
+    /* Add memory form */
+    .add-memory-panel {
+      padding: 14px;
+      border-bottom: var(--panel-border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .add-memory-label {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: block;
+      margin-bottom: 3px;
+    }
+    .importance-picker {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .imp-btn {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 4px 8px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .imp-btn.active {
+      border-color: var(--accent-neon);
+      color: var(--accent-neon);
+    }
+
+    /* Memory list (right panel) */
+    .memory-list-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+    .memory-list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .memory-list-item:hover { background: rgba(0,255,204,0.03); }
+    .memory-list-item:last-child { border-bottom: none; }
+    .memory-list-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .memory-list-content { flex: 1; min-width: 0; }
+    .memory-list-title {
+      font-size: 10px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .memory-list-meta {
+      font-size: 8px;
+      color: var(--text-dim);
+      margin-top: 1px;
+      letter-spacing: 0.04em;
+    }
+    .memory-list-item.highlighted { background: rgba(0,255,204,0.05); }
+
+    /* Stats bar at bottom of sidebar */
+    .memory-stats {
+      padding: 10px 14px;
+      border-top: var(--panel-border);
+      background: var(--bg-panel-alt);
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    /* Canvas tooltip hint */
+    .canvas-hint {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell">
+
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-title">The Warehouse</div>
@@ -31,67 +279,569 @@
       <div class="sidebar-footer-text" style="margin-top:4px;">v0.15.2 · Railway</div>
     </div>
   </aside>
+
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-left">
       <div class="topbar-breadcrumb">WAREHOUSE / <span>MEMORY WORLD</span></div>
     </div>
     <div class="topbar-right">
       <div class="status-pill"><div class="status-dot"></div>HERMES LIVE</div>
-      <div class="status-pill"><div class="status-dot warn"></div>MOCK DATA</div>
+      <div class="status-pill" id="mem-count-pill"><div class="status-dot warn"></div><span id="mem-count">0 memories</span></div>
       <div class="topbar-clock" id="topbar-clock">--:--:--</div>
     </div>
   </header>
-  <main class="main-content">
+
+  <!-- MAIN -->
+  <main class="main-content" style="gap:12px;padding-bottom:0;">
+
     <div class="sector-header">
       <div>
         <div class="sector-title">Memory World</div>
         <div class="sector-subtitle">Sector 07 — Long-Term Cognitive Backup</div>
       </div>
       <div class="sector-meta">
-        <div class="sector-tag">MOCK DATA</div>
-        <div class="sector-tag live">SHELL v1</div>
+        <div class="sector-tag live">LIVE</div>
+        <div class="sector-tag" id="filter-tag">ALL CATEGORIES</div>
       </div>
     </div>
-    <!-- Semantic Search -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Contextual Query <span class="panel-title-accent">// Natural Language</span></div>
-        <span class="badge badge-blue">SEMANTIC</span>
-      </div>
-      <div class="panel-body">
-        <div style="display:flex;gap:1px;background:var(--border-color);">
-          <input class="input-field" type="text" placeholder='e.g. "What movie did I mention watching 6 months ago?"' style="flex:1;" />
-          <button class="btn btn-primary" style="white-space:nowrap;padding:0 16px;">QUERY MEMORY</button>
+
+    <!-- MAIN LAYOUT -->
+    <div class="memory-layout">
+
+      <!-- STAR CANVAS -->
+      <div class="star-canvas-wrap" id="canvas-wrap">
+        <canvas id="star-canvas"></canvas>
+        <!-- Memory popup -->
+        <div class="memory-popup" id="memory-popup">
+          <div class="memory-popup-header">
+            <div class="memory-popup-title" id="popup-title">—</div>
+            <button class="memory-popup-close" onclick="closePopup()">✕</button>
+          </div>
+          <div class="memory-popup-body">
+            <div class="memory-popup-meta">
+              <span class="memory-cat-badge" id="popup-cat">—</span>
+              <span class="memory-date" id="popup-date">—</span>
+              <div class="memory-importance" id="popup-imp"></div>
+            </div>
+            <div class="memory-popup-content" id="popup-content">—</div>
+          </div>
         </div>
+        <div class="canvas-hint">// Click any star to recall · Stars = memories · Size = importance</div>
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="memory-sidebar">
+
+        <!-- Search -->
+        <div class="memory-search-panel">
+          <label class="add-memory-label">Search Memories</label>
+          <div class="memory-search-wrap">
+            <input class="input-field" id="mem-search" type="text"
+                   placeholder="Keyword, topic, date..." style="flex:1;border:none;"
+                   oninput="handleSearch()" />
+            <button class="btn btn-primary" style="border:none;padding:0 12px;font-size:9px;"
+                    onclick="handleSearch()">⌕</button>
+          </div>
+          <div class="search-results-count" id="search-count">// All memories visible</div>
+
+          <!-- Category filters -->
+          <div class="cat-filters" id="cat-filters">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Add Memory -->
+        <div class="add-memory-panel">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <label class="add-memory-label" style="margin:0;">Add New Memory</label>
+            <button class="btn btn-primary" onclick="submitMemory()" style="padding:3px 10px;font-size:9px;">+ SAVE</button>
+          </div>
+          <div>
+            <label class="add-memory-label">Title</label>
+            <input class="input-field" id="new-title" type="text" placeholder="What is this memory?" />
+          </div>
+          <div style="display:flex;gap:6px;">
+            <div style="flex:1;">
+              <label class="add-memory-label">Category</label>
+              <select class="input-field" id="new-cat" style="font-size:11px;">
+                <option value="Idea">💡 Idea</option>
+                <option value="Book">📖 Book</option>
+                <option value="Movie">🎬 Movie/Show</option>
+                <option value="Decision">⚡ Decision</option>
+                <option value="Person">👤 Person</option>
+                <option value="Project">🔧 Project</option>
+                <option value="Random">✦ Random</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="add-memory-label">Content</label>
+            <textarea class="input-field" id="new-content" rows="2"
+              placeholder="What do you want to remember?" style="resize:none;font-size:11px;"></textarea>
+          </div>
+          <div>
+            <label class="add-memory-label">Importance</label>
+            <div class="importance-picker" id="imp-picker">
+              <button class="imp-btn" onclick="setImp(1,this)">●</button>
+              <button class="imp-btn active" onclick="setImp(2,this)">●●</button>
+              <button class="imp-btn" onclick="setImp(3,this)">●●●</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Memory List -->
+        <div class="memory-list-panel" id="memory-list">
+          <!-- populated by JS -->
+        </div>
+
+        <!-- Stats -->
+        <div class="memory-stats">
+          <span id="stats-total">0 memories</span>
+          <span id="stats-cats">0 categories</span>
+          <span id="stats-latest">—</span>
+        </div>
+
       </div>
     </div>
-    <!-- Concept Array + Ingest -->
-    <div class="bento-grid bento-grid-2-1" style="gap:1px;">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Concept Array <span class="panel-title-accent">// Visual Log</span></div>
-          <span class="badge badge-muted">MOCK</span>
-        </div>
-        <div class="stub-block" style="min-height:220px;">
-          <div class="stub-label">Array Slot</div>
-          <div class="stub-title">Historical Thoughts</div>
-          <div class="stub-note">Interactive visual display of logged ideas, thoughts, and concepts over time.</div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Async Ingest <span class="panel-title-accent">// Telegram</span></div>
-          <span class="badge badge-green">BOT LINKED</span>
-        </div>
-        <div class="stub-block" style="min-height:220px;">
-          <div class="stub-label">Ingest Slot</div>
-          <div class="stub-title">File · Audio · Text</div>
-          <div class="stub-note">Entries ingested asynchronously from Telegram bot interface.</div>
-        </div>
-      </div>
-    </div>
+
   </main>
 </div>
+
 <script src="script.js"></script>
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════
+// CATEGORY CONFIG
+// ══════════════════════════════════════════════════════════
+const CATS = {
+  Idea:     { color: '#00FFCC', emoji: '💡' },
+  Book:     { color: '#4CC9F0', emoji: '📖' },
+  Movie:    { color: '#DA70D6', emoji: '🎬' },
+  Decision: { color: '#FFD166', emoji: '⚡' },
+  Person:   { color: '#FF8C00', emoji: '👤' },
+  Project:  { color: '#90EE90', emoji: '🔧' },
+  Random:   { color: '#AAAAAA', emoji: '✦'  },
+};
+
+// ══════════════════════════════════════════════════════════
+// MEMORY DATA
+// ══════════════════════════════════════════════════════════
+let memories = [
+  { id:1,  title:'Bottleneck Theory — The Goal',         cat:'Book',     date:'2024-01-12', imp:3, content:'Every system has one constraint. Optimize only the bottleneck. Everything else is noise. Goldratt changed how I think about operations forever.' },
+  { id:2,  title:'Poriborton — Recycled PP sourcing',    cat:'Project',  date:'2024-03-05', imp:3, content:'Explored Shanghai Resin Co. for industrial PP resin. Price range $2.30–2.80/unit. Need to cross-check with Chittagong local supply chain before committing.' },
+  { id:3,  title:'Inception — the totem scene',          cat:'Movie',    date:'2023-11-20', imp:1, content:'The totem doesn\'t tell you if you\'re dreaming — it tells you if someone else\'s dream has rules. The point is subjective reality construction.' },
+  { id:4,  title:'Antifragile systems idea',             cat:'Idea',     date:'2024-02-18', imp:3, content:'Build Poriborton supply chain to benefit from disruption — dual source every critical input, hold 15% buffer inventory, use spot market volatility to buy dips.' },
+  { id:5,  title:'NSDA meeting — CS submission format',  cat:'Decision', date:'2024-04-02', imp:2, content:'Competency Standards document must follow exact BTEB template. Units of competency need element breakdown + performance criteria. Jamdani metrics due Q2.' },
+  { id:6,  title:'Nassim Taleb — skin in the game',      cat:'Book',     date:'2023-09-15', imp:2, content:'Never trust advice from someone who doesn\'t bear the consequences. Applies to every consultant, every vendor pitch, every government planner.' },
+  { id:7,  title:'Nabil — warm intro to Meghna Group',   cat:'Person',   date:'2024-03-28', imp:3, content:'Nabil connected me to Farhan Hossain at Meghna. CFO level. Needs full digital + SEO retainer. Proposal sent. Follow up weekly.' },
+  { id:8,  title:'Hermes Railway config webhook',        cat:'Project',  date:'2024-05-10', imp:2, content:'Railway deployment uses port 8080. Webhook token stored in ENV. Telegram bot ID linked. n8n workflow triggers Hermes every 6hr for digest.' },
+  { id:9,  title:'Interstellar — Cooper station ending', cat:'Movie',    date:'2023-07-04', imp:1, content:'The 5th dimension isn\'t space — it\'s time experienced spatially. Cooper\'s love for Murph is the gravitational constant that closes the loop. Physics as metaphor.' },
+  { id:10, title:'Startup capital allocation idea',      cat:'Idea',     date:'2024-04-15', imp:2, content:'Allocate 25% of Poriborton Year 1 surplus into a micro-angel position in one Sylhet-based cleantech startup. Creates network leverage + optionality.' },
+  { id:11, title:'Dhaka Chamber event — City Group lead',cat:'Person',   date:'2024-03-10', imp:2, content:'Met Jakia Sultana at Sylhet chamber event. City Group BD. Interested in SEO + newsletter package. Budget small but door open. Follow up Q3.' },
+  { id:12, title:'Zero to One — last mover advantage',  cat:'Book',     date:'2023-12-01', imp:3, content:'Don\'t compete to be the best in an existing market. Create a new category. The last mover captures most value — proprietary tech, network effects, brand.' },
+  { id:13, title:'Weird fact — octopus neurons',        cat:'Random',   date:'2024-01-30', imp:1, content:'Each octopus arm has autonomous neural clusters. The arm can make local decisions — taste, grip, navigate — without consulting the central brain.' },
+  { id:14, title:'DSE portfolio rebalance decision',     cat:'Decision', date:'2024-04-20', imp:3, content:'Moved 15% from BD equities to Sanchayapatra after DSE correction. Locked 11.28% guaranteed return. Revisit in 6 months if market recovers above 6800.' },
+  { id:15, title:'The Wire — Omar Little philosophy',    cat:'Movie',    date:'2023-08-14', imp:1, content:'Omar plays by a code in a world without one. "A man\'s gotta have a code." The most moral character in the most immoral setting. Contrast as character design.' },
+  { id:16, title:'Jamdani weave density metric',        cat:'Project',  date:'2024-05-01', imp:2, content:'CS standard for Jamdani: thread count per inch (warp+weft), motif complexity score, loom type classification. Need artisan input for performance criteria baseline.' },
+  { id:17, title:'Ray Dalio — pain + reflection loop',  cat:'Book',     date:'2024-02-05', imp:2, content:'Pain is the signal. Reflection converts it to progress. Without the loop, you just suffer. Systematize post-mortems for every failed deal and supplier negotiation.' },
+  { id:18, title:'n8n webhook multi-route architecture',cat:'Idea',     date:'2024-05-08', imp:3, content:'Route Telegram inputs through n8n: media → Memory World, commands → Hermes, reports → Warehouse dashboard. Single bot, three pipelines, zero manual sorting.' },
+  { id:19, title:'Walton sponsor scan — first result',  cat:'Project',  date:'2024-04-28', imp:1, content:'Competitor channel scan found Walton sponsoring 3 Dhaka-based YouTube channels under 50K subs. Indicates low-cost brand testing strategy. Opportunity to pitch alternative.' },
+  { id:20, title:'Meaningful quote — Feynman',          cat:'Random',   date:'2023-10-22', imp:2, content:'"If you think you understand quantum mechanics, you don\'t understand quantum mechanics." Epistemic humility as a feature, not a bug.' },
+];
+let memIdCounter = 30;
+let currentImp = 2;
+let activeFilter = 'all';
+let searchQuery = '';
+
+// ══════════════════════════════════════════════════════════
+// STARS / CANVAS
+// ══════════════════════════════════════════════════════════
+const canvas  = document.getElementById('star-canvas');
+const ctx     = canvas.getContext('2d');
+const wrap    = document.getElementById('canvas-wrap');
+
+let stars = [];           // { x, y, vx, vy, r, memId, pulse, opacity, twinkle }
+let bgStars = [];         // decorative non-memory stars
+let animFrame;
+let hoveredStar = null;
+
+const CAT_COLORS = Object.fromEntries(Object.entries(CATS).map(([k,v]) => [k, v.color]));
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+function initCanvas() {
+  canvas.width  = wrap.offsetWidth;
+  canvas.height = wrap.offsetHeight;
+  buildStars();
+  buildBgStars();
+}
+
+function buildBgStars() {
+  bgStars = [];
+  const count = Math.floor((canvas.width * canvas.height) / 4000);
+  for (let i = 0; i < count; i++) {
+    bgStars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 0.8 + 0.2,
+      opacity: Math.random() * 0.4 + 0.1,
+      twinkleSpeed: Math.random() * 0.02 + 0.005,
+      twinklePhase: Math.random() * Math.PI * 2,
+    });
+  }
+}
+
+function buildStars() {
+  const visible = getVisibleMemories();
+  const W = canvas.width, H = canvas.height;
+  const pad = 40;
+
+  // Keep positions for existing stars if possible
+  const posMap = {};
+  stars.forEach(s => { posMap[s.memId] = { x: s.x, y: s.y, vx: s.vx, vy: s.vy }; });
+
+  stars = visible.map(mem => {
+    const cat   = CATS[mem.cat] || CATS.Random;
+    const r     = 3 + mem.imp * 3;   // 6, 9, 12 px radius
+    const old   = posMap[mem.id];
+    return {
+      memId:  mem.id,
+      x:      old ? old.x : pad + Math.random() * (W - pad*2),
+      y:      old ? old.y : pad + Math.random() * (H - pad*2),
+      vx:     old ? old.vx : (Math.random() - 0.5) * 0.25,
+      vy:     old ? old.vy : (Math.random() - 0.5) * 0.25,
+      r,
+      color:  cat.color,
+      pulse:  0,
+      twinklePhase: Math.random() * Math.PI * 2,
+      twinkleSpeed: Math.random() * 0.015 + 0.005,
+    };
+  });
+}
+
+function getVisibleMemories() {
+  return memories.filter(m => {
+    const catOk = activeFilter === 'all' || m.cat === activeFilter;
+    const qOk   = !searchQuery ||
+      m.title.toLowerCase().includes(searchQuery) ||
+      m.content.toLowerCase().includes(searchQuery) ||
+      m.cat.toLowerCase().includes(searchQuery) ||
+      m.date.includes(searchQuery);
+    return catOk && qOk;
+  });
+}
+
+// ── ANIMATION LOOP ───────────────────────────────────────
+function animate() {
+  animFrame = requestAnimationFrame(animate);
+  const W = canvas.width, H = canvas.height;
+  const now = Date.now() / 1000;
+
+  // Deep space background
+  ctx.fillStyle = '#050E0A';
+  ctx.fillRect(0, 0, W, H);
+
+  // Background decorative stars
+  bgStars.forEach(s => {
+    const tw = Math.sin(now * s.twinkleSpeed * 60 + s.twinklePhase);
+    const op = s.opacity + tw * 0.08;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(244,239,234,${Math.max(0.05, op)})`;
+    ctx.fill();
+  });
+
+  // Memory stars
+  stars.forEach(s => {
+    // Move
+    s.x += s.vx;
+    s.y += s.vy;
+
+    // Bounce off edges with padding
+    const pad = s.r + 10;
+    if (s.x < pad || s.x > W - pad) s.vx *= -1;
+    if (s.y < pad || s.y > H - pad) s.vy *= -1;
+    s.x = Math.max(pad, Math.min(W - pad, s.x));
+    s.y = Math.max(pad, Math.min(H - pad, s.y));
+
+    // Twinkle
+    const tw = Math.sin(now * s.twinkleSpeed * 60 + s.twinklePhase) * 0.3 + 0.7;
+
+    // Search highlight — pulse bright
+    const mem = memories.find(m => m.id === s.memId);
+    const isMatch = searchQuery && mem && (
+      mem.title.toLowerCase().includes(searchQuery) ||
+      mem.content.toLowerCase().includes(searchQuery)
+    );
+    const isHovered = hoveredStar && hoveredStar.memId === s.memId;
+
+    // Glow layers
+    const glowR = isHovered ? s.r * 4 : isMatch ? s.r * 3.5 : s.r * 2.5;
+    const glowA = isHovered ? 0.35 : isMatch ? 0.3 : 0.12;
+    const rgb   = hexToRgb(s.color);
+
+    // Outer glow
+    const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowR);
+    grad.addColorStop(0, `rgba(${rgb},${glowA})`);
+    grad.addColorStop(1, `rgba(${rgb},0)`);
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, glowR, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Core star
+    const coreA = isHovered ? 1 : tw * (isMatch ? 1 : 0.85);
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${rgb},${coreA})`;
+    ctx.fill();
+
+    // Inner bright core
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r * 0.4, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${coreA * 0.7})`;
+    ctx.fill();
+
+    // Label on hover
+    if (isHovered && mem) {
+      ctx.font = '9px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = `rgba(${rgb},0.9)`;
+      const label = mem.title.length > 28 ? mem.title.substring(0,28)+'…' : mem.title;
+      ctx.fillText(label, s.x, s.y - s.r - 8);
+    }
+  });
+}
+
+// ── HIT TEST ─────────────────────────────────────────────
+function hitTest(mx, my) {
+  let best = null, bestDist = Infinity;
+  stars.forEach(s => {
+    const d = Math.hypot(mx - s.x, my - s.y);
+    if (d < s.r + 8 && d < bestDist) {
+      bestDist = d;
+      best = s;
+    }
+  });
+  return best;
+}
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const my = (e.clientY - rect.top)  * (canvas.height / rect.height);
+  hoveredStar = hitTest(mx, my);
+  canvas.style.cursor = hoveredStar ? 'pointer' : 'crosshair';
+});
+
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const my = (e.clientY - rect.top)  * (canvas.height / rect.height);
+  const hit = hitTest(mx, my);
+  if (hit) {
+    openPopupForStar(hit, e.clientX, e.clientY);
+  } else {
+    closePopup();
+  }
+});
+
+canvas.addEventListener('mouseleave', () => { hoveredStar = null; });
+
+// ── POPUP ─────────────────────────────────────────────────
+function openPopupForStar(star, screenX, screenY) {
+  const mem = memories.find(m => m.id === star.memId);
+  if (!mem) return;
+
+  const popup = document.getElementById('memory-popup');
+  const wrapRect = wrap.getBoundingClientRect();
+
+  document.getElementById('popup-title').textContent   = mem.title;
+  document.getElementById('popup-date').textContent    = mem.date;
+  document.getElementById('popup-content').textContent = mem.content;
+
+  const catEl = document.getElementById('popup-cat');
+  catEl.textContent   = CATS[mem.cat]?.emoji + ' ' + mem.cat;
+  catEl.style.borderColor = CATS[mem.cat]?.color || '#fff';
+  catEl.style.color       = CATS[mem.cat]?.color || '#fff';
+
+  const impEl = document.getElementById('popup-imp');
+  impEl.innerHTML = Array.from({length:3}, (_,i) =>
+    `<div class="imp-dot" style="background:${i < mem.imp ? star.color : 'var(--border-active)'};"></div>`
+  ).join('');
+
+  // Position popup near click but keep in bounds
+  let px = screenX - wrapRect.left + 14;
+  let py = screenY - wrapRect.top  - 20;
+  if (px + 290 > wrapRect.width)  px = screenX - wrapRect.left - 300;
+  if (py + 160 > wrapRect.height) py = screenY - wrapRect.top  - 160;
+  px = Math.max(8, px);
+  py = Math.max(8, py);
+
+  popup.style.left = px + 'px';
+  popup.style.top  = py + 'px';
+  popup.classList.add('open');
+
+  // Highlight in list
+  document.querySelectorAll('.memory-list-item').forEach(el => el.classList.remove('highlighted'));
+  const listItem = document.querySelector(`.memory-list-item[data-id="${mem.id}"]`);
+  if (listItem) {
+    listItem.classList.add('highlighted');
+    listItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function closePopup() {
+  document.getElementById('memory-popup').classList.remove('open');
+  document.querySelectorAll('.memory-list-item').forEach(el => el.classList.remove('highlighted'));
+}
+
+// ══════════════════════════════════════════════════════════
+// SEARCH + FILTER
+// ══════════════════════════════════════════════════════════
+function handleSearch() {
+  searchQuery = document.getElementById('mem-search').value.toLowerCase().trim();
+  const visible = getVisibleMemories();
+  document.getElementById('search-count').textContent =
+    searchQuery
+      ? `// ${visible.length} match${visible.length !== 1 ? 'es' : ''} for "${searchQuery}"`
+      : '// All memories visible';
+  buildStars();
+  renderList();
+}
+
+function setFilter(cat, btn) {
+  activeFilter = cat;
+  document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('filter-tag').textContent =
+    cat === 'all' ? 'ALL CATEGORIES' : cat.toUpperCase();
+  closePopup();
+  buildStars();
+  renderList();
+}
+
+function renderCatFilters() {
+  const container = document.getElementById('cat-filters');
+  container.innerHTML = `<button class="cat-filter-btn active" onclick="setFilter('all',this)">All</button>`;
+  Object.entries(CATS).forEach(([cat, cfg]) => {
+    container.innerHTML += `
+      <button class="cat-filter-btn" onclick="setFilter('${cat}',this)"
+        style="border-color:${cfg.color}40;color:${cfg.color}80;"
+        onmouseover="this.style.borderColor='${cfg.color}';this.style.color='${cfg.color}'"
+        onmouseout="if(!this.classList.contains('active')){this.style.borderColor='${cfg.color}40';this.style.color='${cfg.color}80';}">
+        ${cfg.emoji} ${cat}
+      </button>`;
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// MEMORY LIST (sidebar)
+// ══════════════════════════════════════════════════════════
+function renderList() {
+  const list = document.getElementById('memory-list');
+  const visible = getVisibleMemories()
+    .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  if (!visible.length) {
+    list.innerHTML = `<div style="padding:16px;font-size:9px;color:var(--text-dim);letter-spacing:0.06em;">// No memories match</div>`;
+    return;
+  }
+
+  list.innerHTML = visible.map(mem => {
+    const cfg = CATS[mem.cat] || CATS.Random;
+    return `<div class="memory-list-item" data-id="${mem.id}" onclick="focusMemory(${mem.id})">
+      <div class="memory-list-dot" style="background:${cfg.color};box-shadow:0 0 4px ${cfg.color}60;"></div>
+      <div class="memory-list-content">
+        <div class="memory-list-title">${mem.title}</div>
+        <div class="memory-list-meta">${cfg.emoji} ${mem.cat} · ${mem.date}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateStats();
+}
+
+function focusMemory(id) {
+  const star = stars.find(s => s.memId === id);
+  if (!star) { closePopup(); return; }
+  // Fake a click at star screen position
+  const wrapRect = wrap.getBoundingClientRect();
+  const scaleX = canvas.width  / wrapRect.width;
+  const scaleY = canvas.height / wrapRect.height;
+  const screenX = wrapRect.left + star.x / scaleX;
+  const screenY = wrapRect.top  + star.y / scaleY;
+  openPopupForStar(star, screenX, screenY);
+}
+
+function updateStats() {
+  const cats = new Set(memories.map(m => m.cat));
+  const latest = memories.slice().sort((a,b) => new Date(b.date)-new Date(a.date))[0];
+  document.getElementById('stats-total').textContent   = memories.length + ' memories';
+  document.getElementById('stats-cats').textContent    = cats.size + ' categories';
+  document.getElementById('stats-latest').textContent  = latest ? latest.date : '—';
+  document.getElementById('mem-count').textContent     = memories.length + ' memories';
+}
+
+// ══════════════════════════════════════════════════════════
+// ADD MEMORY
+// ══════════════════════════════════════════════════════════
+function setImp(val, btn) {
+  currentImp = val;
+  document.querySelectorAll('.imp-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function submitMemory() {
+  const title   = document.getElementById('new-title').value.trim();
+  const cat     = document.getElementById('new-cat').value;
+  const content = document.getElementById('new-content').value.trim();
+  if (!title)   { alert('Title required.'); return; }
+  if (!content) { alert('Content required.'); return; }
+
+  const today = new Date().toISOString().split('T')[0];
+  memories.unshift({
+    id: ++memIdCounter,
+    title, cat, content,
+    date: today,
+    imp: currentImp,
+  });
+
+  document.getElementById('new-title').value   = '';
+  document.getElementById('new-content').value = '';
+
+  buildStars();
+  renderList();
+  updateStats();
+
+  if (typeof toast === 'function') toast('Memory saved · Star spawned', 'success');
+}
+
+// ══════════════════════════════════════════════════════════
+// RESIZE
+// ══════════════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+  canvas.width  = wrap.offsetWidth;
+  canvas.height = wrap.offsetHeight;
+  buildBgStars();
+});
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  initCanvas();
+  renderCatFilters();
+  renderList();
+  animate();
+});
+</script>
 </body>
 </html>
