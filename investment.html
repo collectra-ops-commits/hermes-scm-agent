@@ -5,9 +5,277 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Warehouse — Investment Command</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ══════════════════════════════════════════════════
+       SECTOR 3 — INVESTMENT COMMAND
+    ══════════════════════════════════════════════════ */
+
+    /* ── CURRENCY TOGGLE ────────────────────────────── */
+    .currency-toggle {
+      display: flex;
+      gap: 1px;
+      background: var(--border-color);
+    }
+    .currency-btn {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      padding: 5px 12px;
+      border: none;
+      background: var(--bg-panel-alt);
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.12s;
+      text-transform: uppercase;
+    }
+    .currency-btn.active {
+      background: var(--accent-neon);
+      color: var(--bg-main);
+      font-weight: 600;
+    }
+
+    /* ── NET WORTH HERO ─────────────────────────────── */
+    .networth-hero {
+      background: var(--bg-panel);
+      border: var(--panel-border);
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .networth-main { display: flex; flex-direction: column; gap: 4px; }
+    .networth-label {
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .networth-value {
+      font-family: var(--font-mono);
+      font-size: 48px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+    .networth-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .networth-stats {
+      display: flex;
+      gap: 32px;
+    }
+    .networth-stat { display: flex; flex-direction: column; gap: 3px; }
+    .networth-stat-label {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .networth-stat-value {
+      font-size: 16px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+
+    /* ── ASSET GRID ─────────────────────────────────── */
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+    }
+    .asset-block {
+      background: var(--bg-panel);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-bottom: 3px solid transparent;
+    }
+    .asset-block:hover { background: rgba(0,255,204,0.03); }
+    .asset-block.selected { border-bottom-color: var(--accent-neon); }
+    .asset-icon {
+      font-size: 16px;
+      margin-bottom: 2px;
+    }
+    .asset-name {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .asset-value {
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    .asset-pct {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    .asset-delta {
+      font-size: 10px;
+      font-weight: 500;
+    }
+    .asset-delta.up   { color: var(--accent-neon); }
+    .asset-delta.down { color: var(--accent-red); }
+    .asset-delta.flat { color: var(--text-dim); }
+
+    /* ── LIVE TICKER ────────────────────────────────── */
+    .ticker-strip {
+      background: var(--bg-panel-alt);
+      border: var(--panel-border);
+      display: flex;
+      align-items: stretch;
+      gap: 1px;
+      overflow-x: auto;
+    }
+    .ticker-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 10px 16px;
+      border-right: 1px solid var(--border-color);
+      min-width: 120px;
+      flex-shrink: 0;
+    }
+    .ticker-item:last-child { border-right: none; }
+    .ticker-symbol {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .ticker-live-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-neon);
+      animation: pulse 2s infinite;
+    }
+    .ticker-price {
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+    .ticker-chg {
+      font-size: 10px;
+      font-weight: 500;
+    }
+    .ticker-chg.up   { color: var(--accent-neon); }
+    .ticker-chg.down { color: var(--accent-red); }
+    .ticker-chg.flat { color: var(--text-dim); }
+    .ticker-loading {
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      animation: pulse 1.5s infinite;
+    }
+
+    /* ── CHARTS PANEL ───────────────────────────────── */
+    .charts-layout {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 1px;
+      background: var(--border-color);
+    }
+
+    .chart-panel {
+      background: var(--bg-panel);
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-canvas-wrap {
+      padding: 16px;
+      flex: 1;
+      position: relative;
+    }
+    canvas.chart-canvas {
+      width: 100%;
+      display: block;
+    }
+
+    /* ── CHART LEGEND ───────────────────────────────── */
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 0 16px 12px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      cursor: pointer;
+    }
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ── PORTFOLIO TABLE ────────────────────────────── */
+    .port-table { width: 100%; border-collapse: collapse; }
+    .port-table th {
+      font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-dim); padding: 8px 12px;
+      border-bottom: var(--panel-border); text-align: left; font-weight: 400;
+    }
+    .port-table td {
+      font-size: 11px; color: var(--text-primary);
+      padding: 9px 12px; border-bottom: 1px solid var(--border-color);
+    }
+    .port-table tr:last-child td { border-bottom: none; }
+    .port-table tr:hover td { background: rgba(0,255,204,0.02); }
+    .port-alloc-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .port-alloc-track {
+      width: 70px;
+      height: 3px;
+      background: var(--border-color);
+      position: relative;
+      display: inline-block;
+    }
+    .port-alloc-fill {
+      position: absolute;
+      left: 0; top: 0; height: 100%;
+    }
+
+    @media (max-width: 1100px) {
+      .asset-grid { grid-template-columns: repeat(4,1fr); }
+      .charts-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      .asset-grid { grid-template-columns: repeat(2,1fr); }
+      .networth-stats { flex-wrap: wrap; gap: 16px; }
+      .networth-value { font-size: 32px; }
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell">
+
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-title">The Warehouse</div>
@@ -31,68 +299,566 @@
       <div class="sidebar-footer-text" style="margin-top:4px;">v0.15.2 · Railway</div>
     </div>
   </aside>
+
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-left">
       <div class="topbar-breadcrumb">WAREHOUSE / <span>INVESTMENT COMMAND</span></div>
     </div>
     <div class="topbar-right">
-      <div class="status-pill"><div class="status-dot"></div>HERMES LIVE</div>
-      <div class="status-pill"><div class="status-dot warn"></div>MOCK DATA</div>
+      <div class="status-pill"><div class="status-dot" id="market-status-dot"></div><span id="market-status-label">MARKET LIVE</span></div>
+      <div class="status-pill"><div class="status-dot warn"></div>DSE MOCK</div>
       <div class="topbar-clock" id="topbar-clock">--:--:--</div>
     </div>
   </header>
-  <main class="main-content">
+
+  <!-- MAIN -->
+  <main class="main-content" style="gap:12px;">
+
+    <!-- SECTOR HEADER -->
     <div class="sector-header">
       <div>
         <div class="sector-title">Investment Command</div>
         <div class="sector-subtitle">Sector 03 — Portfolio & Net Worth Monitor</div>
       </div>
       <div class="sector-meta">
-        <div class="sector-tag">MOCK DATA</div>
-        <div class="sector-tag live">SHELL v1</div>
+        <div class="currency-toggle">
+          <button class="currency-btn active" onclick="setCurrency('BDT',this)">BDT</button>
+          <button class="currency-btn" onclick="setCurrency('USD',this)">USD</button>
+          <button class="currency-btn" onclick="setCurrency('EUR',this)">EUR</button>
+        </div>
+        <button class="btn btn-primary" onclick="refreshAll()" style="padding:5px 14px;font-size:9px;">⟳ REFRESH</button>
       </div>
     </div>
-    <div class="bento-grid bento-grid-2-1" style="gap:1px;">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Net Worth <span class="panel-title-accent">// Consolidated</span></div>
-          <div style="display:flex;gap:6px;">
-            <button class="btn" style="padding:4px 8px;font-size:9px;">BDT</button>
-            <button class="btn" style="padding:4px 8px;font-size:9px;">USD</button>
-            <button class="btn" style="padding:4px 8px;font-size:9px;">EUR</button>
-          </div>
-        </div>
-        <div class="stub-block" style="min-height:120px;">
-          <div class="stub-label">Metric Slot</div>
-          <div class="stub-title">~1.7M Total Valuation</div>
-          <div class="stub-note">Currency toggle. Real-time delta. Populates Session 4.</div>
-        </div>
+
+    <!-- NET WORTH HERO -->
+    <div class="networth-hero">
+      <div class="networth-main">
+        <div class="networth-label">Total Net Worth</div>
+        <div class="networth-value" id="networth-display">—</div>
+        <div class="networth-sub" id="networth-sub">Loading market data...</div>
       </div>
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Asset Classes</div>
-          <span class="badge badge-muted">7 CLASSES</span>
+      <div class="networth-stats">
+        <div class="networth-stat">
+          <div class="networth-stat-label">Invested</div>
+          <div class="networth-stat-value" id="stat-invested">—</div>
         </div>
-        <div class="stub-block" style="min-height:120px;">
-          <div class="stub-label">Grid Slot</div>
-          <div class="stub-title">Allocation Blocks</div>
-          <div class="stub-note">Crypto · Intl Equities · BD Equities · Startup · FD · Land · Sanchayapatra</div>
+        <div class="networth-stat">
+          <div class="networth-stat-label">Liquid</div>
+          <div class="networth-stat-value" id="stat-liquid">—</div>
+        </div>
+        <div class="networth-stat">
+          <div class="networth-stat-label">Unrealized P&L</div>
+          <div class="networth-stat-value" id="stat-pnl">—</div>
+        </div>
+        <div class="networth-stat">
+          <div class="networth-stat-label">Last Updated</div>
+          <div class="networth-stat-value" id="stat-updated" style="font-size:11px;">—</div>
         </div>
       </div>
     </div>
+
+    <!-- LIVE TICKER -->
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-title">Portfolio Delta <span class="panel-title-accent">// Charts</span></div>
-        <span class="badge badge-muted">MOCK</span>
+        <div class="panel-title">Live Market Ticker <span class="panel-title-accent">// Crypto + Forex</span></div>
+        <span class="last-updated" id="ticker-timestamp" style="font-size:9px;color:var(--text-dim);">Fetching...</span>
       </div>
-      <div class="stub-block" style="min-height:160px;">
-        <div class="stub-label">Chart Slot</div>
-        <div class="stub-title">Line & Bar Graphs</div>
-        <div class="stub-note">Real-time value changes and market corrections. Dynamic timelines.</div>
+      <div class="ticker-strip" id="ticker-strip">
+        <div class="ticker-item"><div class="ticker-loading">// Loading market data</div></div>
       </div>
     </div>
+
+    <!-- ASSET ALLOCATION GRID -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Asset Allocation <span class="panel-title-accent">// 7 Classes</span></div>
+        <span class="badge badge-muted">CLICK TO HIGHLIGHT</span>
+      </div>
+      <div class="asset-grid" id="asset-grid">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-layout">
+      <!-- Bar chart: 30-day performance -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <div class="panel-title">30-Day Performance <span class="panel-title-accent">// By Asset Class</span></div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn" style="font-size:9px;padding:3px 8px;" onclick="setChartMode('30d',this)">30D</button>
+            <button class="btn" style="font-size:9px;padding:3px 8px;" onclick="setChartMode('7d',this)">7D</button>
+            <button class="btn btn-primary" style="font-size:9px;padding:3px 8px;" onclick="setChartMode('ytd',this)">YTD</button>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas class="chart-canvas" id="bar-chart" height="220"></canvas>
+        </div>
+        <div class="chart-legend" id="bar-legend"></div>
+      </div>
+
+      <!-- Portfolio breakdown table -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <div class="panel-title">Portfolio Breakdown <span class="panel-title-accent">// Allocation</span></div>
+        </div>
+        <div style="padding:0 0 8px;">
+          <table class="port-table" id="port-table">
+            <!-- populated by JS -->
+          </table>
+        </div>
+        <!-- Donut-style ring chart -->
+        <div class="chart-canvas-wrap" style="padding:8px 16px 16px;">
+          <canvas class="chart-canvas" id="donut-chart" height="160"></canvas>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
+
 <script src="script.js"></script>
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════
+// PORTFOLIO DATA (BDT base values)
+// ══════════════════════════════════════════════════════════
+const PORTFOLIO = [
+  { id:'crypto',   name:'Cryptocurrency',     icon:'◈', color:'#F7931A', value:340000,  cost:280000,  liquid:true  },
+  { id:'intleq',   name:'Intl Equities',       icon:'◆', color:'#4CC9F0', value:280000,  cost:260000,  liquid:true  },
+  { id:'bdeq',     name:'BD Equities (DSE)',   icon:'▲', color:'#00FFCC', value:195000,  cost:180000,  liquid:true  },
+  { id:'startup',  name:'Startup Capital',     icon:'⊕', color:'#FFD166', value:420000,  cost:420000,  liquid:false },
+  { id:'fd',       name:'Fixed Deposits',      icon:'▣', color:'#DA70D6', value:210000,  cost:200000,  liquid:false },
+  { id:'land',     name:'Land / Property',     icon:'⬡', color:'#90EE90', value:180000,  cost:150000,  liquid:false },
+  { id:'sanch',    name:'Sanchayapatra',       icon:'◉', color:'#FF8C00', value:75000,   cost:70000,   liquid:false },
+];
+
+const TOTAL_BDT = PORTFOLIO.reduce((s,a) => s + a.value, 0);
+const TOTAL_COST= PORTFOLIO.reduce((s,a) => s + a.cost, 0);
+const TOTAL_LIQUID = PORTFOLIO.filter(a=>a.liquid).reduce((s,a) => s+a.value, 0);
+const TOTAL_PNL = TOTAL_BDT - TOTAL_COST;
+
+// Performance mock data (% delta per period)
+const PERF_DATA = {
+  '7d':  { crypto:+4.2,  intleq:+1.1,  bdeq:+0.8,  startup:0,    fd:+0.1, land:0,    sanch:+0.1 },
+  '30d': { crypto:+12.4, intleq:+3.2,  bdeq:-1.4,  startup:0,    fd:+0.4, land:+1.2, sanch:+0.3 },
+  'ytd': { crypto:+38.2, intleq:+9.8,  bdeq:+4.1,  startup:+8.0, fd:+2.1, land:+5.0, sanch:+1.8 },
+};
+
+// Exchange rates (will be updated from API)
+let FX = { BDT: 1, USD: 0.0091, EUR: 0.0083 };
+let currentCurrency = 'BDT';
+let currentChartMode = 'ytd';
+let selectedAsset = null;
+
+// ══════════════════════════════════════════════════════════
+// FORMATTING
+// ══════════════════════════════════════════════════════════
+const SYMBOLS = { BDT: '৳', USD: '$', EUR: '€' };
+
+function fmtVal(bdt) {
+  const v = bdt * FX[currentCurrency];
+  const sym = SYMBOLS[currentCurrency];
+  if (v >= 1000000) return sym + (v/1000000).toFixed(2) + 'M';
+  if (v >= 1000)    return sym + Math.round(v/1000) + 'K';
+  return sym + Math.round(v).toLocaleString();
+}
+
+// ══════════════════════════════════════════════════════════
+// LIVE MARKET DATA — COINGECKO + FRANKFURTER
+// ══════════════════════════════════════════════════════════
+let liveMarket = {};
+
+async function fetchCrypto() {
+  try {
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,binancecoin,solana&vs_currencies=usd,bdt&include_24hr_change=true',
+      { signal: AbortSignal.timeout(8000) }
+    );
+    const data = await res.json();
+    liveMarket.crypto = data;
+    return data;
+  } catch(e) {
+    console.warn('CoinGecko fetch failed:', e.message);
+    return null;
+  }
+}
+
+async function fetchForex() {
+  try {
+    const res = await fetch(
+      'https://api.frankfurter.app/latest?from=USD&to=BDT,EUR,GBP,JPY',
+      { signal: AbortSignal.timeout(8000) }
+    );
+    const data = await res.json();
+    if (data.rates) {
+      FX.USD = 1 / data.rates.BDT;
+      FX.EUR = data.rates.EUR / data.rates.BDT;
+      liveMarket.forex = data.rates;
+    }
+    return data;
+  } catch(e) {
+    console.warn('Frankfurter fetch failed:', e.message);
+    return null;
+  }
+}
+
+async function refreshAll() {
+  document.getElementById('ticker-timestamp').textContent = 'Fetching...';
+  document.getElementById('market-status-dot').className = 'status-dot warn';
+  document.getElementById('market-status-label').textContent = 'FETCHING...';
+
+  const [crypto, forex] = await Promise.all([fetchCrypto(), fetchForex()]);
+
+  renderTicker(crypto, forex);
+  renderNetWorth();
+  renderAssetGrid();
+  renderPortTable();
+  drawBarChart();
+  drawDonutChart();
+
+  const now = new Date().toLocaleTimeString('en-GB');
+  document.getElementById('ticker-timestamp').textContent = 'Live · ' + now;
+  document.getElementById('stat-updated').textContent = now;
+  document.getElementById('market-status-dot').className = 'status-dot';
+  document.getElementById('market-status-label').textContent = 'MARKET LIVE';
+}
+
+// ══════════════════════════════════════════════════════════
+// TICKER STRIP
+// ══════════════════════════════════════════════════════════
+function renderTicker(crypto, forex) {
+  const strip = document.getElementById('ticker-strip');
+  let html = '';
+
+  // DSE (mock — no free API)
+  const dseMock = [
+    { sym:'DSEX',  price:'6,842', chg:'+0.34%', up:true },
+    { sym:'DS30',  price:'2,418', chg:'-0.12%', up:false },
+    { sym:'DSES',  price:'1,512', chg:'+0.21%', up:true },
+  ];
+  dseMock.forEach(d => {
+    html += `<div class="ticker-item">
+      <div class="ticker-symbol"><div class="ticker-live-dot" style="background:var(--accent-warm);box-shadow:0 0 4px var(--accent-warm);"></div>${d.sym} <span style="font-size:8px;color:var(--text-dim);">MOCK</span></div>
+      <div class="ticker-price">${d.price}</div>
+      <div class="ticker-chg ${d.up?'up':'down'}">${d.chg}</div>
+    </div>`;
+  });
+
+  // Crypto (live)
+  if (crypto) {
+    const coins = [
+      { id:'bitcoin',     sym:'BTC', label:'Bitcoin' },
+      { id:'ethereum',    sym:'ETH', label:'Ethereum' },
+      { id:'binancecoin', sym:'BNB', label:'BNB' },
+      { id:'solana',      sym:'SOL', label:'Solana' },
+    ];
+    coins.forEach(c => {
+      const d = crypto[c.id];
+      if (!d) return;
+      const price = d.usd >= 1000
+        ? '$' + d.usd.toLocaleString('en-US', {maximumFractionDigits:0})
+        : '$' + d.usd.toFixed(2);
+      const chg = d.usd_24h_change;
+      const chgStr = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+      html += `<div class="ticker-item">
+        <div class="ticker-symbol"><div class="ticker-live-dot"></div>${c.sym}</div>
+        <div class="ticker-price">${price}</div>
+        <div class="ticker-chg ${chg>=0?'up':'down'}">${chgStr} 24h</div>
+      </div>`;
+    });
+  } else {
+    html += `<div class="ticker-item"><div class="ticker-symbol">CRYPTO</div><div class="ticker-loading">// API unavailable</div></div>`;
+  }
+
+  // Forex (live)
+  if (forex && forex.rates) {
+    const rates = forex.rates;
+    const pairs = [
+      { sym:'USD/BDT', val: rates.BDT.toFixed(2), base: 'USD' },
+      { sym:'EUR/BDT', val: (rates.BDT / rates.EUR).toFixed(2), base: 'EUR' },
+      { sym:'GBP/BDT', val: (rates.BDT / rates.GBP).toFixed(2), base: 'GBP' },
+    ];
+    pairs.forEach(p => {
+      html += `<div class="ticker-item">
+        <div class="ticker-symbol"><div class="ticker-live-dot"></div>${p.sym}</div>
+        <div class="ticker-price">৳${p.val}</div>
+        <div class="ticker-chg flat">LIVE</div>
+      </div>`;
+    });
+  } else {
+    // Fallback
+    html += `<div class="ticker-item">
+      <div class="ticker-symbol">USD/BDT</div>
+      <div class="ticker-price">৳110.00</div>
+      <div class="ticker-chg flat">FALLBACK</div>
+    </div>`;
+  }
+
+  strip.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════
+// NET WORTH
+// ══════════════════════════════════════════════════════════
+function renderNetWorth() {
+  document.getElementById('networth-display').textContent = fmtVal(TOTAL_BDT);
+  document.getElementById('networth-sub').textContent =
+    `Portfolio across ${PORTFOLIO.length} asset classes · As of today`;
+  document.getElementById('stat-invested').textContent = fmtVal(TOTAL_COST);
+  document.getElementById('stat-liquid').textContent   = fmtVal(TOTAL_LIQUID);
+  const pnl = TOTAL_PNL;
+  const pnlEl = document.getElementById('stat-pnl');
+  pnlEl.textContent = (pnl >= 0 ? '+' : '') + fmtVal(Math.abs(pnl));
+  pnlEl.style.color = pnl >= 0 ? 'var(--accent-neon)' : 'var(--accent-red)';
+}
+
+// ══════════════════════════════════════════════════════════
+// ASSET GRID
+// ══════════════════════════════════════════════════════════
+function renderAssetGrid() {
+  const grid = document.getElementById('asset-grid');
+  grid.innerHTML = '';
+  PORTFOLIO.forEach(a => {
+    const pct = ((a.value / TOTAL_BDT) * 100).toFixed(1);
+    const pnl = a.value - a.cost;
+    const pnlPct = ((pnl / a.cost) * 100).toFixed(1);
+    const isUp = pnl >= 0;
+    const isSelected = selectedAsset === a.id;
+    grid.innerHTML += `
+      <div class="asset-block ${isSelected ? 'selected' : ''}" onclick="selectAsset('${a.id}')"
+           style="border-bottom-color:${isSelected ? a.color : 'transparent'};">
+        <div class="asset-icon">${a.icon}</div>
+        <div class="asset-name" style="color:${a.color};">${a.name}</div>
+        <div class="asset-value">${fmtVal(a.value)}</div>
+        <div class="asset-pct">${pct}% of portfolio</div>
+        <div class="asset-delta ${isUp ? 'up' : 'down'}">
+          ${isUp ? '▲' : '▼'} ${Math.abs(pnlPct)}%
+        </div>
+      </div>`;
+  });
+}
+
+function selectAsset(id) {
+  selectedAsset = selectedAsset === id ? null : id;
+  renderAssetGrid();
+}
+
+// ══════════════════════════════════════════════════════════
+// PORTFOLIO TABLE
+// ══════════════════════════════════════════════════════════
+function renderPortTable() {
+  const table = document.getElementById('port-table');
+  const rows = PORTFOLIO.map(a => {
+    const pct = ((a.value / TOTAL_BDT) * 100).toFixed(1);
+    const pnl = a.value - a.cost;
+    const pnlPct = ((pnl / a.cost) * 100).toFixed(1);
+    const isUp = pnl >= 0;
+    return `<tr>
+      <td style="color:${a.color};">${a.icon} ${a.name.split(' ')[0]}</td>
+      <td style="text-align:right;">${fmtVal(a.value)}</td>
+      <td>
+        <div class="port-alloc-bar">
+          <div class="port-alloc-track">
+            <div class="port-alloc-fill" style="width:${pct}%;background:${a.color};"></div>
+          </div>
+          <span style="font-size:9px;color:var(--text-muted);">${pct}%</span>
+        </div>
+      </td>
+      <td style="color:${isUp?'var(--accent-neon)':'var(--accent-red)'};text-align:right;">
+        ${isUp?'+':''}${pnlPct}%
+      </td>
+    </tr>`;
+  }).join('');
+
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Asset</th>
+        <th style="text-align:right;">Value</th>
+        <th>Alloc</th>
+        <th style="text-align:right;">P&L</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// BAR CHART — Canvas drawn
+// ══════════════════════════════════════════════════════════
+function setChartMode(mode, btn) {
+  currentChartMode = mode;
+  document.querySelectorAll('.chart-panel .btn').forEach(b => b.classList.remove('btn-primary'));
+  if (btn) btn.classList.add('btn-primary');
+  drawBarChart();
+}
+
+function drawBarChart() {
+  const canvas = document.getElementById('bar-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 500;
+  const H = 220;
+  canvas.width = W;
+  canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  const perf = PERF_DATA[currentChartMode];
+  const assets = PORTFOLIO;
+  const vals = assets.map(a => perf[a.id] || 0);
+  const maxAbs = Math.max(...vals.map(Math.abs), 1);
+  const pad = { top: 20, bottom: 36, left: 10, right: 10 };
+  const chartH = H - pad.top - pad.bottom;
+  const barW = Math.floor((W - pad.left - pad.right) / assets.length) - 6;
+  const zero = pad.top + chartH / 2;
+
+  // Zero line
+  ctx.beginPath();
+  ctx.moveTo(pad.left, zero);
+  ctx.lineTo(W - pad.right, zero);
+  ctx.strokeStyle = '#1A3A2F';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Grid lines
+  [-1, -0.5, 0.5, 1].forEach(f => {
+    const y = zero - (f / maxAbs) * (chartH / 2);
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(W - pad.right, y);
+    ctx.strokeStyle = '#0E241E';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
+
+  assets.forEach((a, i) => {
+    const v = vals[i];
+    const x = pad.left + i * ((W - pad.left - pad.right) / assets.length) + 3;
+    const barH = Math.abs(v / maxAbs) * (chartH / 2 - 4);
+    const y = v >= 0 ? zero - barH : zero;
+
+    // Bar
+    ctx.fillStyle = v >= 0 ? a.color + 'CC' : '#FF4C4C88';
+    ctx.fillRect(x, v >= 0 ? y : zero, barW, v >= 0 ? barH : barH);
+
+    // Border top/bottom
+    ctx.strokeStyle = v >= 0 ? a.color : '#FF4C4C';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, v >= 0 ? y : zero, barW, barH);
+
+    // Value label
+    ctx.fillStyle = v >= 0 ? a.color : '#FF4C4C';
+    ctx.font = '9px JetBrains Mono, monospace';
+    ctx.textAlign = 'center';
+    const label = (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+    ctx.fillText(label, x + barW / 2, v >= 0 ? y - 4 : zero + barH + 12);
+
+    // X label
+    ctx.fillStyle = '#3D5A4F';
+    ctx.font = '8px JetBrains Mono, monospace';
+    ctx.fillText(a.name.split(' ')[0].substring(0,5), x + barW / 2, H - 8);
+  });
+
+  // Legend
+  const legend = document.getElementById('bar-legend');
+  legend.innerHTML = assets.map(a =>
+    `<div class="legend-item">
+      <div class="legend-dot" style="background:${a.color};"></div>
+      <span>${a.name}</span>
+    </div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// DONUT CHART — Canvas drawn
+// ══════════════════════════════════════════════════════════
+function drawDonutChart() {
+  const canvas = document.getElementById('donut-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 300;
+  const H = 160;
+  canvas.width = W;
+  canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2;
+  const outerR = Math.min(cx, cy) - 8;
+  const innerR = outerR * 0.58;
+  let startAngle = -Math.PI / 2;
+
+  PORTFOLIO.forEach(a => {
+    const slice = (a.value / TOTAL_BDT) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, outerR, startAngle, startAngle + slice);
+    ctx.closePath();
+    ctx.fillStyle = a.color + 'BB';
+    ctx.fill();
+    ctx.strokeStyle = '#0B1D17';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    startAngle += slice;
+  });
+
+  // Inner hole
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+  ctx.fillStyle = '#0E241E';
+  ctx.fill();
+
+  // Center text
+  ctx.fillStyle = '#F4EFEA';
+  ctx.font = `bold 13px JetBrains Mono, monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(fmtVal(TOTAL_BDT), cx, cy - 7);
+  ctx.fillStyle = '#7A9A8F';
+  ctx.font = '8px JetBrains Mono, monospace';
+  ctx.fillText('TOTAL PORTFOLIO', cx, cy + 10);
+}
+
+// ══════════════════════════════════════════════════════════
+// CURRENCY SWITCH
+// ══════════════════════════════════════════════════════════
+function setCurrency(cur, btn) {
+  currentCurrency = cur;
+  document.querySelectorAll('.currency-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderNetWorth();
+  renderAssetGrid();
+  renderPortTable();
+  drawDonutChart();
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  // Render with mock first (instant)
+  renderNetWorth();
+  renderAssetGrid();
+  renderPortTable();
+
+  // Wait for layout then draw charts
+  requestAnimationFrame(() => {
+    drawBarChart();
+    drawDonutChart();
+  });
+
+  // Then fetch live data
+  await refreshAll();
+
+  // Auto-refresh every 60s
+  setInterval(refreshAll, 60000);
+});
+
+window.addEventListener('resize', () => {
+  drawBarChart();
+  drawDonutChart();
+});
+</script>
 </body>
 </html>
