@@ -711,17 +711,11 @@ function openPopupForStar(star, screenX, screenY) {
   popup.classList.add('open');
 
   // Highlight in list
-  document.querySelectorAll('.memory-list-item').forEach(el => el.classList.remove('highlighted'));
-  const listItem = document.querySelector(`.memory-list-item[data-id="${mem.id}"]`);
-  if (listItem) {
-    listItem.classList.add('highlighted');
-    listItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }
+
 }
 
 function closePopup() {
   document.getElementById('memory-popup').classList.remove('open');
-  document.querySelectorAll('.memory-list-item').forEach(el => el.classList.remove('highlighted'));
 }
 
 // ══════════════════════════════════════════════════════════
@@ -735,7 +729,6 @@ function handleSearch() {
       ? `// ${visible.length} match${visible.length !== 1 ? 'es' : ''} for "${searchQuery}"`
       : '// All memories visible';
   buildStars();
-  renderList();
 }
 
 function setFilter(cat, btn) {
@@ -746,7 +739,6 @@ function setFilter(cat, btn) {
     cat === 'all' ? 'ALL CATEGORIES' : cat.toUpperCase();
   closePopup();
   buildStars();
-  renderList();
 }
 
 function renderCatFilters() {
@@ -766,41 +758,7 @@ function renderCatFilters() {
 // ══════════════════════════════════════════════════════════
 // MEMORY LIST (sidebar)
 // ══════════════════════════════════════════════════════════
-function renderList() {
-  const list = document.getElementById('memory-list');
-  const visible = getVisibleMemories()
-    .sort((a,b) => new Date(b.date) - new Date(a.date));
 
-  if (!visible.length) {
-    list.innerHTML = `<div style="padding:16px;font-size:9px;color:var(--text-dim);letter-spacing:0.06em;">// No memories match</div>`;
-    return;
-  }
-
-  list.innerHTML = visible.map(mem => {
-    const cfg = CATS[mem.cat] || CATS.Random;
-    return `<div class="memory-list-item" data-id="${mem.id}" onclick="focusMemory(${mem.id})">
-      <div class="memory-list-dot" style="background:${cfg.color};box-shadow:0 0 4px ${cfg.color}60;"></div>
-      <div class="memory-list-content">
-        <div class="memory-list-title">${mem.title}</div>
-        <div class="memory-list-meta">${cfg.emoji} ${mem.cat} · ${mem.date}</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  updateStats();
-}
-
-function focusMemory(id) {
-  const star = stars.find(s => s.memId === id);
-  if (!star) { closePopup(); return; }
-  // Fake a click at star screen position
-  const wrapRect = wrap.getBoundingClientRect();
-  const scaleX = canvas.width  / wrapRect.width;
-  const scaleY = canvas.height / wrapRect.height;
-  const screenX = wrapRect.left + star.x / scaleX;
-  const screenY = wrapRect.top  + star.y / scaleY;
-  openPopupForStar(star, screenX, screenY);
-}
 
 function updateStats() {
   const cats = new Set(memories.map(m => m.cat));
@@ -839,7 +797,6 @@ function submitMemory() {
   document.getElementById('new-content').value = '';
 
   buildStars();
-  renderList();
   updateStats();
 
   if (typeof toast === 'function') toast('Memory saved · Star spawned', 'success');
@@ -860,7 +817,7 @@ window.addEventListener('resize', () => {
 document.addEventListener('DOMContentLoaded', () => {
   initCanvas();
   renderCatFilters();
-  renderList();
+  updateStats();
   animate();
 });
 </script>
