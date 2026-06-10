@@ -189,46 +189,7 @@
       color: var(--accent-neon);
     }
 
-    /* Memory list (right panel) */
-    .memory-list-panel {
-      flex: 1;
-      overflow-y: auto;
-      padding: 8px 0;
-    }
-    .memory-list-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border-bottom: 1px solid var(--border-color);
-      cursor: pointer;
-      transition: background 0.12s;
-    }
-    .memory-list-item:hover { background: rgba(0,255,204,0.03); }
-    .memory-list-item:last-child { border-bottom: none; }
-    .memory-list-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .memory-list-content { flex: 1; min-width: 0; }
-    .memory-list-title {
-      font-size: 10px;
-      color: var(--text-primary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .memory-list-meta {
-      font-size: 8px;
-      color: var(--text-dim);
-      margin-top: 1px;
-      letter-spacing: 0.04em;
-    }
-    .memory-list-item.highlighted { background: rgba(0,255,204,0.05); }
-
-    /* Stats bar at bottom of sidebar */
+    /* Memory count footer */
     .memory-stats {
       padding: 10px 14px;
       border-top: var(--panel-border);
@@ -390,12 +351,7 @@
           </div>
         </div>
 
-        <!-- Memory List -->
-        <div class="memory-list-panel" id="memory-list">
-          <!-- populated by JS -->
-        </div>
-
-        <!-- Stats -->
+        <!-- Stats footer -->
         <div class="memory-stats">
           <span id="stats-total">0 memories</span>
           <span id="stats-cats">0 categories</span>
@@ -564,58 +520,123 @@ function animate() {
     s.x += s.vx;
     s.y += s.vy;
 
-    // Bounce off edges with padding
-    const pad = s.r + 10;
+    // Bounce off edges
+    const pad = s.r + 14;
     if (s.x < pad || s.x > W - pad) s.vx *= -1;
     if (s.y < pad || s.y > H - pad) s.vy *= -1;
     s.x = Math.max(pad, Math.min(W - pad, s.x));
     s.y = Math.max(pad, Math.min(H - pad, s.y));
 
     // Twinkle
-    const tw = Math.sin(now * s.twinkleSpeed * 60 + s.twinklePhase) * 0.3 + 0.7;
+    const tw = Math.sin(now * s.twinkleSpeed * 60 + s.twinklePhase) * 0.25 + 0.75;
 
-    // Search highlight — pulse bright
     const mem = memories.find(m => m.id === s.memId);
-    const isMatch = searchQuery && mem && (
+    const isMatch   = searchQuery && mem && (
       mem.title.toLowerCase().includes(searchQuery) ||
       mem.content.toLowerCase().includes(searchQuery)
     );
     const isHovered = hoveredStar && hoveredStar.memId === s.memId;
+    const rgb = hexToRgb(s.color);
 
-    // Glow layers
-    const glowR = isHovered ? s.r * 4 : isMatch ? s.r * 3.5 : s.r * 2.5;
-    const glowA = isHovered ? 0.35 : isMatch ? 0.3 : 0.12;
-    const rgb   = hexToRgb(s.color);
-
-    // Outer glow
-    const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowR);
-    grad.addColorStop(0, `rgba(${rgb},${glowA})`);
-    grad.addColorStop(1, `rgba(${rgb},0)`);
+    // ── CORONA / DIFFUSE GLOW ──────────────────────────
+    const coronaR = isHovered ? s.r * 7 : isMatch ? s.r * 6 : s.r * 4;
+    const coronaA = isHovered ? 0.28 : isMatch ? 0.22 : 0.10;
+    const corona  = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, coronaR);
+    corona.addColorStop(0,   `rgba(${rgb},${coronaA})`);
+    corona.addColorStop(0.4, `rgba(${rgb},${coronaA * 0.5})`);
+    corona.addColorStop(1,   `rgba(${rgb},0)`);
     ctx.beginPath();
-    ctx.arc(s.x, s.y, glowR, 0, Math.PI * 2);
-    ctx.fillStyle = grad;
+    ctx.arc(s.x, s.y, coronaR, 0, Math.PI * 2);
+    ctx.fillStyle = corona;
     ctx.fill();
 
-    // Core star
-    const coreA = isHovered ? 1 : tw * (isMatch ? 1 : 0.85);
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${rgb},${coreA})`;
-    ctx.fill();
+    // ── CROSS SPIKE RAYS ──────────────────────────────
+    const spikeLen = isHovered ? s.r * 5 : s.r * 3.5;
+    const spikeA   = (isHovered ? 0.7 : 0.35) * tw;
+    ctx.save();
+    ctx.globalAlpha = spikeA;
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth   = isHovered ? 1.2 : 0.8;
+    // horizontal spike
+    const hGrad = ctx.createLinearGradient(s.x - spikeLen, s.y, s.x + spikeLen, s.y);
+    hGrad.addColorStop(0,   `rgba(${rgb},0)`);
+    hGrad.addColorStop(0.5, `rgba(${rgb},1)`);
+    hGrad.addColorStop(1,   `rgba(${rgb},0)`);
+    ctx.strokeStyle = hGrad;
+    ctx.beginPath(); ctx.moveTo(s.x - spikeLen, s.y); ctx.lineTo(s.x + spikeLen, s.y); ctx.stroke();
+    // vertical spike
+    const vGrad = ctx.createLinearGradient(s.x, s.y - spikeLen, s.x, s.y + spikeLen);
+    vGrad.addColorStop(0,   `rgba(${rgb},0)`);
+    vGrad.addColorStop(0.5, `rgba(${rgb},1)`);
+    vGrad.addColorStop(1,   `rgba(${rgb},0)`);
+    ctx.strokeStyle = vGrad;
+    ctx.beginPath(); ctx.moveTo(s.x, s.y - spikeLen); ctx.lineTo(s.x, s.y + spikeLen); ctx.stroke();
+    // diagonal spikes (shorter)
+    const diagLen = spikeLen * 0.55;
+    const dGrad = ctx.createLinearGradient(s.x - diagLen, s.y - diagLen, s.x + diagLen, s.y + diagLen);
+    dGrad.addColorStop(0,   `rgba(${rgb},0)`);
+    dGrad.addColorStop(0.5, `rgba(${rgb},0.6)`);
+    dGrad.addColorStop(1,   `rgba(${rgb},0)`);
+    ctx.strokeStyle = dGrad; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(s.x - diagLen, s.y - diagLen); ctx.lineTo(s.x + diagLen, s.y + diagLen); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(s.x + diagLen, s.y - diagLen); ctx.lineTo(s.x - diagLen, s.y + diagLen); ctx.stroke();
+    ctx.restore();
 
-    // Inner bright core
+    // ── 5-POINT STAR SHAPE ────────────────────────────
+    const outerR = s.r;
+    const innerR = s.r * 0.42;
+    const rotation = -Math.PI / 2;
+    ctx.save();
+    ctx.globalAlpha = isHovered ? 1 : tw * 0.95;
     ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r * 0.4, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255,255,255,${coreA * 0.7})`;
+    for (let i = 0; i < 10; i++) {
+      const angle = rotation + (i * Math.PI) / 5;
+      const radius = i % 2 === 0 ? outerR : innerR;
+      const px = s.x + Math.cos(angle) * radius;
+      const py = s.y + Math.sin(angle) * radius;
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    // Fill with radial gradient from white core to color
+    const starGrad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, outerR);
+    starGrad.addColorStop(0,   `rgba(255,255,255,${isHovered ? 1 : 0.95})`);
+    starGrad.addColorStop(0.3, `rgba(${rgb},${isHovered ? 1 : 0.9})`);
+    starGrad.addColorStop(1,   `rgba(${rgb},0.7)`);
+    ctx.fillStyle = starGrad;
     ctx.fill();
+    // Crisp edge stroke
+    ctx.strokeStyle = `rgba(${rgb},0.6)`;
+    ctx.lineWidth   = 0.5;
+    ctx.stroke();
+    ctx.restore();
 
-    // Label on hover
+    // ── BRIGHT CENTER CORE ────────────────────────────
+    ctx.save();
+    ctx.globalAlpha = isHovered ? 1 : tw;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r * 0.22, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+    ctx.restore();
+
+    // ── HOVER LABEL ───────────────────────────────────
     if (isHovered && mem) {
+      ctx.save();
+      ctx.globalAlpha = 0.92;
+      const label = mem.title.length > 30 ? mem.title.substring(0,30) + '…' : mem.title;
       ctx.font = '9px JetBrains Mono, monospace';
       ctx.textAlign = 'center';
-      ctx.fillStyle = `rgba(${rgb},0.9)`;
-      const label = mem.title.length > 28 ? mem.title.substring(0,28)+'…' : mem.title;
-      ctx.fillText(label, s.x, s.y - s.r - 8);
+      const textW = ctx.measureText(label).width;
+      // bg pill
+      ctx.fillStyle = 'rgba(14,36,30,0.85)';
+      ctx.fillRect(s.x - textW/2 - 6, s.y - s.r - 22, textW + 12, 16);
+      ctx.strokeStyle = `rgba(${rgb},0.5)`;
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(s.x - textW/2 - 6, s.y - s.r - 22, textW + 12, 16);
+      // text
+      ctx.fillStyle = s.color;
+      ctx.fillText(label, s.x, s.y - s.r - 10);
+      ctx.restore();
     }
   });
 }
